@@ -35,4 +35,9 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-return': 'off',
     },
   },
+  {
+    // Los mocks de jest (expect(prisma.x.y).toHaveBeenCalled...) disparan unbound-method sin riesgo real.
+    files: ['**/*.spec.ts', '**/*.e2e-spec.ts'],
+    rules: { '@typescript-eslint/unbound-method': 'off' },
+  },
 );

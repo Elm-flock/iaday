@@ -1,3 +1,4 @@
+import argon2 from 'argon2';
 import { randomUUID } from 'crypto';
 import {
   CycleKind,
@@ -9,13 +10,17 @@ import {
 
 /**
  * Factories mínimas para e2e. Cada una acepta `overrides` y devuelve la fila creada.
- * El passwordHash por defecto NO es un hash válido: los tests de login deben crear
- * el usuario con un hash argon2 real (ver `createUser` con `passwordHash`).
+ * El usuario se crea con un hash argon2 REAL de `DEFAULT_PASSWORD` (calculado una sola vez),
+ * de modo que sirve directamente para los tests de login.
  */
 let counter = 0;
 const next = () => ++counter;
 
-export function createUser(
+export const DEFAULT_PASSWORD = 'Password123!';
+let defaultHash: Promise<string> | undefined;
+const getDefaultHash = () => (defaultHash ??= argon2.hash(DEFAULT_PASSWORD));
+
+export async function createUser(
   prisma: PrismaClient,
   overrides: Partial<{
     email: string;
@@ -30,7 +35,7 @@ export function createUser(
     data: {
       email: `user${n}@test.local`,
       name: `Usuario ${n}`,
-      passwordHash: 'hash-invalido-de-prueba',
+      passwordHash: await getDefaultHash(),
       role: 'MEMBER',
       ...overrides,
     },
