@@ -67,8 +67,10 @@ describe('createRecognitionAction', () => {
   });
 
   it('autorreconocimiento (400)', async () => {
-    fetchMock.mockResolvedValue(Response.json({ statusCode: 400, message: 'x' }, { status: 400 }));
+    fetchMock.mockResolvedValue(
+      Response.json({ statusCode: 400, message: 'x', code: 'RECOGNITION_SELF' }, { status: 400 }),
+    );
     const state = await createRecognitionAction(idleState, form(valid));
-    expect(state.message).toMatch(/no sea para vos mismo/);
+    expect(state.message).toMatch(/No podés reconocerte a vos mismo/);
   });
 });

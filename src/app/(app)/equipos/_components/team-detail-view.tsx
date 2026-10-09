@@ -1,4 +1,5 @@
 import { CycleSelect, type CycleOption } from './cycle-select';
+import { DownloadReportButton } from './download-report-button';
 import { MembersManager, type Candidate } from './members-manager';
 import { OriginMixIndicator } from './origin-mix-indicator';
 import { Card } from '@/components/ui/card';
@@ -24,7 +25,10 @@ export function TeamDetailView({
     <div className="flex flex-col gap-s20">
       <Card title="Mezcla de objetivos (50/50)">
         <div className="flex flex-col gap-s20">
-          <CycleSelect options={cycleOptions} selectedId={selectedCycleId} />
+          <div className="flex flex-wrap items-end justify-between gap-s20">
+            <CycleSelect options={cycleOptions} selectedId={selectedCycleId} />
+            <DownloadReportButton teamId={team.id} cycleId={selectedCycleId} />
+          </div>
           <OriginMixIndicator mix={team.originMix} />
         </div>
       </Card>

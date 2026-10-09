@@ -25,8 +25,12 @@ export const EMPTY_COPY = {
 } as const;
 
 export const FEEDBACK_ERROR_COPY: ErrorCopy = {
+  codes: {
+    FEEDBACK_SELF_SEND:
+      'No podés enviarte feedback a vos mismo. Elegí a otra persona: el feedback funciona cuando circula entre compañeros.',
+  },
   statuses: {
-    400: `No pudimos enviar el feedback. Revisá que el mensaje tenga entre 1 y ${CONTENT_MAX} caracteres y que no sea para vos mismo.`,
+    400: `No pudimos enviar el feedback. Revisá que el mensaje tenga entre 1 y ${CONTENT_MAX} caracteres y que hayas elegido a una persona.`,
     403: 'Solo quien escribió el feedback puede editarlo o eliminarlo.',
     404: 'No encontramos a la persona o el feedback. Puede que ya no exista: volvé a la lista y probá de nuevo.',
   },

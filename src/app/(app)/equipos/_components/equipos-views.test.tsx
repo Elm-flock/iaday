@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+import { DownloadReportButton } from './download-report-button';
 import { OriginMixIndicator } from './origin-mix-indicator';
 import { TeamTreeView } from './team-tree-view';
 import { MembersManager } from './members-manager';
@@ -92,5 +93,20 @@ describe('MembersManager', () => {
     expect(screen.getByText(/Todas las personas activas ya están/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Quitar liderazgo' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Hacer líder' })).toBeInTheDocument();
+  });
+});
+
+describe('DownloadReportButton', () => {
+  it('con ciclo es un enlace de descarga al Route Handler', () => {
+    render(<DownloadReportButton teamId="t1" cycleId="c1" />);
+    const link = screen.getByRole('link', { name: 'Descargar reporte PDF' });
+    expect(link).toHaveAttribute('href', '/api/reports/teams/t1/pdf?cycleId=c1');
+    expect(link).toHaveAttribute('download');
+  });
+
+  it('sin ciclo está deshabilitado y explica por qué', () => {
+    render(<DownloadReportButton teamId="t1" cycleId={undefined} />);
+    expect(screen.getByRole('button', { name: 'Descargar reporte PDF' })).toBeDisabled();
+    expect(screen.getByText('Elegí un ciclo para descargar el reporte.')).toBeInTheDocument();
   });
 });

@@ -1,5 +1,5 @@
 import { Target } from 'lucide-react';
-import { ReadBadge, UnreadBadge } from './unread-badge';
+import { EditedBadge, ReadBadge, UnreadBadge } from './unread-badge';
 import { Avatar } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
 import { Link } from '@/components/ui/link';
@@ -18,6 +18,8 @@ type Props = {
   content: string;
   createdAt: string;
   readAt: string | null;
+  /** Fecha de la última edición del autor; `null` si nunca se editó. */
+  editedAt?: string | null;
   viewerRole: 'author' | 'receiver';
   link: FeedbackLinkInfo | null;
 };
@@ -29,6 +31,7 @@ export function FeedbackDetailView({
   content,
   createdAt,
   readAt,
+  editedAt = null,
   viewerRole,
   link,
 }: Props) {
@@ -42,9 +45,11 @@ export function FeedbackDetailView({
         </p>
         {viewerRole === 'receiver' && readAt === null ? <UnreadBadge /> : null}
         {viewerRole === 'author' && readAt ? <ReadBadge /> : null}
+        {editedAt ? <EditedBadge /> : null}
       </div>
       <p className="mt-s5 text-caption text-ink-muted">
         {formatDateTime(createdAt)}
+        {editedAt ? ` · Editado ${formatDateTime(editedAt)}` : ''}
         {viewerRole === 'author'
           ? readAt
             ? ` · Leído ${formatDateTime(readAt)}`

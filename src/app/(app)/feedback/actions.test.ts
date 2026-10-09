@@ -56,14 +56,17 @@ describe('createFeedbackAction', () => {
 
   it('autoenvío rechazado por el back: copy claro y conserva lo escrito', async () => {
     fetchMock.mockResolvedValue(
-      Response.json({ statusCode: 400, message: 'No podés enviarte feedback' }, { status: 400 }),
+      Response.json(
+        { statusCode: 400, message: 'No podés enviarte feedback', code: 'FEEDBACK_SELF_SEND' },
+        { status: 400 },
+      ),
     );
     const state = await createFeedbackAction(
       idleState,
       form({ toUserId: 'yo', content: 'Mi mensaje' }),
     );
     expect(state.status).toBe('error');
-    expect(state.message).toMatch(/no sea para vos mismo/);
+    expect(state.message).toMatch(/No podés enviarte feedback a vos mismo/);
     expect(state.values?.content).toBe('Mi mensaje');
   });
 

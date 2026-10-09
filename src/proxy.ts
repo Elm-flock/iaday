@@ -29,9 +29,10 @@ function isPublic(pathname: string): boolean {
 
 function redirectToLogin(request: NextRequest, clearCookies: boolean): NextResponse {
   const { pathname, search } = request.nextUrl;
-  const response = NextResponse.redirect(
-    new URL(loginUrlPath(`${pathname}${search}`), request.url),
-  );
+  // Descargas/endpoints (/api/*): un redirect a /login no sirve a un fetch ni a un enlace de archivo.
+  const response = pathname.startsWith('/api/')
+    ? NextResponse.json({ message: 'Iniciá sesión para continuar.' }, { status: 401 })
+    : NextResponse.redirect(new URL(loginUrlPath(`${pathname}${search}`), request.url));
   if (clearCookies) {
     for (const name of [ACCESS_COOKIE, REFRESH_COOKIE, RETRY_COOKIE]) response.cookies.delete(name);
   }

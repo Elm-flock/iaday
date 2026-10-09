@@ -800,6 +800,11 @@ export interface components {
       content: string;
       /** Format: date-time */
       createdAt: string;
+      /**
+       * Format: date-time
+       * @description Fecha de la última edición del autor; null si nunca se editó
+       */
+      editedAt: string | null;
       /** Format: uuid */
       fromUserId: string;
       /** Format: uuid */
@@ -812,8 +817,6 @@ export interface components {
       readAt: string | null;
       /** Format: uuid */
       toUserId: string;
-      /** Format: date-time */
-      updatedAt: string;
     };
     KeyResultDto: {
       /** @description Decimal como string */

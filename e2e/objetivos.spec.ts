@@ -234,7 +234,7 @@ test.describe('objetivos (miembros reales contra el back)', () => {
     // El detalle de un borrador ajeno es un 404 (no filtra su existencia).
     await page.goto(`/objetivos/${ctx.draftId}`);
     await expect(page.getByText(`Objetivo 4 ${suffix}`)).toHaveCount(0);
-    await expect(page.getByText(/could not be found|no se encontr/i)).toBeVisible();
+    await expect(page.getByText('No encontramos esta página')).toBeVisible();
 
     // Un objetivo ajeno publicado se ve, sin acciones de edición.
     await page.goto(`/objetivos?cycleId=${ctx.cycleId}`);

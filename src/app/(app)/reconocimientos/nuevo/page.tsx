@@ -53,7 +53,8 @@ async function NewRecognitionContent({ searchParams }: { searchParams: SearchPar
 }
 
 async function MilestoneStep({ personId, personName }: { personId: string; personName: string }) {
-  const objectives = await listObjectives({ ownerUserId: personId });
+  // Sin filtro: incluye los objetivos de equipo donde la persona es responsable de un KR.
+  const objectives = await listObjectives();
   const milestones = listMilestones(objectives, personId);
 
   if (milestones.length === 0) {

@@ -86,8 +86,11 @@ describe('copy de feedback', () => {
   });
 
   it('autoenvío (400 del back): qué pasó y cómo seguir', () => {
-    const msg = failureMessage({ status: 400, body: { message: 'x' } }, FEEDBACK_ERROR_COPY);
-    expect(msg).toMatch(/no sea para vos mismo/);
+    const msg = failureMessage(
+      { status: 400, body: { statusCode: 400, message: 'x', code: 'FEEDBACK_SELF_SEND' } },
+      FEEDBACK_ERROR_COPY,
+    );
+    expect(msg).toMatch(/No podés enviarte feedback a vos mismo/);
     expect(msg).not.toMatch(/!/);
   });
 

@@ -78,6 +78,7 @@ src/
 └── lib/
     ├── api/                  # cliente openapi-fetch, schema.d.ts generado, errores
     ├── auth/                 # cookies, safeNext, token
+    ├── pdf/                  # reporte PDF del equipo (json-render + react-pdf): ver sección Reporte PDF
     ├── actions/              # FormState + useActionForm (forms sin reset tras la action)
     └── dal/                  # acceso a datos server-only (session, cycles, teams, users, objectives, check-ins, recognitions; feedback SIN cache)
 test/      # setup y mocks de Vitest
@@ -106,6 +107,24 @@ Dos capas con responsabilidades separadas:
 - Los e2e de auth necesitan el back corriendo (`API_URL`, default `:3000`) con un admin sembrado (`E2E_ADMIN_EMAIL`/`E2E_ADMIN_PASSWORD`). Ver `src/app/(auth)/CLAUDE.md`.
 - Vitest solo incluye `src/**` y `test/**`; Playwright solo `e2e/**`. No mezclar.
 - Mocks de Vitest en `test/mocks/`: `server-only` (no-op) y `next/headers` (stub con `__setCookies`/`__setHeaders`), aliasados en `vitest.config.mts`.
+
+## Reporte PDF (`src/lib/pdf/`)
+
+PDF del equipo por ciclo con `@json-render/core` + `@json-render/react-pdf` **fijados en 0.21.0 (exactos, sin `^`)** y `zod` 4.6.5 (peer obligatorio). Se eligió json-render (ronda 9, tras el spike 9.1) para que el spec sea JSON testeable sin renderizar. Es pre-1.0 y saca minors rápido: no actualizar sin re-correr los tests y mirar el PDF. `@react-pdf/renderer` (4.9) entra de forma transitiva y se importa directo en `registry.tsx`/`fonts.ts` (misma instancia hoisteada que usa json-render).
+
+| Archivo                                     | Rol                                                                                                                                                                                                                                                                                                                                                |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `team-report-spec.ts`                       | PURO: `TeamReportDto` -> `Spec`. Textos ya formateados (es-AR, voseo). Personas en orden alfabético (colación `es`), NUNCA por score. Sin `lastCheckInAt` = badge neutro "Sin check-ins" (objetivo neutro si ningún KR tiene check-ins). Mezcla de origen con aviso suave fuera de 40–60 %.                                                        |
+| `registry.tsx`                              | Componentes custom: `Page` (reemplaza al estándar que fija Helvetica; pie fijo "Página X de Y"), `BrandHeader` (degradé "Noche" con `Svg LinearGradient`), `OriginMix`, `ObjectiveBlock` (`wrap={false}`), `SectionTitle` (`minPresenceAhead`). Estado = ícono SVG + palabra (Public Sans no trae ●▲). Mapa plano sin tipar (no `defineRegistry`). |
+| `fonts.ts`                                  | `registerPdfFonts()` idempotente, Public Sans 300/400/700. react-pdf solo acepta `.woff`/`.ttf` (NO woff2).                                                                                                                                                                                                                                        |
+| `fonts/*.woff`                              | Copiados de `@fontsource/public-sans` 5.3.0 (OFL) y versionados en el repo: así no dependen de `node_modules` en el deploy; `next.config.ts` los incluye con `outputFileTracingIncludes` para la ruta del PDF.                                                                                                                                     |
+| `render-team-report-pdf.ts`                 | Adaptador: ÚNICO archivo que importa el render de json-render; devuelve `Buffer` (`Buffer.from(Uint8Array)`). Cambiar de motor toca solo este archivo.                                                                                                                                                                                             |
+| `slug.ts`, `report-types.ts`, `fixtures.ts` | Nombre de archivo, tipos del schema y fixtures de tests.                                                                                                                                                                                                                                                                                           |
+
+- Cualquier símbolo fuera de Latin-1 en el texto del PDF (flechas, viñetas Unicode) cae a Helvetica o se rompe: usar solo Latin-1 (`·` está bien).
+- `@react-pdf/renderer` ya está en la lista de externos por defecto de Next, así que NO hizo falta `serverExternalPackages`.
+- **Riesgo conocido**: verificado solo en `next dev` (Turbopack). Nunca se corrió `next build`; el primer build debe re-verificar que el PDF sale y que los `.woff` están en el trace (si falla el bundling: `serverExternalPackages: ['@react-pdf/renderer']`).
+- Tests: `team-report-spec.test.ts` (puro), `render-team-report-pdf.test.ts` (`// @vitest-environment node`, el Buffer empieza con `%PDF`), `route.test.ts` del handler y `e2e/reporte-equipo.spec.ts`.
 
 ## Reglas de Negocio Importantes
 

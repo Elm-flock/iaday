@@ -273,7 +273,7 @@ test.describe('usuario sin permisos de administración', () => {
     // Acceso directo: notFound(). Con Cache Components el shell ya se envió, así que el status HTTP
     // es 200 pero el contenido es el 404 y nunca se renderiza la lista (la API igual exige ADMIN).
     await page.goto('/admin/usuarios');
-    await expect(page.getByText('This page could not be found')).toBeVisible();
+    await expect(page.getByText('No encontramos esta página')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Usuarios' })).toHaveCount(0);
     await expect(page.getByText(memberEmail)).toHaveCount(0);
 

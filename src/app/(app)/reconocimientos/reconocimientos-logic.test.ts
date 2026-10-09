@@ -86,6 +86,54 @@ describe('listMilestones', () => {
   });
 });
 
+describe('listMilestones: KRs de objetivos de equipo', () => {
+  const team = (over = {}) =>
+    objective({ id: 'tobj', ownerUserId: null, ownerTeamId: 'team-1', ...over });
+
+  it('ofrece solo los KRs que la persona ejecuta y con score >= 0,70', () => {
+    const options = listMilestones(
+      [
+        team({
+          keyResults: [
+            { id: 'mio-alto', title: 'Mío alto', score: 0.8, ownerId: 'ana' },
+            { id: 'mio-bajo', title: 'Mío bajo', score: 0.69, ownerId: 'ana' },
+            { id: 'ajeno', title: 'Ajeno', score: 0.95, ownerId: 'beto' },
+          ],
+        }),
+      ],
+      'ana',
+    );
+    expect(options.map((o) => o.value)).toEqual(['kr:tobj:mio-alto']);
+    expect(options[0]).toMatchObject({ kind: 'kr', inTeamObjective: true, score: 0.8 });
+  });
+
+  it('no ofrece el objetivo de equipo en sí, ni cerrado, ni borradores de equipo', () => {
+    const options = listMilestones(
+      [
+        team({ status: 'CLOSED', finalScore: 0.9 }),
+        team({
+          id: 'draft',
+          status: 'DRAFT',
+          keyResults: [{ id: 'k', title: 'k', score: 1, ownerId: 'ana' }],
+        }),
+      ],
+      'ana',
+    );
+    expect(options).toEqual([]);
+  });
+
+  it('convive con los hitos de sus objetivos individuales', () => {
+    const options = listMilestones(
+      [
+        objective({ keyResults: [{ id: 'k1', title: 'Propio', score: 0.9 }] }),
+        team({ keyResults: [{ id: 'k2', title: 'Equipo', score: 0.75, ownerId: 'ana' }] }),
+      ],
+      'ana',
+    );
+    expect(options.map((o) => o.value)).toEqual(['kr:o1:k1', 'kr:tobj:k2']);
+  });
+});
+
 describe('parseo del reconocimiento', () => {
   it('exige persona, logro y mensaje', () => {
     const r = parseCreateRecognition(form({ toUserId: '', milestone: '', message: '' }));
@@ -118,9 +166,12 @@ describe('copy de errores', () => {
   });
 
   it('autorreconocimiento (400) y 404', () => {
-    expect(failureMessage({ status: 400 }, RECOGNITION_ERROR_COPY)).toMatch(
-      /no sea para vos mismo/,
-    );
+    expect(
+      failureMessage(
+        { status: 400, body: { statusCode: 400, message: 'x', code: 'RECOGNITION_SELF' } },
+        RECOGNITION_ERROR_COPY,
+      ),
+    ).toMatch(/No podés reconocerte a vos mismo/);
     expect(failureMessage({ status: 404 }, RECOGNITION_ERROR_COPY)).toMatch(/No encontramos/);
   });
 });

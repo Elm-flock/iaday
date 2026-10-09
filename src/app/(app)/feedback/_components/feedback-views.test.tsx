@@ -30,7 +30,7 @@ const fb = (over: Partial<Feedback> = {}): Feedback => ({
   keyResultId: null,
   readAt: null,
   createdAt: '2026-03-02T15:30:00.000Z',
-  updatedAt: '2026-03-02T15:30:00.000Z',
+  editedAt: null,
   ...over,
 });
 const names = new Map([
@@ -129,6 +129,23 @@ describe('FeedbackDetailView', () => {
       />,
     );
     expect(screen.getByText(/Leído 03\/03\/2026 07:00/)).toBeVisible();
+  });
+
+  it('editado: muestra la marca con ícono y palabra y la fecha', () => {
+    render(
+      <FeedbackDetailView
+        fromName="Ana Pérez"
+        toName="Beto Gómez"
+        content="Gran trabajo"
+        createdAt="2026-03-02T15:30:00.000Z"
+        readAt={null}
+        editedAt="2026-03-04T13:00:00.000Z"
+        viewerRole="receiver"
+        link={null}
+      />,
+    );
+    expect(screen.getByText('Editado')).toBeVisible();
+    expect(screen.getByText(/Editado 04\/03\/2026 10:00/)).toBeVisible();
   });
 
   it('un objetivo enlazado que ya no se ve no filtra su título', () => {

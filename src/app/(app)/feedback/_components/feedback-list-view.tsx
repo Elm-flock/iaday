@@ -1,7 +1,7 @@
 import { MessageSquare } from 'lucide-react';
 import { EMPTY_COPY } from '../messages';
 import { excerpt, isUnread } from '../policy';
-import { ReadBadge, UnreadBadge } from './unread-badge';
+import { EditedBadge, ReadBadge, UnreadBadge } from './unread-badge';
 import { Avatar } from '@/components/ui/avatar';
 import { buttonStyles } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -55,6 +55,7 @@ export function FeedbackListView({ box, items, viewerId, names }: Props) {
                   </span>
                   {unread ? <UnreadBadge /> : null}
                   {box === 'sent' && f.readAt ? <ReadBadge /> : null}
+                  {f.editedAt ? <EditedBadge /> : null}
                 </span>
                 <span className="text-body-sm text-ink-muted">{excerpt(f.content)}</span>
                 <span className="text-caption text-ink-muted">{formatDateTime(f.createdAt)}</span>

@@ -21,9 +21,11 @@ type MilestoneObjective = {
   title: string;
   status: ObjectiveStatus;
   ownerUserId: string | null;
+  /** Presente en objetivos de equipo; ahí solo cuentan los KRs que ejecuta la persona. */
+  ownerTeamId?: string | null;
   score: number;
   finalScore: number | null;
-  keyResults: { id: string; title: string; score: number }[];
+  keyResults: { id: string; title: string; score: number; ownerId?: string }[];
 };
 
 export type MilestoneOption = {
@@ -35,21 +37,30 @@ export type MilestoneOption = {
   title: string;
   objectiveTitle: string;
   score: number;
+  /** El KR pertenece a un objetivo del equipo (la persona es responsable del KR). */
+  inTeamObjective?: boolean;
 };
 
 /**
- * Hitos de una persona que se pueden reconocer: sus KRs con score >= 0,70 y sus objetivos CLOSED.
- * Solo objetivos propios de la persona (individuales) y nunca borradores. El back valida de nuevo.
+ * Hitos de una persona que se pueden reconocer, nunca de borradores:
+ * - Objetivos propios (individuales): el objetivo si está CLOSED y sus KRs con score >= 0,70.
+ * - Objetivos de EQUIPO: solo los KRs que la persona es responsable de ejecutar (`ownerId`) con
+ *   score >= 0,70. El objetivo de equipo en sí no es un logro individual, aunque esté CLOSED.
+ * El back valida de nuevo.
  */
 export function listMilestones(
   objectives: MilestoneObjective[],
   userId: string,
 ): MilestoneOption[] {
   return objectives
-    .filter((o) => o.ownerUserId === userId && o.status !== 'DRAFT')
+    .filter((o) => o.status !== 'DRAFT')
     .flatMap((o) => {
+      const own = o.ownerUserId === userId;
+      const team = !own && o.ownerUserId === null && Boolean(o.ownerTeamId);
+      if (!own && !team) return [];
+
       const options: MilestoneOption[] = [];
-      if (isMilestone(null, { status: o.status })) {
+      if (own && isMilestone(null, { status: o.status })) {
         options.push({
           value: encodeObjectiveLink(o.id),
           kind: 'objective',
@@ -60,6 +71,7 @@ export function listMilestones(
         });
       }
       for (const kr of o.keyResults) {
+        if (team && kr.ownerId !== userId) continue;
         if (!isMilestone({ score: kr.score }, null)) continue;
         options.push({
           value: encodeKeyResultLink(o.id, kr.id),
@@ -69,6 +81,7 @@ export function listMilestones(
           title: kr.title,
           objectiveTitle: o.title,
           score: kr.score,
+          ...(team ? { inTeamObjective: true } : {}),
         });
       }
       return options;

@@ -25,7 +25,7 @@ Feedback **privado** entre dos personas (`/feedback`, `/feedback/nuevo`, `/feedb
 - Nunca se loguea contenido de feedback (ni en actions ni en el DAL). El `title` de la página es fijo.
 - El feedback no se renderiza en ningún lugar fuera de la vista del emisor y del receptor (no hay dashboard, reportes ni PDF con feedback).
 - Las mutaciones usan `refresh()` (router del cliente), no `updateTag`.
-- `updatedAt` del back cambia también al marcar como leído, por eso la UI **no** muestra "Editado" (no se puede distinguir de una lectura).
+- El back informa `readAt` y `editedAt` (ya no hay `updatedAt`): marcar como leído no toca `editedAt`, por eso la UI muestra "Editado" (ícono + palabra, con `dd/mm/aaaa hh:mm` en el detalle) solo cuando `editedAt` no es null.
 - Con `cacheComponents`, Next conserva las páginas anteriores ocultas (`Activity`): en e2e filtrar con `{ visible: true }` al contar textos.
 
 ## Tests

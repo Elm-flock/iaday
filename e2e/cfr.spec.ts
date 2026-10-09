@@ -73,7 +73,7 @@ async function sessionFor(browser: Browser, who: Who | 'admin'): Promise<Page> {
 
 async function expectNotFound(page: Page, path: string) {
   await page.goto(path);
-  await expect(page.getByText('This page could not be found.')).toBeVisible();
+  await expect(page.getByText('No encontramos esta página')).toBeVisible();
   await expect(page.getByText(FEEDBACK_TEXT)).toHaveCount(0);
   await expect(page.getByText(FEEDBACK_EDITED)).toHaveCount(0);
 }

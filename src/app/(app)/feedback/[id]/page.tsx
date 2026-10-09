@@ -65,6 +65,7 @@ async function FeedbackDetail({ params }: { params: Params }) {
           content={feedback.content}
           createdAt={feedback.createdAt}
           readAt={feedback.readAt}
+          editedAt={feedback.editedAt}
           viewerRole={role}
           link={link}
         />
