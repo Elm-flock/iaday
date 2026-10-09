@@ -1,6 +1,5 @@
 import { Target } from 'lucide-react';
 import NextLink from 'next/link';
-import { BandBadge } from '@/components/ui/status-badge';
 import { Card } from '@/components/ui/card';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ScoreBar } from '@/components/ui/score-bar';
@@ -8,6 +7,7 @@ import type { Objective } from '@/lib/dal/objectives';
 import { OBJECTIVE_MAX, OBJECTIVE_MIN } from '../messages';
 import { ownerKey } from '../policy';
 import { LimitIndicator, ObjectiveStatusBadge, ObjectiveTags } from './objective-meta';
+import { hasScore, ObjectiveProgressBadge, objectiveProgressState } from './progress-badge';
 
 export type OwnerGroup = {
   key: string;
@@ -79,8 +79,14 @@ function ObjectiveCard({ objective }: { objective: Objective }) {
           </span>
         ) : (
           <span className="flex flex-wrap items-center gap-s15">
-            <BandBadge score={objective.score} />
-            <ScoreBar score={objective.score} label={objective.title} className="min-w-40 flex-1" />
+            <ObjectiveProgressBadge objective={objective} />
+            {hasScore(objectiveProgressState(objective)) ? (
+              <ScoreBar
+                score={objective.score}
+                label={objective.title}
+                className="min-w-40 flex-1"
+              />
+            ) : null}
           </span>
         )}
       </NextLink>

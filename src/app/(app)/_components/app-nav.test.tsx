@@ -15,9 +15,7 @@ describe('AppNav', () => {
 
     expect(screen.getByRole('link', { name: 'Inicio' })).toHaveAttribute('aria-current', 'page');
 
-    const checkIns = screen.getByText('Check-ins').closest('[aria-disabled="true"]');
-    expect(checkIns).toBeInTheDocument();
-    expect(checkIns).toHaveAccessibleDescription(/todavía no está disponible/i);
+    expect(screen.getByRole('link', { name: 'Check-ins' })).toHaveAttribute('href', '/check-ins');
     for (const label of ['Feedback', 'Reconocimientos']) {
       expect(screen.getByText(label).closest('[aria-disabled="true"]')).toBeInTheDocument();
     }

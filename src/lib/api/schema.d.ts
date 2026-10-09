@@ -4,6 +4,23 @@
  */
 
 export interface paths {
+  '/audit': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Consulta del registro de auditoría (solo ADMIN) con filtros por entidad, actor, acción y rango de fechas; paginado, del más nuevo al más viejo. */
+    get: operations['AuditController_list'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/auth/login': {
     parameters: {
       query?: never;
@@ -66,6 +83,23 @@ export interface paths {
     put?: never;
     /** Rota el refresh token y emite un nuevo access token */
     post: operations['AuthController_refresh'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/check-ins/pending': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Mis KRs vencidos: pasó más que la cadencia del ciclo desde el último check-in (o la publicación). Solo indicador, sin notificaciones. */
+    get: operations['CheckInsController_pending'];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -142,6 +176,60 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/feedback': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Mi feedback (recibido y/o enviado, según `box`), del más nuevo al más viejo. El filtro de privacidad está en el WHERE. */
+    get: operations['FeedbackController_list'];
+    put?: never;
+    /** Envía feedback privado a otro usuario (no a uno mismo) */
+    post: operations['FeedbackController_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/feedback/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Detalle: solo emisor o receptor (cualquier otro, incluido ADMIN, recibe 404) */
+    get: operations['FeedbackController_get'];
+    put?: never;
+    post?: never;
+    /** El autor borra su feedback */
+    delete: operations['FeedbackController_remove'];
+    options?: never;
+    head?: never;
+    /** El autor edita el contenido de su feedback */
+    patch: operations['FeedbackController_update'];
+    trace?: never;
+  };
+  '/feedback/{id}/read': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** El destinatario marca el feedback como leído (idempotente) */
+    patch: operations['FeedbackController_markRead'];
+    trace?: never;
+  };
   '/health': {
     parameters: {
       query?: never;
@@ -175,6 +263,24 @@ export interface paths {
     head?: never;
     /** Edita un KR. Tras publicar, cambiar start/target solo lo hacen ADMIN o líderes (owner team / equipo del owner) y se audita como KR_TARGET_CHANGED. */
     patch: operations['KeyResultsController_update'];
+    trace?: never;
+  };
+  '/key-results/{id}/check-ins': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Historial de check-ins del KR, del más nuevo al más viejo */
+    get: operations['CheckInsController_history'];
+    put?: never;
+    /** Registra un check-in del KR (responsable del KR, dueño del objetivo, miembros del equipo owner o su líder; sin bypass de ADMIN). Guarda snapshot de score y banda, recalcula KR y objetivo y audita KR_SCORE_CHANGED. */
+    post: operations['CheckInsController_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
     trace?: never;
   };
   '/objectives': {
@@ -242,6 +348,41 @@ export interface paths {
     put?: never;
     /** Publica el objetivo (DRAFT -> PUBLISHED): exige al menos 3 objetivos del owner en el ciclo y 3 KRs en este */
     post: operations['ObjectivesController_publish'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/recognitions': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Muro público de reconocimientos (cualquier autenticado), del más nuevo al más viejo */
+    get: operations['RecognitionsController_list'];
+    put?: never;
+    /** Reconoce a otra persona, con enlace opcional a un hito (KR con score >= 0.7 u objetivo CLOSED). */
+    post: operations['RecognitionsController_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/reports/teams/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Reporte del equipo en un ciclo (cualquier autenticado): objetivos del equipo y objetivos individuales de sus miembros agrupados por persona, con KRs, scores, bandas, mezcla de origen y logro al cierre. Sin feedback, ranking ni datos de compensación. */
+    get: operations['ReportsController_teamReport'];
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -358,6 +499,42 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    AuditEntryDto: {
+      /** @enum {string} */
+      action:
+        | 'OBJECTIVE_PUBLISHED'
+        | 'OBJECTIVE_CLOSED'
+        | 'KR_TARGET_CHANGED'
+        | 'KR_SCORE_CHANGED'
+        | 'CYCLE_ACTIVATED'
+        | 'CYCLE_CLOSED'
+        | 'CYCLE_THRESHOLDS_CHANGED'
+        | 'USER_ROLE_CHANGED'
+        | 'USER_DEACTIVATED'
+        | 'REFRESH_REUSE_DETECTED'
+        | 'REFRESH_REVOKED_USED';
+      /** Format: uuid */
+      actorId: string | null;
+      after: {
+        [key: string]: unknown;
+      } | null;
+      before: {
+        [key: string]: unknown;
+      } | null;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: uuid */
+      entityId: string;
+      entityType: string;
+      /** Format: uuid */
+      id: string;
+    };
+    AuditPageDto: {
+      items: components['schemas']['AuditEntryDto'][];
+      limit: number;
+      page: number;
+      total: number;
+    };
     AuthSessionDto: {
       /** Format: date-time */
       accessExpiresAt: string;
@@ -376,6 +553,46 @@ export interface components {
       name: string;
       /** @enum {string} */
       role: 'ADMIN' | 'LEADER' | 'MEMBER';
+    };
+    CheckInDto: {
+      /** @enum {string} */
+      action: 'CONTINUE' | 'UPDATE' | 'START' | 'STOP';
+      /** Format: uuid */
+      authorId: string;
+      /**
+       * @description Banda al momento del check-in (snapshot)
+       * @enum {string}
+       */
+      band: 'RED' | 'YELLOW' | 'GREEN';
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: uuid */
+      id: string;
+      /** Format: uuid */
+      keyResultId: string;
+      note: string | null;
+      /** @description Score 0..1 al momento del check-in (snapshot inmutable) */
+      score: number;
+      /** @description Decimal como string (snapshot) */
+      value: string | null;
+    };
+    CreateCheckInDto: {
+      /**
+       * @description Exactamente una acción
+       * @enum {string}
+       */
+      action: 'CONTINUE' | 'UPDATE' | 'START' | 'STOP';
+      /**
+       * @description Score 0..1 en pasos de 0.1. Obligatorio en KR binario (MANUAL).
+       * @example 0.7
+       */
+      manualScore?: number;
+      note?: string;
+      /**
+       * @description Nuevo valor actual (decimal como string). Obligatorio en KR numérico (DERIVED).
+       * @example 50
+       */
+      value?: string;
     };
     CreateCycleDto: {
       /** @default 0.7 */
@@ -400,6 +617,24 @@ export interface components {
       parentId?: string;
       /** @example 2026-01-01 */
       startDate: string;
+    };
+    CreateFeedbackDto: {
+      content: string;
+      /**
+       * Format: uuid
+       * @description KR visible al que se refiere
+       */
+      keyResultId?: string;
+      /**
+       * Format: uuid
+       * @description Objetivo visible al que se refiere
+       */
+      objectiveId?: string;
+      /**
+       * Format: uuid
+       * @description Destinatario (no puede ser uno mismo)
+       */
+      toUserId: string;
     };
     CreateKeyResultDto: {
       /**
@@ -455,6 +690,24 @@ export interface components {
       title: string;
       /** @enum {string} */
       type: 'COMMITTED' | 'ASPIRATIONAL';
+    };
+    CreateRecognitionDto: {
+      /**
+       * Format: uuid
+       * @description KR hito (score >= 0.7, o de un objetivo CLOSED) al que se vincula
+       */
+      keyResultId?: string;
+      message: string;
+      /**
+       * Format: uuid
+       * @description Objetivo hito (CLOSED) al que se vincula el reconocimiento
+       */
+      objectiveId?: string;
+      /**
+       * Format: uuid
+       * @description Persona reconocida (no puede ser uno mismo)
+       */
+      toUserId: string;
     };
     CreateTeamDto: {
       /** @example Plataforma */
@@ -543,15 +796,38 @@ export interface components {
       /** @enum {string} */
       status: 'DRAFT' | 'ACTIVE' | 'CLOSED';
     };
+    FeedbackDto: {
+      content: string;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: uuid */
+      fromUserId: string;
+      /** Format: uuid */
+      id: string;
+      /** Format: uuid */
+      keyResultId: string | null;
+      /** Format: uuid */
+      objectiveId: string | null;
+      /** Format: date-time */
+      readAt: string | null;
+      /** Format: uuid */
+      toUserId: string;
+      /** Format: date-time */
+      updatedAt: string;
+    };
     KeyResultDto: {
       /** @description Decimal como string */
       currentValue: string | null;
+      /** @description Tiene al menos un check-in (false: estado neutro "Sin check-ins") */
+      hasCheckIns: boolean;
       /** Format: uuid */
       id: string;
       /** Format: date-time */
       lastCheckInAt: string | null;
       /** Format: uuid */
       objectiveId: string;
+      /** @description Vencido: pasó más que la cadencia del ciclo desde el último check-in (o la publicación). Solo objetivos PUBLISHED. */
+      overdue: boolean;
       /** Format: uuid */
       ownerId: string;
       position: number;
@@ -604,6 +880,8 @@ export interface components {
       description: string | null;
       /** @description Score al cierre del ciclo */
       finalScore: number | null;
+      /** @description true si alguno de sus KRs tiene al menos un check-in */
+      hasCheckIns: boolean;
       /** Format: uuid */
       id: string;
       keyResults: components['schemas']['KeyResultDto'][];
@@ -635,9 +913,128 @@ export interface components {
       /** @description true si el % BOTTOM_UP queda fuera de [40%, 60%]. Indicador blando. */
       warning: boolean;
     };
+    PendingCheckInDto: {
+      /**
+       * @description Cadencia del ciclo
+       * @enum {string}
+       */
+      cadence: 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY';
+      /** Format: uuid */
+      keyResultId: string;
+      keyResultTitle: string;
+      /** Format: date-time */
+      lastCheckInAt: string | null;
+      /** Format: uuid */
+      objectiveId: string;
+      objectiveTitle: string;
+      /**
+       * Format: date-time
+       * @description Referencia del vencimiento: último check-in o, si no hay, la publicación
+       */
+      referenceAt: string;
+    };
+    RecognitionDto: {
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: uuid */
+      fromUserId: string;
+      /** Format: uuid */
+      id: string;
+      /** Format: uuid */
+      keyResultId: string | null;
+      message: string;
+      /** @description true si el enlace a un hito fue validado al crearlo */
+      milestoneVerified: boolean;
+      /** Format: uuid */
+      objectiveId: string | null;
+      /** Format: uuid */
+      toUserId: string;
+    };
+    RecognitionPageDto: {
+      items: components['schemas']['RecognitionDto'][];
+      limit: number;
+      page: number;
+      total: number;
+    };
     RefreshDto: {
       /** @description Refresh token opaco recibido en login/refresh */
       refreshToken: string;
+    };
+    ReportCycleDto: {
+      /** @description Umbral de logro de objetivos ASPIRATIONAL (0..1) */
+      aspirationalThreshold: number;
+      /** @description Umbral de logro de objetivos COMMITTED (0..1) */
+      committedThreshold: number;
+      /** Format: uuid */
+      id: string;
+      /** @enum {string} */
+      kind: 'ANNUAL' | 'QUARTER';
+      name: string;
+      /** @enum {string} */
+      status: 'DRAFT' | 'ACTIVE' | 'CLOSED';
+    };
+    ReportKeyResultDto: {
+      /**
+       * @description Banda sobre el score
+       * @enum {string}
+       */
+      band: 'RED' | 'YELLOW' | 'GREEN';
+      /** @description Decimal como string */
+      currentValue: string | null;
+      /** Format: uuid */
+      id: string;
+      /** Format: date-time */
+      lastCheckInAt: string | null;
+      /** @description Score 0..1 */
+      score: number;
+      /** @enum {string} */
+      scoring: 'DERIVED' | 'MANUAL';
+      /** @description Decimal como string */
+      startValue: string | null;
+      /** @description Decimal como string */
+      targetValue: string | null;
+      title: string;
+      unit: string | null;
+    };
+    ReportMemberDto: {
+      name: string;
+      /** @description Objetivos individuales PUBLISHED/CLOSED de la persona en el ciclo */
+      objectives: components['schemas']['ReportObjectiveDto'][];
+      /** Format: uuid */
+      userId: string;
+    };
+    ReportObjectiveDto: {
+      /** @description Logro al cierre según el umbral del ciclo (solo CLOSED) */
+      achieved: boolean | null;
+      /** @enum {string} */
+      band: 'RED' | 'YELLOW' | 'GREEN';
+      /** @description Score al cierre (solo CLOSED) */
+      finalScore: number | null;
+      /** Format: uuid */
+      id: string;
+      keyResults: components['schemas']['ReportKeyResultDto'][];
+      /** @enum {string} */
+      origin: 'TOP_DOWN' | 'BOTTOM_UP';
+      /** @description Score vigente 0..1 */
+      score: number;
+      /** @enum {string} */
+      status: 'PUBLISHED' | 'CLOSED';
+      title: string;
+      /** @enum {string} */
+      type: 'COMMITTED' | 'ASPIRATIONAL';
+    };
+    ReportOriginMixDto: {
+      bottomUp: number;
+      /** @description null si no hay objetivos */
+      bottomUpRatio: number | null;
+      topDown: number;
+      /** @description true si el % bottom-up queda fuera de [40%, 60%] (solo indicador) */
+      warning: boolean;
+    };
+    ReportTeamDto: {
+      /** Format: uuid */
+      id: string;
+      name: string;
     };
     ResetPasswordDto: {
       password: string;
@@ -677,6 +1074,18 @@ export interface components {
       /** Format: uuid */
       parentId: string | null;
     };
+    TeamReportDto: {
+      cycle: components['schemas']['ReportCycleDto'];
+      /** Format: date-time */
+      generatedAt: string;
+      /** @description Miembros directos del equipo, orden alfabético, con sus objetivos individuales */
+      members: components['schemas']['ReportMemberDto'][];
+      /** @description Mezcla de origen sobre los objetivos incluidos en el reporte */
+      originMix: components['schemas']['ReportOriginMixDto'];
+      team: components['schemas']['ReportTeamDto'];
+      /** @description Objetivos cuyo owner es el equipo */
+      teamObjectives: components['schemas']['ReportObjectiveDto'][];
+    };
     UpdateCycleDto: {
       aspirationalThreshold?: number;
       /** @enum {string} */
@@ -693,6 +1102,9 @@ export interface components {
        * @example 2026-01-01
        */
       startDate?: string;
+    };
+    UpdateFeedbackDto: {
+      content: string;
     };
     UpdateKeyResultDto: {
       /** Format: uuid */
@@ -756,6 +1168,62 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+  AuditController_list: {
+    parameters: {
+      query?: {
+        entityType?: string;
+        entityId?: string;
+        /** @description Usuario que ejecutó la acción */
+        actorId?: string;
+        action?:
+          | 'OBJECTIVE_PUBLISHED'
+          | 'OBJECTIVE_CLOSED'
+          | 'KR_TARGET_CHANGED'
+          | 'KR_SCORE_CHANGED'
+          | 'CYCLE_ACTIVATED'
+          | 'CYCLE_CLOSED'
+          | 'CYCLE_THRESHOLDS_CHANGED'
+          | 'USER_ROLE_CHANGED'
+          | 'USER_DEACTIVATED'
+          | 'REFRESH_REUSE_DETECTED'
+          | 'REFRESH_REVOKED_USED';
+        /** @description Desde (inclusive) */
+        from?: string;
+        /** @description Hasta (inclusive) */
+        to?: string;
+        page?: number;
+        limit?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AuditPageDto'];
+        };
+      };
+      /** @description Filtros o paginación inválidos */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Solo ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
   AuthController_login: {
     parameters: {
       query?: never;
@@ -867,6 +1335,25 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+    };
+  };
+  CheckInsController_pending: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PendingCheckInDto'][];
+        };
       };
     };
   };
@@ -1077,6 +1564,214 @@ export interface operations {
       };
     };
   };
+  FeedbackController_list: {
+    parameters: {
+      query?: {
+        /** @description Sin valor: recibidos y enviados */
+        box?: 'received' | 'sent';
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FeedbackDto'][];
+        };
+      };
+      /** @description box inválido */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  FeedbackController_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateFeedbackDto'];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FeedbackDto'];
+        };
+      };
+      /** @description Autoenvío, contenido inválido o KR de otro objetivo */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Destinatario, objetivo o KR inexistente o no visible */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  FeedbackController_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FeedbackDto'];
+        };
+      };
+      /** @description Inexistente o ajeno (indistinguibles) */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  FeedbackController_remove: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Lo ve pero no es el autor */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Inexistente o ajeno */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  FeedbackController_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateFeedbackDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FeedbackDto'];
+        };
+      };
+      /** @description Contenido inválido */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Lo ve pero no es el autor */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Inexistente o ajeno */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  FeedbackController_markRead: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['FeedbackDto'];
+        };
+      };
+      /** @description Lo ve pero no es el destinatario */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Inexistente o ajeno */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
   HealthController_check: {
     parameters: {
       query?: never;
@@ -1184,6 +1879,87 @@ export interface operations {
         content?: never;
       };
       /** @description Objetivo CLOSED o ciclo cerrado */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  CheckInsController_history: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CheckInDto'][];
+        };
+      };
+      /** @description KR inexistente u objetivo DRAFT no visible */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  CheckInsController_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateCheckInDto'];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CheckInDto'];
+        };
+      };
+      /** @description Acción inválida o valor/score incoherente con el tipo de KR */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description No sos responsable ni del equipo owner */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description KR inexistente u objetivo DRAFT no visible */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Objetivo DRAFT/CLOSED o ciclo cerrado */
       409: {
         headers: {
           [name: string]: unknown;
@@ -1505,6 +2281,112 @@ export interface operations {
       };
       /** @description MIN_OBJECTIVES_NOT_MET o MIN_KRS_NOT_MET (o límites superados) */
       422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  RecognitionsController_list: {
+    parameters: {
+      query?: {
+        /** @description Solo los dirigidos a esta persona */
+        toUserId?: string;
+        page?: number;
+        limit?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RecognitionPageDto'];
+        };
+      };
+    };
+  };
+  RecognitionsController_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateRecognitionDto'];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RecognitionDto'];
+        };
+      };
+      /** @description Autoreconocimiento, mensaje inválido o KR de otro objetivo */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Persona, objetivo o KR inexistente o no visible */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description El enlace no es un hito (MILESTONE_NOT_REACHED) */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  ReportsController_teamReport: {
+    parameters: {
+      query: {
+        /** @description Ciclo del reporte (obligatorio) */
+        cycleId: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TeamReportDto'];
+        };
+      };
+      /** @description cycleId faltante o inválido */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Equipo o ciclo inexistente */
+      404: {
         headers: {
           [name: string]: unknown;
         };

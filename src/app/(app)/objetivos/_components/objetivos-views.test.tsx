@@ -26,7 +26,9 @@ const kr = (over: Partial<KeyResult> = {}): KeyResult => ({
   unit: 'clientes',
   score: 0.7,
   position: 1,
-  lastCheckInAt: null,
+  lastCheckInAt: '2026-01-05T12:00:00.000Z',
+  hasCheckIns: true,
+  overdue: false,
   ...over,
 });
 
@@ -40,6 +42,7 @@ const objective = (over: Partial<Objective> = {}): Objective =>
     ownerUserId: 'u1',
     ownerTeamId: null,
     score: 0.7,
+    hasCheckIns: true,
     keyResults: [kr(), kr({ id: 'k2' })],
     ...over,
   }) as Objective;
@@ -125,6 +128,7 @@ describe('KeyResultsCard', () => {
         viewerId="u1"
         canEdit
         canChangeTarget
+        checkInReasons={{}}
       />,
     );
     const row = screen.getByRole('row', { name: /Llegar a 100 clientes/ });
@@ -142,6 +146,7 @@ describe('KeyResultsCard', () => {
         people={people}
         viewerId="u1"
         canEdit
+        checkInReasons={{}}
         canChangeTarget={false}
       />,
     );
@@ -158,6 +163,7 @@ describe('KeyResultsCard', () => {
         people={people}
         viewerId="u1"
         canEdit
+        checkInReasons={{}}
         canChangeTarget={false}
       />,
     );
@@ -174,6 +180,7 @@ describe('KeyResultsCard', () => {
         people={people}
         viewerId="otro"
         canEdit={false}
+        checkInReasons={{}}
         canChangeTarget={false}
       />,
     );

@@ -1,9 +1,9 @@
 import NextLink from 'next/link';
 import { Card } from '@/components/ui/card';
 import { ScoreBar } from '@/components/ui/score-bar';
-import { BandBadge } from '@/components/ui/status-badge';
 import type { Objective } from '@/lib/dal/objectives';
 import { ObjectiveStatusBadge, ObjectiveTags } from './objective-meta';
+import { hasScore, ObjectiveProgressBadge, objectiveProgressState } from './progress-badge';
 
 type Related = { id: string; title: string; status: Objective['status']; ownerName: string };
 
@@ -64,12 +64,14 @@ export function ObjectiveDetailView({
             </p>
           ) : (
             <div className="flex flex-wrap items-center gap-s15">
-              <BandBadge score={objective.score} />
-              <ScoreBar
-                score={objective.score}
-                label={`Score de ${objective.title}`}
-                className="min-w-48 max-w-md flex-1"
-              />
+              <ObjectiveProgressBadge objective={objective} />
+              {hasScore(objectiveProgressState(objective)) ? (
+                <ScoreBar
+                  score={objective.score}
+                  label={`Score de ${objective.title}`}
+                  className="min-w-48 max-w-md flex-1"
+                />
+              ) : null}
             </div>
           )}
         </div>

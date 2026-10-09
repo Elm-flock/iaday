@@ -5,6 +5,9 @@ import { useCallback, useState, useTransition } from 'react';
 import { deleteKeyResultAction } from '../actions';
 import { KR_MAX, KR_MIN, KR_SCORING_LABEL } from '../messages';
 import { KrFormModal, type PersonOption } from './kr-form-modal';
+import { KrProgressBadge } from './progress-badge';
+import { toCheckInTarget } from '../../check-ins/_components/check-in-target';
+import { RegisterCheckInButton } from '../../check-ins/_components/register-check-in-button';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -12,7 +15,6 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { EmptyState } from '@/components/ui/empty-state';
 import { IconButton } from '@/components/ui/icon-button';
 import { ScoreBar } from '@/components/ui/score-bar';
-import { BandBadge } from '@/components/ui/status-badge';
 import { useToast } from '@/components/ui/toast';
 import type { KeyResult, Objective } from '@/lib/dal/objectives';
 import { formatNumber } from '@/lib/format';
@@ -29,6 +31,8 @@ type Props = {
   canEdit: boolean;
   /** Puede cambiar inicio/meta tras publicar. */
   canChangeTarget: boolean;
+  /** Por KR: `null` si puede registrar check-ins; si no, la razón (se muestra deshabilitado con explicación). */
+  checkInReasons: Record<string, string | null>;
 };
 
 /** KRs del objetivo: tabla con inicio/meta/actual/unidad/score/banda y alta/edición/baja en modal. */
@@ -39,6 +43,7 @@ export function KeyResultsCard({
   viewerId,
   canEdit,
   canChangeTarget,
+  checkInReasons,
 }: Props) {
   const [modal, setModal] = useState<{ kr?: KeyResult } | null>(null);
   const [toDelete, setToDelete] = useState<KeyResult | null>(null);
@@ -52,6 +57,9 @@ export function KeyResultsCard({
   const names = new Map(people.map((p) => [p.id, p.name]));
   const full = keyResults.length >= KR_MAX;
   const targetLocked = !isDraft && !canChangeTarget;
+  const showCheckIn = !isDraft;
+  const showActions = (canEdit && open) || showCheckIn;
+  const blockedReason = Object.values(checkInReasons).find((r) => r !== null) ?? null;
 
   function remove(kr: KeyResult) {
     startTransition(async () => {
@@ -93,6 +101,11 @@ export function KeyResultsCard({
         </div>
       }
     >
+      {showCheckIn && blockedReason ? (
+        <p id="check-in-reason" className="mb-s15 text-body-sm text-ink-muted">
+          {blockedReason}
+        </p>
+      ) : null}
       {error ? (
         <Alert tone="danger" className="mb-s15">
           {error}
@@ -134,7 +147,7 @@ export function KeyResultsCard({
                 <th scope="col" className="py-s10 pr-s10 font-normal">
                   Banda
                 </th>
-                {canEdit && open ? (
+                {showActions ? (
                   <th scope="col" className="py-s10 font-normal">
                     <span className="sr-only">Acciones</span>
                   </th>
@@ -157,35 +170,52 @@ export function KeyResultsCard({
                   <td className="py-s10 pr-s10 text-right tabular-nums">{num(kr.currentValue)}</td>
                   <td className="py-s10 pr-s10 text-ink">{kr.unit ?? '—'}</td>
                   <td className="py-s10 pr-s10">
-                    <ScoreBar
-                      score={kr.score}
-                      label={`Score de ${kr.title}`}
-                      className="min-w-32"
-                    />
+                    {kr.hasCheckIns ? (
+                      <ScoreBar
+                        score={kr.score}
+                        label={`Score de ${kr.title}`}
+                        className="min-w-32"
+                      />
+                    ) : (
+                      <span className="text-ink-muted" title="Todavía no hay check-ins">
+                        —
+                      </span>
+                    )}
                   </td>
                   <td className="py-s10 pr-s10">
-                    <BandBadge score={kr.score} />
+                    <KrProgressBadge kr={kr} />
                   </td>
-                  {canEdit && open ? (
+                  {showActions ? (
                     <td className="py-s10">
                       <div className="flex items-center justify-end gap-s5">
-                        <IconButton
-                          aria-label={`Editar ${kr.title}`}
-                          onClick={() => setModal({ kr })}
-                        >
-                          <Pencil size={18} strokeWidth={1.75} aria-hidden="true" />
-                        </IconButton>
-                        <IconButton
-                          aria-label={
-                            isDraft
-                              ? `Quitar ${kr.title}`
-                              : `Quitar ${kr.title} (solo se pueden quitar en borrador)`
-                          }
-                          disabled={!isDraft}
-                          onClick={() => setToDelete(kr)}
-                        >
-                          <Trash2 size={18} strokeWidth={1.75} aria-hidden="true" />
-                        </IconButton>
+                        {showCheckIn ? (
+                          <RegisterCheckInButton
+                            target={toCheckInTarget(kr)}
+                            disabled={checkInReasons[kr.id] != null}
+                            disabledReasonId="check-in-reason"
+                          />
+                        ) : null}
+                        {canEdit && open ? (
+                          <>
+                            <IconButton
+                              aria-label={`Editar ${kr.title}`}
+                              onClick={() => setModal({ kr })}
+                            >
+                              <Pencil size={18} strokeWidth={1.75} aria-hidden="true" />
+                            </IconButton>
+                            <IconButton
+                              aria-label={
+                                isDraft
+                                  ? `Quitar ${kr.title}`
+                                  : `Quitar ${kr.title} (solo se pueden quitar en borrador)`
+                              }
+                              disabled={!isDraft}
+                              onClick={() => setToDelete(kr)}
+                            >
+                              <Trash2 size={18} strokeWidth={1.75} aria-hidden="true" />
+                            </IconButton>
+                          </>
+                        ) : null}
                       </div>
                     </td>
                   ) : null}

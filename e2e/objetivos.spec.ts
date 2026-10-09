@@ -161,7 +161,8 @@ test.describe('objetivos (miembros reales contra el back)', () => {
     await expect(page.getByTestId('limit-indicator')).toHaveText('3 de 5 objetivos');
     await expect(page.getByText('Comprometido').first()).toBeVisible();
     await expect(page.getByText('Bottom-up').first()).toBeVisible();
-    await expect(page.getByText(/En riesgo/).first()).toBeVisible();
+    await expect(page.getByText('Sin check-ins').first()).toBeVisible();
+    await expect(page.getByText(/En riesgo/)).toHaveCount(0);
     await page.screenshot({ path: `${SHOTS}/objetivos-lista.png`, fullPage: true });
   });
 

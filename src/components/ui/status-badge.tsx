@@ -1,4 +1,11 @@
-import { CircleAlert, CircleCheck, TriangleAlert, type LucideIcon } from 'lucide-react';
+import {
+  CircleAlert,
+  CircleCheck,
+  CircleDashed,
+  Clock,
+  TriangleAlert,
+  type LucideIcon,
+} from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { scoreBand, type ScoreBand } from '@/lib/score-band';
 import { toneStyles, type AlertTone } from './alert';
@@ -41,6 +48,30 @@ export function BandBadge({ score, className }: { score: number; className?: str
     <span data-band={scoreBand(score)} className={cn(badgeBase, 'text-ink', box, className)}>
       <Icon size={14} strokeWidth={1.75} aria-hidden="true" className={icon} />
       {label}
+    </span>
+  );
+}
+
+/** Estado neutro: todavía no hay datos para calificar. Gris, ícono + palabra; no es una banda. */
+export function NoCheckInsBadge({ className }: { className?: string }) {
+  return (
+    <span
+      data-state="no-check-ins"
+      className={cn(badgeBase, 'border-border bg-surface-subtle text-ink', className)}
+    >
+      <CircleDashed size={14} strokeWidth={1.75} aria-hidden="true" className="text-ink-muted" />
+      Sin check-ins
+    </span>
+  );
+}
+
+/** Check-in vencido: pasó más que la cadencia del ciclo. Advertencia, ícono + palabra. */
+export function OverdueBadge({ className }: { className?: string }) {
+  const { box, icon } = toneStyles.warning;
+  return (
+    <span data-state="overdue" className={cn(badgeBase, 'text-ink', box, className)}>
+      <Clock size={14} strokeWidth={1.75} aria-hidden="true" className={icon} />
+      Check-in vencido
     </span>
   );
 }

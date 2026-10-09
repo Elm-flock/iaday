@@ -19,7 +19,7 @@ Al terminar, actualizá `src/app/(app)/<módulo>/CLAUDE.md` para reflejar los ca
 | Módulo         | Ruta                                              |
 | -------------- | ------------------------------------------------- |
 | objetivos      | `src/app/(app)/objetivos/CLAUDE.md` (creado)      |
-| check-ins      | `src/app/(app)/check-ins/CLAUDE.md`               |
+| check-ins      | `src/app/(app)/check-ins/CLAUDE.md` (creado)      |
 | cfr            | `src/app/(app)/cfr/CLAUDE.md`                     |
 | auth           | `src/app/(auth)/CLAUDE.md` (creado)               |
 | ciclos         | `src/app/(app)/ciclos/CLAUDE.md` (creado)         |
@@ -58,7 +58,7 @@ Flock UI implementado de forma nativa sobre Tailwind 4 (sin bundle `fk-*`, sin `
 
 - **Tokens** en `src/app/globals.css`: variables CSS claro (default) / oscuro (clase `.dark`), expuestas con `@theme` como utilidades: `bg-surface`, `text-ink`, `text-ink-muted`, `border-border`, `bg-primary`, `text-primary-text`, `bg-success-subtle`, `rounded-pill|lg|md|sm`, `p-s10|s15|s20|s30|s40`, `shadow-sm|overlay`, `text-body|body-sm|caption|button|heading-1..3|display`, `bg-horizonte|brasa|noche`. No inventar colores fuera de los tokens; no usar `dark:` (los tokens ya cambian con el tema).
 - **Componentes** en `src/components/ui/<nombre>.tsx` (importar directo, sin barrel). Server Components salvo los interactivos (`'use client'`: Modal, Drawer, ConfirmDialog, Toast, AppShell/Sidebar, FormField y controles). `cn()` en `src/lib/cn.ts` (clsx + tailwind-merge configurado con los tokens: al agregar un token de texto/espaciado, registrarlo ahí). Variantes explícitas por mapa de clases, sin `class-variance-authority`.
-- **Reglas**: voz es-AR con voseo y sentence case; una sola acción primaria por vista; pill = acción, `radius-lg` = contenedor, `radius-md` = campo; el estado nunca va solo en color (ícono + palabra: `BandBadge` → En ruta / Requiere atención / En riesgo); íconos Lucide con trazo 1.75; foco visible (anillo 2px `focus`); movimiento 150–200 ms y `prefers-reduced-motion`; acciones sin permiso deshabilitadas con explicación; degradés solo en superficies de marca (login, PDF).
+- **Reglas**: voz es-AR con voseo y sentence case; una sola acción primaria por vista; pill = acción, `radius-lg` = contenedor, `radius-md` = campo; el estado nunca va solo en color (ícono + palabra: `BandBadge` → En ruta / Requiere atención / En riesgo; sin check-ins no hay banda: `NoCheckInsBadge` "Sin check-ins" / `OverdueBadge`); íconos Lucide con trazo 1.75; foco visible (anillo 2px `focus`); movimiento 150–200 ms y `prefers-reduced-motion`; acciones sin permiso deshabilitadas con explicación; degradés solo en superficies de marca (login, PDF).
 - **Formato AR** en `src/lib/format.ts`: `formatNumber` (1.234,56), `formatScore` (0,70), `formatPercent` (70 %), `formatDate` (dd/mm/aaaa), `formatTime` (24 h, Buenos Aires).
 - **Tipografía**: Public Sans (next/font, 300/400/700) como respaldo de Tomato Grotesk; títulos en 300 con tracking.
 
@@ -78,7 +78,7 @@ src/
     ├── api/                  # cliente openapi-fetch, schema.d.ts generado, errores
     ├── auth/                 # cookies, safeNext, token
     ├── actions/              # FormState + useActionForm (forms sin reset tras la action)
-    └── dal/                  # acceso a datos server-only (session, cycles, teams, users, objectives)
+    └── dal/                  # acceso a datos server-only (session, cycles, teams, users, objectives, check-ins)
 test/      # setup y mocks de Vitest
 e2e/       # specs de Playwright
 ```

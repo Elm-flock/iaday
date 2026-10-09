@@ -28,7 +28,7 @@ export const ADMIN_ONLY_REASON = 'Solo administración puede gestionar usuarios.
 export const NAV_ITEMS: NavItem[] = [
   { href: '/', label: 'Inicio', icon: Home },
   { href: '/objetivos', label: 'Objetivos', icon: Target },
-  { href: '/check-ins', label: 'Check-ins', icon: RefreshCw, unavailableReason: soon('Check-ins') },
+  { href: '/check-ins', label: 'Check-ins', icon: RefreshCw },
   { href: '/equipos', label: 'Equipos', icon: Users },
   { href: '/ciclos', label: 'Ciclos', icon: CalendarRange },
   {

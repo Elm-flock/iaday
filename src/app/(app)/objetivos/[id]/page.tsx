@@ -4,10 +4,13 @@ import { Suspense } from 'react';
 import { KeyResultsCard } from '../_components/key-results-card';
 import { ObjectiveActions } from '../_components/objective-actions';
 import { ObjectiveDetailView } from '../_components/objective-detail-view';
+import { KrHistoryCard } from '../../check-ins/_components/kr-history-card';
+import { checkInAvailability } from '../../check-ins/policy';
 import { canChangeKrTarget, canEditObjective } from '../policy';
 import { PageSkeleton } from '../../_components/page-skeleton';
 import { flattenTeams } from '../../equipos/team-tree';
 import { PageHeader } from '@/components/ui/page-header';
+import { listKrCheckIns } from '@/lib/dal/check-ins';
 import { listCycles } from '@/lib/dal/cycles';
 import { getObjective, listObjectives, type Objective } from '@/lib/dal/objectives';
 import { getCurrentUser } from '@/lib/dal/session';
@@ -58,6 +61,18 @@ async function ObjectiveContent({ params }: { params: Params }) {
 
   const canEdit = canEditObjective(user, objective);
   const open = objective.status !== 'CLOSED';
+  // Historial de cada KR en paralelo (ya conocemos sus ids); un borrador no tiene check-ins.
+  const histories =
+    objective.status === 'DRAFT'
+      ? []
+      : await Promise.all(objective.keyResults.map((kr) => listKrCheckIns(kr.id)));
+  const history = new Map(objective.keyResults.map((kr, i) => [kr.id, histories[i] ?? []]));
+  const checkInReasons = Object.fromEntries(
+    objective.keyResults.map((kr) => {
+      const availability = checkInAvailability(user, objective, kr);
+      return [kr.id, availability.allowed ? null : availability.reason];
+    }),
+  );
   const people = users.filter((u) => u.active).map((u) => ({ id: u.id, name: u.name }));
 
   return (
@@ -95,7 +110,15 @@ async function ObjectiveContent({ params }: { params: Params }) {
           viewerId={user.id}
           canEdit={canEdit}
           canChangeTarget={canChangeKrTarget(user, objective)}
+          checkInReasons={checkInReasons}
         />
+        {objective.status !== 'DRAFT' ? (
+          <KrHistoryCard
+            keyResults={objective.keyResults}
+            history={history}
+            names={new Map(users.map((u) => [u.id, u.name]))}
+          />
+        ) : null}
       </div>
     </>
   );
