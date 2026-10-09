@@ -594,6 +594,10 @@
             "nullable": true,
             "type": "string"
           },
+          "hasCheckIns": {
+            "description": "Tiene al menos un check-in (false: estado neutro \"Sin check-ins\")",
+            "type": "boolean"
+          },
           "id": {
             "format": "uuid",
             "type": "string"
@@ -658,7 +662,8 @@
           "score",
           "position",
           "lastCheckInAt",
-          "overdue"
+          "overdue",
+          "hasCheckIns"
         ],
         "type": "object"
       },
@@ -751,6 +756,10 @@
             "nullable": true,
             "type": "number"
           },
+          "hasCheckIns": {
+            "description": "true si alguno de sus KRs tiene al menos un check-in",
+            "type": "boolean"
+          },
           "id": {
             "format": "uuid",
             "type": "string"
@@ -819,6 +828,7 @@
           "publishedAt",
           "closedAt",
           "createdAt",
+          "hasCheckIns",
           "keyResults"
         ],
         "type": "object"

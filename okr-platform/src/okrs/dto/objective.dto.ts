@@ -41,6 +41,8 @@ export class ObjectiveDto {
   @ApiProperty({ type: String, format: 'date-time', nullable: true }) publishedAt!: Date | null;
   @ApiProperty({ type: String, format: 'date-time', nullable: true }) closedAt!: Date | null;
   @ApiProperty({ type: String, format: 'date-time' }) createdAt!: Date;
+  @ApiProperty({ description: 'true si alguno de sus KRs tiene al menos un check-in' })
+  hasCheckIns!: boolean;
   @ApiProperty({ type: [KeyResultDto] }) keyResults!: KeyResultDto[];
 }
 

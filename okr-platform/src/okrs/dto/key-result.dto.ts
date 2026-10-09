@@ -28,4 +28,6 @@ export class KeyResultDto {
       'Vencido: pasó más que la cadencia del ciclo desde el último check-in (o la publicación). Solo objetivos PUBLISHED.',
   })
   overdue!: boolean;
+  @ApiProperty({ description: 'Tiene al menos un check-in (false: estado neutro "Sin check-ins")' })
+  hasCheckIns!: boolean;
 }

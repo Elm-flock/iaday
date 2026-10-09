@@ -29,6 +29,8 @@ export function toKeyResultDto(kr: KeyResult, context: OverdueContext, now: Date
     score: Number(kr.score),
     position: kr.position,
     lastCheckInAt: kr.lastCheckInAt,
+    // Los check-ins son inmutables y cada uno fija lastCheckInAt: equivale a "existe alguno".
+    hasCheckIns: kr.lastCheckInAt !== null,
     overdue: isCheckInOverdue(
       kr.lastCheckInAt,
       context.publishedAt ?? context.createdAt,
@@ -40,6 +42,9 @@ export function toKeyResultDto(kr: KeyResult, context: OverdueContext, now: Date
 }
 
 export function toObjectiveDto(o: ObjectiveRecord, now: Date): ObjectiveDto {
+  const keyResults = o.keyResults.map((kr) =>
+    toKeyResultDto(kr, { ...o, checkInCadence: o.cycle.checkInCadence }, now),
+  );
   return {
     id: o.id,
     cycleId: o.cycleId,
@@ -58,9 +63,8 @@ export function toObjectiveDto(o: ObjectiveRecord, now: Date): ObjectiveDto {
     publishedAt: o.publishedAt,
     closedAt: o.closedAt,
     createdAt: o.createdAt,
-    keyResults: o.keyResults.map((kr) =>
-      toKeyResultDto(kr, { ...o, checkInCadence: o.cycle.checkInCadence }, now),
-    ),
+    hasCheckIns: keyResults.some((k) => k.hasCheckIns),
+    keyResults,
   };
 }
 

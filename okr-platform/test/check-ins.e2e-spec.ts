@@ -407,6 +407,44 @@ describe('Check-ins (e2e) REQ-CHK-1 / REQ-CHK-2', () => {
       });
     });
 
+    describe('hasCheckIns (decisión round 8)', () => {
+      it('KR y objetivo (detalle y lista) pasan de hasCheckIns=false a true con el primer check-in', async () => {
+        const { user, auth } = await as('MEMBER');
+        const { objective, kr } = await published(user.id);
+        const other = await createKeyResult(prisma, {
+          objectiveId: objective.id,
+          ownerId: user.id,
+          position: 2,
+        });
+        const detail = () =>
+          http().get(`/objectives/${objective.id}`).set('Authorization', auth).expect(200);
+        const list = () =>
+          http()
+            .get(`/objectives?cycleId=${objective.cycleId}`)
+            .set('Authorization', auth)
+            .expect(200);
+
+        const before = await detail();
+        expect(before.body.hasCheckIns).toBe(false);
+        expect(before.body.keyResults.map((k: { hasCheckIns: boolean }) => k.hasCheckIns)).toEqual([
+          false,
+          false,
+        ]);
+        expect((await list()).body[0].hasCheckIns).toBe(false);
+
+        await postCheckIn(auth, kr.id, valid).expect(201);
+
+        const after = await detail();
+        expect(after.body.hasCheckIns).toBe(true);
+        const byId = Object.fromEntries(
+          after.body.keyResults.map((k: { id: string; hasCheckIns: boolean }) => [k.id, k]),
+        );
+        expect(byId[kr.id].hasCheckIns).toBe(true);
+        expect(byId[other.id].hasCheckIns).toBe(false);
+        expect((await list()).body[0].hasCheckIns).toBe(true);
+      });
+    });
+
     describe('KeyResultDto.overdue', () => {
       it('GET /objectives/:id expone overdue y lastCheckInAt calculados con la cadencia del ciclo', async () => {
         const { user, auth } = await as('MEMBER');
