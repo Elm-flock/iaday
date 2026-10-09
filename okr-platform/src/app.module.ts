@@ -8,6 +8,8 @@ import { RolesGuard } from './common/guards/roles.guard';
 import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter';
 import { HealthController } from './health/health.controller';
 import { PrismaModule } from './prisma/prisma.module';
+import { TeamsModule } from './teams/teams.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { PrismaModule } from './prisma/prisma.module';
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 300 }]),
     PrismaModule,
     AuthModule,
+    UsersModule,
+    TeamsModule,
   ],
   controllers: [HealthController],
   providers: [

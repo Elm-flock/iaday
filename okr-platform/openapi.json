@@ -46,6 +46,47 @@
         "required": ["id", "name", "email", "role"],
         "type": "object"
       },
+      "CreateTeamDto": {
+        "properties": {
+          "name": {
+            "example": "Plataforma",
+            "type": "string"
+          },
+          "parentId": {
+            "description": "Omitir solo para la raíz (organización)",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": ["name"],
+        "type": "object"
+      },
+      "CreateUserDto": {
+        "properties": {
+          "email": {
+            "description": "Se guarda en minúsculas",
+            "example": "ana@empresa.com",
+            "type": "string"
+          },
+          "name": {
+            "example": "Ana Pérez",
+            "type": "string"
+          },
+          "password": {
+            "description": "Clave inicial (se guarda con argon2id)",
+            "maxLength": 200,
+            "minLength": 8,
+            "type": "string"
+          },
+          "role": {
+            "default": "MEMBER",
+            "enum": ["ADMIN", "LEADER", "MEMBER"],
+            "type": "string"
+          }
+        },
+        "required": ["email", "name", "password"],
+        "type": "object"
+      },
       "LoginDto": {
         "properties": {
           "email": {
@@ -102,6 +143,29 @@
         "required": ["teamId", "name", "isLead"],
         "type": "object"
       },
+      "OriginMixDto": {
+        "properties": {
+          "bottomUp": {
+            "description": "Objetivos BOTTOM_UP del equipo en el ciclo",
+            "type": "number"
+          },
+          "bottomUpRatio": {
+            "description": "bottomUp / total; null sin objetivos",
+            "nullable": true,
+            "type": "number"
+          },
+          "topDown": {
+            "description": "Objetivos TOP_DOWN del equipo en el ciclo",
+            "type": "number"
+          },
+          "warning": {
+            "description": "true si el % BOTTOM_UP queda fuera de [40%, 60%]. Indicador blando.",
+            "type": "boolean"
+          }
+        },
+        "required": ["topDown", "bottomUp", "bottomUpRatio", "warning"],
+        "type": "object"
+      },
       "RefreshDto": {
         "properties": {
           "refreshToken": {
@@ -110,6 +174,170 @@
           }
         },
         "required": ["refreshToken"],
+        "type": "object"
+      },
+      "ResetPasswordDto": {
+        "properties": {
+          "password": {
+            "maxLength": 200,
+            "minLength": 8,
+            "type": "string"
+          }
+        },
+        "required": ["password"],
+        "type": "object"
+      },
+      "SetMemberDto": {
+        "properties": {
+          "isLead": {
+            "default": false,
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "TeamDetailDto": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/TeamMemberDto"
+            },
+            "type": "array"
+          },
+          "name": {
+            "type": "string"
+          },
+          "originMix": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OriginMixDto"
+              }
+            ],
+            "description": "Indicador 50/50 de los objetivos propios del equipo; null si no se indica cycleId",
+            "nullable": true,
+            "type": "object"
+          },
+          "parentId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": ["id", "name", "parentId", "members", "originMix"],
+        "type": "object"
+      },
+      "TeamDto": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parentId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": ["id", "name", "parentId"],
+        "type": "object"
+      },
+      "TeamMemberDto": {
+        "properties": {
+          "isLead": {
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string"
+          },
+          "userId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": ["userId", "name", "isLead"],
+        "type": "object"
+      },
+      "TeamNodeDto": {
+        "properties": {
+          "children": {
+            "items": {
+              "$ref": "#/components/schemas/TeamNodeDto"
+            },
+            "type": "array"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parentId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": ["id", "name", "parentId", "children"],
+        "type": "object"
+      },
+      "UpdateTeamDto": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "parentId": {
+            "description": "Nuevo padre (mover). No puede crear ciclos.",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateUserDto": {
+        "properties": {
+          "active": {
+            "description": "false desactiva al usuario y revoca sus sesiones",
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "enum": ["ADMIN", "LEADER", "MEMBER"],
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "UserDto": {
+        "properties": {
+          "active": {
+            "type": "boolean"
+          },
+          "email": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "enum": ["ADMIN", "LEADER", "MEMBER"],
+            "type": "string"
+          }
+        },
+        "required": ["id", "name", "email", "role", "active"],
         "type": "object"
       }
     },
@@ -277,6 +505,419 @@
         },
         "summary": "Estado del servicio",
         "tags": ["health"]
+      }
+    },
+    "/teams": {
+      "get": {
+        "operationId": "TeamsController_tree",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TeamNodeDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Árbol de equipos anidado (raíz única = organización)",
+        "tags": ["teams"]
+      },
+      "post": {
+        "operationId": "TeamsController_create",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTeamDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "Rol insuficiente"
+          },
+          "404": {
+            "description": "Padre inexistente"
+          },
+          "409": {
+            "description": "Raíz duplicada o nombre repetido bajo el mismo padre"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Crea un equipo (solo ADMIN)",
+        "tags": ["teams"]
+      }
+    },
+    "/teams/{id}": {
+      "get": {
+        "operationId": "TeamsController_detail",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Ciclo para el cálculo de originMix",
+            "in": "query",
+            "name": "cycleId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamDetailDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "Equipo o ciclo inexistente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Detalle del equipo con miembros e indicador 50/50 (si se pasa cycleId)",
+        "tags": ["teams"]
+      },
+      "patch": {
+        "operationId": "TeamsController_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTeamDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "Equipo o padre inexistente"
+          },
+          "409": {
+            "description": "El movimiento crearía un ciclo o un nombre repetido"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Renombra o mueve un equipo (solo ADMIN). Sin ciclos en el árbol.",
+        "tags": ["teams"]
+      }
+    },
+    "/teams/{id}/members/{userId}": {
+      "delete": {
+        "operationId": "TeamsController_removeMember",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "404": {
+            "description": "El usuario no es miembro del equipo"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Quita un miembro del equipo (solo ADMIN)",
+        "tags": ["teams"]
+      },
+      "put": {
+        "operationId": "TeamsController_setMember",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetMemberDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamMemberDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "Equipo o usuario inexistente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Agrega un miembro o actualiza isLead (solo ADMIN)",
+        "tags": ["teams"]
+      }
+    },
+    "/users": {
+      "get": {
+        "operationId": "UsersController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UserDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Directorio de usuarios (cualquier usuario autenticado)",
+        "tags": ["users"]
+      },
+      "post": {
+        "operationId": "UsersController_create",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "Rol insuficiente"
+          },
+          "409": {
+            "description": "El email ya existe"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Crea un usuario (solo ADMIN; no hay auto-registro)",
+        "tags": ["users"]
+      }
+    },
+    "/users/{id}": {
+      "patch": {
+        "operationId": "UsersController_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "Usuario inexistente"
+          },
+          "422": {
+            "description": "El ADMIN no puede cambiar su propio rol ni desactivarse"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Edita nombre, rol o estado activo (solo ADMIN)",
+        "tags": ["users"]
+      }
+    },
+    "/users/{id}/password": {
+      "post": {
+        "operationId": "UsersController_resetPassword",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "404": {
+            "description": "Usuario inexistente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Resetea la clave de un usuario y revoca sus sesiones (solo ADMIN)",
+        "tags": ["users"]
       }
     }
   },
