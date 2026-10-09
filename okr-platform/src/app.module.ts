@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
 import { CheckInsModule } from './check-ins/check-ins.module';
 import { CyclesModule } from './cycles/cycles.module';
@@ -26,6 +27,7 @@ import { UsersModule } from './users/users.module';
     CyclesModule,
     OkrsModule,
     CheckInsModule,
+    AuditModule,
   ],
   controllers: [HealthController],
   providers: [

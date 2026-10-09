@@ -1,6 +1,88 @@
 {
   "components": {
     "schemas": {
+      "AuditEntryDto": {
+        "properties": {
+          "action": {
+            "enum": [
+              "OBJECTIVE_PUBLISHED",
+              "OBJECTIVE_CLOSED",
+              "KR_TARGET_CHANGED",
+              "KR_SCORE_CHANGED",
+              "CYCLE_ACTIVATED",
+              "CYCLE_CLOSED",
+              "CYCLE_THRESHOLDS_CHANGED",
+              "USER_ROLE_CHANGED",
+              "USER_DEACTIVATED",
+              "REFRESH_REUSE_DETECTED",
+              "REFRESH_REVOKED_USED"
+            ],
+            "type": "string"
+          },
+          "actorId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "after": {
+            "additionalProperties": true,
+            "nullable": true,
+            "type": "object"
+          },
+          "before": {
+            "additionalProperties": true,
+            "nullable": true,
+            "type": "object"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "entityId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "entityType": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "actorId",
+          "action",
+          "entityType",
+          "entityId",
+          "before",
+          "after",
+          "createdAt"
+        ],
+        "type": "object"
+      },
+      "AuditPageDto": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AuditEntryDto"
+            },
+            "type": "array"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "page": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": ["items", "total", "page", "limit"],
+        "type": "object"
+      },
       "AuthSessionDto": {
         "properties": {
           "accessExpiresAt": {
@@ -999,6 +1081,128 @@
   },
   "openapi": "3.0.0",
   "paths": {
+    "/audit": {
+      "get": {
+        "operationId": "AuditController_list",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "entityType",
+            "required": false,
+            "schema": {
+              "example": "KeyResult",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "entityId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Usuario que ejecutó la acción",
+            "in": "query",
+            "name": "actorId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "action",
+            "required": false,
+            "schema": {
+              "enum": [
+                "OBJECTIVE_PUBLISHED",
+                "OBJECTIVE_CLOSED",
+                "KR_TARGET_CHANGED",
+                "KR_SCORE_CHANGED",
+                "CYCLE_ACTIVATED",
+                "CYCLE_CLOSED",
+                "CYCLE_THRESHOLDS_CHANGED",
+                "USER_ROLE_CHANGED",
+                "USER_DEACTIVATED",
+                "REFRESH_REUSE_DETECTED",
+                "REFRESH_REVOKED_USED"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "Desde (inclusive)",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Hasta (inclusive)",
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditPageDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Filtros o paginación inválidos"
+          },
+          "403": {
+            "description": "Solo ADMIN"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Consulta del registro de auditoría (solo ADMIN) con filtros por entidad, actor, acción y rango de fechas; paginado, del más nuevo al más viejo.",
+        "tags": ["audit"]
+      }
+    },
     "/auth/login": {
       "post": {
         "operationId": "AuthController_login",
