@@ -132,13 +132,25 @@ export class CheckInsService {
     return rows.map(toCheckInDto);
   }
 
-  /** KRs vencidos de objetivos publicados de los que el usuario es responsable (KR) o dueño (objetivo). */
+  /**
+   * KRs vencidos de objetivos publicados: responsable del KR, dueño del objetivo individual o
+   * LÍDER del equipo dueño del objetivo (los demás miembros del equipo no, salvo que sean responsables).
+   */
   async pending(user: AuthUser): Promise<PendingCheckInDto[]> {
     const now = new Date();
     const krs = await this.prisma.keyResult.findMany({
       where: {
         AND: [
-          { OR: [{ ownerId: user.id }, { objective: { ownerUserId: user.id } }] },
+          {
+            // Una sola query con OR: cada KR aparece una vez aunque el usuario cumpla varias condiciones.
+            OR: [
+              { ownerId: user.id },
+              { objective: { ownerUserId: user.id } },
+              {
+                objective: { ownerTeam: { members: { some: { userId: user.id, isLead: true } } } },
+              },
+            ],
+          },
           { objective: { status: 'PUBLISHED', cycle: { status: { not: 'CLOSED' } } } },
         ],
       },

@@ -10,7 +10,7 @@ import { KeyResultDto } from './dto/key-result.dto';
 import { CreateKeyResultDto, UpdateKeyResultDto } from './dto/key-result-input.dto';
 import { OkrsAccess, type ObjectiveRecord } from './okrs-access.service';
 import { okrDomainError } from './okrs.errors';
-import { toKeyResultDto } from './okrs.mapper';
+import { overdueContext, toKeyResultDto } from './okrs.mapper';
 
 const decimalString = (value: string): string => new Prisma.Decimal(value).toString();
 
@@ -66,7 +66,7 @@ export class KeyResultsService {
         },
       });
       await this.recomputeObjectiveScore(tx, objectiveId);
-      return toKeyResultDto(created);
+      return toKeyResultDto(created, overdueContext(objective), new Date());
     });
   }
 
@@ -164,7 +164,7 @@ export class KeyResultsService {
         });
       }
       if (targetFieldsChanged) await this.recomputeObjectiveScore(tx, kr.objectiveId);
-      return toKeyResultDto(updated);
+      return toKeyResultDto(updated, overdueContext(objective), new Date());
     });
   }
 

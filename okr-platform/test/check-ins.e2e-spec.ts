@@ -342,6 +342,112 @@ describe('Check-ins (e2e) REQ-CHK-1 / REQ-CHK-2', () => {
       expect((await pending(auth)).body).toHaveLength(0);
     });
 
+    describe('objetivos de EQUIPO (decisión round 7)', () => {
+      const ids = (body: { keyResultId: string }[]) => body.map((p) => p.keyResultId);
+      /** Objetivo del equipo publicado hace 10 días con un KR cuyo responsable es `krOwnerId`. */
+      const teamObjective = async (krOwnerId: string) => {
+        const team = await createTeam(prisma);
+        const cycle = await createCycle(prisma);
+        const objective = await createObjective(prisma, {
+          cycleId: cycle.id,
+          createdById: krOwnerId,
+          ownerTeamId: team.id,
+        });
+        await prisma.objective.update({
+          where: { id: objective.id },
+          data: { status: 'PUBLISHED', publishedAt: daysAgo(10) },
+        });
+        const kr = await createKeyResult(prisma, { objectiveId: objective.id, ownerId: krOwnerId });
+        return { team, objective, kr };
+      };
+      const join = (teamId: string, userId: string, isLead = false) =>
+        prisma.teamMember.create({ data: { teamId, userId, isLead } });
+
+      it('el LÍDER del equipo ve el KR vencido aunque no sea su responsable', async () => {
+        const owner = await as('MEMBER');
+        const lead = await as('LEADER');
+        const { team, kr } = await teamObjective(owner.user.id);
+        await join(team.id, owner.user.id);
+        await join(team.id, lead.user.id, true);
+
+        expect(ids((await pending(lead.auth)).body)).toEqual([kr.id]);
+      });
+
+      it('el responsable del KR lo ve; otros miembros del equipo y líderes de otros equipos NO', async () => {
+        const owner = await as('MEMBER');
+        const peer = await as('MEMBER');
+        const otherLead = await as('LEADER');
+        const { team, kr } = await teamObjective(owner.user.id);
+        const otherTeam = await createTeam(prisma, { parentId: team.id });
+        await join(team.id, owner.user.id);
+        await join(team.id, peer.user.id);
+        await join(otherTeam.id, otherLead.user.id, true);
+
+        expect(ids((await pending(owner.auth)).body)).toEqual([kr.id]);
+        expect((await pending(peer.auth)).body).toHaveLength(0);
+        expect((await pending(otherLead.auth)).body).toHaveLength(0);
+      });
+
+      it('líder que además es responsable del KR aparece UNA sola vez', async () => {
+        const lead = await as('LEADER');
+        const { team } = await teamObjective(lead.user.id);
+        await join(team.id, lead.user.id, true);
+        expect((await pending(lead.auth)).body).toHaveLength(1);
+      });
+
+      it('un KR vigente del equipo no aparece para el líder', async () => {
+        const lead = await as('LEADER');
+        const { team, kr } = await teamObjective(lead.user.id);
+        await join(team.id, lead.user.id, true);
+        await prisma.keyResult.update({
+          where: { id: kr.id },
+          data: { lastCheckInAt: daysAgo(1) },
+        });
+        expect((await pending(lead.auth)).body).toHaveLength(0);
+      });
+    });
+
+    describe('KeyResultDto.overdue', () => {
+      it('GET /objectives/:id expone overdue y lastCheckInAt calculados con la cadencia del ciclo', async () => {
+        const { user, auth } = await as('MEMBER');
+        const { objective, kr } = await published(user.id);
+        await prisma.objective.update({
+          where: { id: objective.id },
+          data: { publishedAt: daysAgo(8) },
+        });
+        const fresh = await createKeyResult(prisma, {
+          objectiveId: objective.id,
+          ownerId: user.id,
+          position: 2,
+        });
+        const last = daysAgo(2);
+        await prisma.keyResult.update({ where: { id: fresh.id }, data: { lastCheckInAt: last } });
+
+        const res = await http()
+          .get(`/objectives/${objective.id}`)
+          .set('Authorization', auth)
+          .expect(200);
+        const byId = Object.fromEntries(res.body.keyResults.map((k: { id: string }) => [k.id, k]));
+        expect(byId[kr.id]).toMatchObject({ overdue: true, lastCheckInAt: null });
+        expect(byId[fresh.id].overdue).toBe(false);
+        expect(byId[fresh.id].lastCheckInAt).toBe(last.toISOString());
+      });
+
+      it('un objetivo CLOSED nunca marca overdue', async () => {
+        const { user, auth } = await as('MEMBER');
+        const { objective, kr } = await published(user.id, { status: 'CLOSED' });
+        await prisma.keyResult.update({
+          where: { id: kr.id },
+          data: { lastCheckInAt: daysAgo(40) },
+        });
+        const res = await http()
+          .get(`/objectives/${objective.id}`)
+          .set('Authorization', auth)
+          .expect(200);
+        expect(res.body.keyResults[0].overdue).toBe(false);
+      });
+    });
+
     it('sin token -> 401', async () => {
       await http().get('/check-ins/pending').expect(401);
     });

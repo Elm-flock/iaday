@@ -23,4 +23,9 @@ export class KeyResultDto {
   @ApiProperty() position!: number;
   @ApiProperty({ type: String, format: 'date-time', nullable: true })
   lastCheckInAt!: Date | null;
+  @ApiProperty({
+    description:
+      'Vencido: pasó más que la cadencia del ciclo desde el último check-in (o la publicación). Solo objetivos PUBLISHED.',
+  })
+  overdue!: boolean;
 }

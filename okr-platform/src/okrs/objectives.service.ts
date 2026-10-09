@@ -52,12 +52,13 @@ export class ObjectivesService {
       include: OBJECTIVE_INCLUDE,
       orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
     });
-    return objectives.map(toObjectiveDto);
+    const now = new Date();
+    return objectives.map((o) => toObjectiveDto(o, now));
   }
 
   async get(user: AuthUser, id: string): Promise<ObjectiveDto> {
     const actor = await this.access.loadActor(user);
-    return toObjectiveDto(await this.access.getVisibleObjective(actor, id));
+    return toObjectiveDto(await this.access.getVisibleObjective(actor, id), new Date());
   }
 
   async create(user: AuthUser, dto: CreateObjectiveDto): Promise<ObjectiveDto> {

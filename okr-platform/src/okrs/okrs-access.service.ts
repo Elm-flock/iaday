@@ -6,7 +6,7 @@ import { canViewObjective, type Actor } from './domain/policies';
 
 export const OBJECTIVE_INCLUDE = {
   keyResults: { orderBy: { position: 'asc' } },
-  cycle: { select: { status: true } },
+  cycle: { select: { status: true, checkInCadence: true } },
 } satisfies Prisma.ObjectiveInclude;
 
 export type ObjectiveRecord = Prisma.ObjectiveGetPayload<{ include: typeof OBJECTIVE_INCLUDE }>;

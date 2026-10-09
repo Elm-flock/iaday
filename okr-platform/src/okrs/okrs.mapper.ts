@@ -1,11 +1,21 @@
 import type { KeyResult } from '../../generated/prisma/client';
+import { isCheckInOverdue, type CheckInCadence } from '../check-ins/domain/overdue';
 import { KeyResultDto } from './dto/key-result.dto';
 import { ObjectiveDto } from './dto/objective.dto';
 import type { ObjectiveRecord } from './okrs-access.service';
 
 const dec = (v: { toString(): string } | null): string | null => (v === null ? null : v.toString());
 
-export function toKeyResultDto(kr: KeyResult): KeyResultDto {
+/** Contexto del objetivo necesario para calcular si un KR está vencido. */
+export interface OverdueContext {
+  status: 'DRAFT' | 'PUBLISHED' | 'CLOSED';
+  publishedAt: Date | null;
+  createdAt: Date;
+  checkInCadence: CheckInCadence;
+}
+
+/** `now` se inyecta para que el cálculo sea determinista en tests. */
+export function toKeyResultDto(kr: KeyResult, context: OverdueContext, now: Date): KeyResultDto {
   return {
     id: kr.id,
     objectiveId: kr.objectiveId,
@@ -19,10 +29,17 @@ export function toKeyResultDto(kr: KeyResult): KeyResultDto {
     score: Number(kr.score),
     position: kr.position,
     lastCheckInAt: kr.lastCheckInAt,
+    overdue: isCheckInOverdue(
+      kr.lastCheckInAt,
+      context.publishedAt ?? context.createdAt,
+      context.checkInCadence,
+      now,
+      context.status,
+    ),
   };
 }
 
-export function toObjectiveDto(o: ObjectiveRecord): ObjectiveDto {
+export function toObjectiveDto(o: ObjectiveRecord, now: Date): ObjectiveDto {
   return {
     id: o.id,
     cycleId: o.cycleId,
@@ -41,6 +58,17 @@ export function toObjectiveDto(o: ObjectiveRecord): ObjectiveDto {
     publishedAt: o.publishedAt,
     closedAt: o.closedAt,
     createdAt: o.createdAt,
-    keyResults: o.keyResults.map(toKeyResultDto),
+    keyResults: o.keyResults.map((kr) =>
+      toKeyResultDto(kr, { ...o, checkInCadence: o.cycle.checkInCadence }, now),
+    ),
+  };
+}
+
+export function overdueContext(o: ObjectiveRecord): OverdueContext {
+  return {
+    status: o.status,
+    publishedAt: o.publishedAt,
+    createdAt: o.createdAt,
+    checkInCadence: o.cycle.checkInCadence,
   };
 }
