@@ -4,6 +4,7 @@ import type { AuthUser } from '../../common/types/auth-user';
 import { OkrsAccess } from '../../okrs/okrs-access.service';
 import { okrDomainError } from '../../okrs/okrs.errors';
 import { PrismaService } from '../../prisma/prisma.service';
+import { cfrDomainError } from '../cfr.errors';
 import { isMilestone } from './domain/milestone';
 import {
   CreateRecognitionDto,
@@ -32,7 +33,10 @@ export class RecognitionsService {
 
   async create(user: AuthUser, dto: CreateRecognitionDto): Promise<RecognitionDto> {
     if (dto.toUserId === user.id) {
-      throw new BadRequestException('No podés reconocerte a vos mismo');
+      throw cfrDomainError({
+        code: 'RECOGNITION_SELF',
+        message: 'No podés reconocerte a vos mismo',
+      });
     }
     const receiver = await this.prisma.user.findUnique({
       where: { id: dto.toUserId },

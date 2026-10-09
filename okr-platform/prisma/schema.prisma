@@ -266,7 +266,8 @@ model Feedback {
   keyResultId String?   @db.Uuid
   readAt      DateTime?
   createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  // Solo lo fija una edición del autor; marcar como leído no lo toca (por eso no hay @updatedAt).
+  editedAt    DateTime?
 
   fromUser  User       @relation("FeedbackFrom", fields: [fromUserId], references: [id])
   toUser    User       @relation("FeedbackTo", fields: [toUserId], references: [id])

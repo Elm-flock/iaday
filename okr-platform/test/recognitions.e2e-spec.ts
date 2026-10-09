@@ -4,7 +4,13 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { createTestApp } from './helpers/app';
 import { bearer } from './helpers/auth';
 import { truncateAll } from './helpers/db';
-import { createCycle, createKeyResult, createObjective, createUser } from './helpers/factories';
+import {
+  createCycle,
+  createKeyResult,
+  createObjective,
+  createTeam,
+  createUser,
+} from './helpers/factories';
 
 describe('Reconocimientos (e2e) REQ-REC-1', () => {
   let app: INestApplication;
@@ -117,9 +123,39 @@ describe('Reconocimientos (e2e) REQ-REC-1', () => {
       }).expect(422);
     });
 
-    it('autoreconocimiento -> 400', async () => {
+    it('autoreconocimiento -> 400 con código RECOGNITION_SELF', async () => {
       const a = await as();
-      await give(a.auth, { toUserId: a.user.id, message: 'Soy genial' }).expect(400);
+      const res = await give(a.auth, { toUserId: a.user.id, message: 'Soy genial' }).expect(400);
+      expect(res.body).toMatchObject({ statusCode: 400, code: 'RECOGNITION_SELF' });
+      expect(typeof res.body.message).toBe('string');
+    });
+
+    it('KR que el destinatario es dueño dentro de un objetivo de EQUIPO (score >= 0.7) -> 201', async () => {
+      const a = await as();
+      const b = await as();
+      const team = await createTeam(prisma);
+      const cycle = await createCycle(prisma);
+      const objective = await createObjective(prisma, {
+        cycleId: cycle.id,
+        createdById: a.user.id,
+        ownerTeamId: team.id,
+      });
+      await prisma.objective.update({
+        where: { id: objective.id },
+        data: { status: 'PUBLISHED', publishedAt: new Date() },
+      });
+      const kr = await createKeyResult(prisma, { objectiveId: objective.id, ownerId: b.user.id });
+      await prisma.keyResult.update({ where: { id: kr.id }, data: { score: 0.8 } });
+      const res = await give(a.auth, {
+        toUserId: b.user.id,
+        message: 'Gran aporte al equipo',
+        keyResultId: kr.id,
+      }).expect(201);
+      expect(res.body).toMatchObject({
+        keyResultId: kr.id,
+        objectiveId: objective.id,
+        milestoneVerified: true,
+      });
     });
 
     it('destinatario o KR inexistente -> 404; KR de otro objetivo -> 400', async () => {

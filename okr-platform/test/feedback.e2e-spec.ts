@@ -63,12 +63,15 @@ describe('Feedback privado (e2e) REQ-FDB-1', () => {
         objectiveId: null,
         keyResultId: null,
         readAt: null,
+        editedAt: null,
       });
     });
 
-    it('autoenvío -> 400', async () => {
+    it('autoenvío -> 400 con código FEEDBACK_SELF_SEND', async () => {
       const a = await as('MEMBER');
-      await send(a.auth, { toUserId: a.user.id, content: 'Hola yo' }).expect(400);
+      const res = await send(a.auth, { toUserId: a.user.id, content: 'Hola yo' }).expect(400);
+      expect(res.body).toMatchObject({ statusCode: 400, code: 'FEEDBACK_SELF_SEND' });
+      expect(typeof res.body.message).toBe('string');
     });
 
     it('destinatario inexistente -> 404', async () => {
@@ -219,6 +222,19 @@ describe('Feedback privado (e2e) REQ-FDB-1', () => {
         .expect(200);
       expect(second.body.readAt).toBe(first.body.readAt);
     });
+
+    it('marcar como leído NO marca el feedback como editado', async () => {
+      const a = await as('MEMBER');
+      const b = await as('MEMBER');
+      const fb = await feedbackFrom(a, b);
+      const res = await http()
+        .patch(`/feedback/${fb.id}/read`)
+        .set('Authorization', b.auth)
+        .expect(200);
+      expect(typeof res.body.readAt).toBe('string');
+      expect(res.body.editedAt).toBeNull();
+      expect(res.body).not.toHaveProperty('updatedAt');
+    });
   });
 
   describe('PATCH/DELETE /feedback/:id (autor)', () => {
@@ -233,6 +249,7 @@ describe('Feedback privado (e2e) REQ-FDB-1', () => {
         .send({ content: 'Texto corregido' })
         .expect(200);
       expect(res.body.content).toBe('Texto corregido');
+      expect(typeof res.body.editedAt).toBe('string');
       await http()
         .patch(`/feedback/${fb.id}`)
         .set('Authorization', b.auth)

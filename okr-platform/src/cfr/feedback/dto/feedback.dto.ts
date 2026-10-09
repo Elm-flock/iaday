@@ -53,5 +53,11 @@ export class FeedbackDto {
   @ApiProperty({ type: String, format: 'uuid', nullable: true }) keyResultId!: string | null;
   @ApiProperty({ type: String, format: 'date-time', nullable: true }) readAt!: Date | null;
   @ApiProperty({ type: String, format: 'date-time' }) createdAt!: Date;
-  @ApiProperty({ type: String, format: 'date-time' }) updatedAt!: Date;
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+    nullable: true,
+    description: 'Fecha de la última edición del autor; null si nunca se editó',
+  })
+  editedAt!: Date | null;
 }

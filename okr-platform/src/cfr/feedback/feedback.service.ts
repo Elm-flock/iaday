@@ -8,6 +8,7 @@ import type { Feedback, Prisma } from '../../../generated/prisma/client';
 import type { AuthUser } from '../../common/types/auth-user';
 import { OkrsAccess } from '../../okrs/okrs-access.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import { cfrDomainError } from '../cfr.errors';
 import { canModifyFeedback } from './domain/privacy';
 import { CreateFeedbackDto, FeedbackBox, FeedbackDto, UpdateFeedbackDto } from './dto/feedback.dto';
 
@@ -20,7 +21,7 @@ const toDto = (f: Feedback): FeedbackDto => ({
   keyResultId: f.keyResultId,
   readAt: f.readAt,
   createdAt: f.createdAt,
-  updatedAt: f.updatedAt,
+  editedAt: f.editedAt,
 });
 
 /**
@@ -38,7 +39,10 @@ export class FeedbackService {
 
   async create(user: AuthUser, dto: CreateFeedbackDto): Promise<FeedbackDto> {
     if (dto.toUserId === user.id) {
-      throw new BadRequestException('No podés enviarte feedback a vos mismo');
+      throw cfrDomainError({
+        code: 'FEEDBACK_SELF_SEND',
+        message: 'No podés enviarte feedback a vos mismo',
+      });
     }
     const receiver = await this.prisma.user.findUnique({
       where: { id: dto.toUserId },
@@ -97,7 +101,7 @@ export class FeedbackService {
     }
     const updated = await this.prisma.feedback.update({
       where: { id },
-      data: { content: dto.content },
+      data: { content: dto.content, editedAt: new Date() },
     });
     return toDto(updated);
   }

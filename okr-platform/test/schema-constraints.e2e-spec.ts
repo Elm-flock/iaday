@@ -75,8 +75,8 @@ describe('Constraints manuales de BD (migración 0001_init)', () => {
   it('feedback a si mismo -> 23514', async () => {
     const user = await createUser(prisma);
     const code = await sqlState(
-      prisma.$executeRaw`INSERT INTO "Feedback" ("id","fromUserId","toUserId","content","updatedAt")
-        VALUES (${uuid()}::uuid, ${user.id}::uuid, ${user.id}::uuid, 'x', now())`,
+      prisma.$executeRaw`INSERT INTO "Feedback" ("id","fromUserId","toUserId","content")
+        VALUES (${uuid()}::uuid, ${user.id}::uuid, ${user.id}::uuid, 'x')`,
     );
     expect(code).toBe('23514');
   });
