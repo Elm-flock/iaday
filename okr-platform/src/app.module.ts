@@ -14,6 +14,7 @@ import { RolesGuard } from './common/guards/roles.guard';
 import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter';
 import { HealthController } from './health/health.controller';
 import { PrismaModule } from './prisma/prisma.module';
+import { ReportsModule } from './reports/reports.module';
 import { TeamsModule } from './teams/teams.module';
 import { UsersModule } from './users/users.module';
 
@@ -31,6 +32,7 @@ import { UsersModule } from './users/users.module';
     CheckInsModule,
     FeedbackModule,
     RecognitionsModule,
+    ReportsModule,
     AuditModule,
   ],
   controllers: [HealthController],

@@ -1004,6 +1004,210 @@
         "required": ["refreshToken"],
         "type": "object"
       },
+      "ReportCycleDto": {
+        "properties": {
+          "aspirationalThreshold": {
+            "description": "Umbral de logro de objetivos ASPIRATIONAL (0..1)",
+            "type": "number"
+          },
+          "committedThreshold": {
+            "description": "Umbral de logro de objetivos COMMITTED (0..1)",
+            "type": "number"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "kind": {
+            "enum": ["ANNUAL", "QUARTER"],
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "enum": ["DRAFT", "ACTIVE", "CLOSED"],
+            "type": "string"
+          }
+        },
+        "required": ["id", "name", "kind", "status", "committedThreshold", "aspirationalThreshold"],
+        "type": "object"
+      },
+      "ReportKeyResultDto": {
+        "properties": {
+          "band": {
+            "description": "Banda sobre el score",
+            "enum": ["RED", "YELLOW", "GREEN"],
+            "type": "string"
+          },
+          "currentValue": {
+            "description": "Decimal como string",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "lastCheckInAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "score": {
+            "description": "Score 0..1",
+            "type": "number"
+          },
+          "scoring": {
+            "enum": ["DERIVED", "MANUAL"],
+            "type": "string"
+          },
+          "startValue": {
+            "description": "Decimal como string",
+            "nullable": true,
+            "type": "string"
+          },
+          "targetValue": {
+            "description": "Decimal como string",
+            "nullable": true,
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "unit": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "scoring",
+          "unit",
+          "startValue",
+          "targetValue",
+          "currentValue",
+          "score",
+          "band",
+          "lastCheckInAt"
+        ],
+        "type": "object"
+      },
+      "ReportMemberDto": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "objectives": {
+            "description": "Objetivos individuales PUBLISHED/CLOSED de la persona en el ciclo",
+            "items": {
+              "$ref": "#/components/schemas/ReportObjectiveDto"
+            },
+            "type": "array"
+          },
+          "userId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": ["userId", "name", "objectives"],
+        "type": "object"
+      },
+      "ReportObjectiveDto": {
+        "properties": {
+          "achieved": {
+            "description": "Logro al cierre según el umbral del ciclo (solo CLOSED)",
+            "nullable": true,
+            "type": "boolean"
+          },
+          "band": {
+            "enum": ["RED", "YELLOW", "GREEN"],
+            "type": "string"
+          },
+          "finalScore": {
+            "description": "Score al cierre (solo CLOSED)",
+            "nullable": true,
+            "type": "number"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "keyResults": {
+            "items": {
+              "$ref": "#/components/schemas/ReportKeyResultDto"
+            },
+            "type": "array"
+          },
+          "origin": {
+            "enum": ["TOP_DOWN", "BOTTOM_UP"],
+            "type": "string"
+          },
+          "score": {
+            "description": "Score vigente 0..1",
+            "type": "number"
+          },
+          "status": {
+            "enum": ["PUBLISHED", "CLOSED"],
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "type": {
+            "enum": ["COMMITTED", "ASPIRATIONAL"],
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "type",
+          "origin",
+          "status",
+          "score",
+          "band",
+          "finalScore",
+          "achieved",
+          "keyResults"
+        ],
+        "type": "object"
+      },
+      "ReportOriginMixDto": {
+        "properties": {
+          "bottomUp": {
+            "type": "number"
+          },
+          "bottomUpRatio": {
+            "description": "null si no hay objetivos",
+            "nullable": true,
+            "type": "number"
+          },
+          "topDown": {
+            "type": "number"
+          },
+          "warning": {
+            "description": "true si el % bottom-up queda fuera de [40%, 60%] (solo indicador)",
+            "type": "boolean"
+          }
+        },
+        "required": ["topDown", "bottomUp", "bottomUpRatio", "warning"],
+        "type": "object"
+      },
+      "ReportTeamDto": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "name"],
+        "type": "object"
+      },
       "ResetPasswordDto": {
         "properties": {
           "password": {
@@ -1114,6 +1318,44 @@
           }
         },
         "required": ["id", "name", "parentId", "children"],
+        "type": "object"
+      },
+      "TeamReportDto": {
+        "properties": {
+          "cycle": {
+            "$ref": "#/components/schemas/ReportCycleDto"
+          },
+          "generatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "members": {
+            "description": "Miembros directos del equipo, orden alfabético, con sus objetivos individuales",
+            "items": {
+              "$ref": "#/components/schemas/ReportMemberDto"
+            },
+            "type": "array"
+          },
+          "originMix": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReportOriginMixDto"
+              }
+            ],
+            "description": "Mezcla de origen sobre los objetivos incluidos en el reporte"
+          },
+          "team": {
+            "$ref": "#/components/schemas/ReportTeamDto"
+          },
+          "teamObjectives": {
+            "description": "Objetivos cuyo owner es el equipo",
+            "items": {
+              "$ref": "#/components/schemas/ReportObjectiveDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": ["team", "cycle", "generatedAt", "originMix", "teamObjectives", "members"],
         "type": "object"
       },
       "UpdateCycleDto": {
@@ -2685,6 +2927,56 @@
         ],
         "summary": "Reconoce a otra persona, con enlace opcional a un hito (KR con score >= 0.7 u objetivo CLOSED).",
         "tags": ["recognitions"]
+      }
+    },
+    "/reports/teams/{id}": {
+      "get": {
+        "operationId": "ReportsController_teamReport",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Ciclo del reporte (obligatorio)",
+            "in": "query",
+            "name": "cycleId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TeamReportDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "cycleId faltante o inválido"
+          },
+          "404": {
+            "description": "Equipo o ciclo inexistente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Reporte del equipo en un ciclo (cualquier autenticado): objetivos del equipo y objetivos individuales de sus miembros agrupados por persona, con KRs, scores, bandas, mezcla de origen y logro al cierre. Sin feedback, ranking ni datos de compensación.",
+        "tags": ["reports"]
       }
     },
     "/teams": {
