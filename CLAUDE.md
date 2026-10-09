@@ -35,7 +35,7 @@ Plataforma de gestión de OKRs: objetivos y resultados clave (comprometidos/aspi
 
 - **Framework**: Next.js 16.4 (App Router, Turbopack, `cacheComponents`)
 - **Lenguaje**: TypeScript 5 (`strict: true`, alias `@/* → ./src/*`)
-- **UI**: Tailwind CSS 4 (sin config JS)
+- **UI**: Tailwind CSS 4 (sin config JS) + Flock UI propio (ver Sistema de diseño), lucide-react
 - **Estado**: a definir en SDD (por defecto: Server Components + fetch)
 - **Datos**: REST contra la API NestJS (`okr-platform-back`)
 - **Auth**: JWT emitido por el back
@@ -47,6 +47,16 @@ Plataforma de gestión de OKRs: objetivos y resultados clave (comprometidos/aspi
 - Server Components por defecto; `'use client'` solo en hojas interactivas.
 - Skills de Vercel en `.claude/skills/`: `vercel-react-best-practices`, `vercel-composition-patterns`, `web-design-guidelines`.
 - Pre-commit (Husky + lint-staged): Prettier + ESLint sobre archivos staged.
+
+## Sistema de diseño
+
+Flock UI implementado de forma nativa sobre Tailwind 4 (sin bundle `fk-*`, sin `window.FlockUI`). Referencia completa y catálogo de componentes (P1/P2/P3): `docs/design-system.md`. Catálogo visual en dev: `/ui` (`src/app/(dev)/ui`, 404 en producción).
+
+- **Tokens** en `src/app/globals.css`: variables CSS claro (default) / oscuro (clase `.dark`), expuestas con `@theme` como utilidades: `bg-surface`, `text-ink`, `text-ink-muted`, `border-border`, `bg-primary`, `text-primary-text`, `bg-success-subtle`, `rounded-pill|lg|md|sm`, `p-s10|s15|s20|s30|s40`, `shadow-sm|overlay`, `text-body|body-sm|caption|button|heading-1..3|display`, `bg-horizonte|brasa|noche`. No inventar colores fuera de los tokens; no usar `dark:` (los tokens ya cambian con el tema).
+- **Componentes** en `src/components/ui/<nombre>.tsx` (importar directo, sin barrel). Server Components salvo los interactivos (`'use client'`: Modal, Drawer, ConfirmDialog, Toast, AppShell/Sidebar, FormField y controles). `cn()` en `src/lib/cn.ts` (clsx + tailwind-merge configurado con los tokens: al agregar un token de texto/espaciado, registrarlo ahí). Variantes explícitas por mapa de clases, sin `class-variance-authority`.
+- **Reglas**: voz es-AR con voseo y sentence case; una sola acción primaria por vista; pill = acción, `radius-lg` = contenedor, `radius-md` = campo; el estado nunca va solo en color (ícono + palabra: `BandBadge` → En ruta / Requiere atención / En riesgo); íconos Lucide con trazo 1.75; foco visible (anillo 2px `focus`); movimiento 150–200 ms y `prefers-reduced-motion`; acciones sin permiso deshabilitadas con explicación; degradés solo en superficies de marca (login, PDF).
+- **Formato AR** en `src/lib/format.ts`: `formatNumber` (1.234,56), `formatScore` (0,70), `formatPercent` (70 %), `formatDate` (dd/mm/aaaa), `formatTime` (24 h, Buenos Aires).
+- **Tipografía**: Public Sans (next/font, 300/400/700) como respaldo de Tomato Grotesk; títulos en 300 con tracking.
 
 ## Estructura
 
