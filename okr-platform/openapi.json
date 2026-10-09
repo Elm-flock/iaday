@@ -90,6 +90,47 @@
         "required": ["name", "kind", "startDate", "endDate"],
         "type": "object"
       },
+      "CreateObjectiveDto": {
+        "properties": {
+          "cycleId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "origin": {
+            "description": "Obligatorio",
+            "enum": ["TOP_DOWN", "BOTTOM_UP"],
+            "type": "string"
+          },
+          "ownerTeamId": {
+            "description": "Owner equipo",
+            "format": "uuid",
+            "type": "string"
+          },
+          "ownerUserId": {
+            "description": "Owner usuario. Exactamente uno entre ownerUserId y ownerTeamId.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "parentObjectiveId": {
+            "description": "Objetivo PUBLISHED al que se alinea (puede ser de otro ciclo)",
+            "format": "uuid",
+            "type": "string"
+          },
+          "title": {
+            "example": "Reducir el tiempo de entrega",
+            "type": "string"
+          },
+          "type": {
+            "enum": ["COMMITTED", "ASPIRATIONAL"],
+            "type": "string"
+          }
+        },
+        "required": ["cycleId", "title", "origin", "type"],
+        "type": "object"
+      },
       "CreateTeamDto": {
         "properties": {
           "name": {
@@ -271,6 +312,76 @@
         ],
         "type": "object"
       },
+      "KeyResultDto": {
+        "properties": {
+          "currentValue": {
+            "description": "Decimal como string",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "lastCheckInAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "objectiveId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "ownerId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "position": {
+            "type": "number"
+          },
+          "score": {
+            "description": "Score 0..1 (4 decimales)",
+            "type": "number"
+          },
+          "scoring": {
+            "description": "DERIVED = numérico; MANUAL = binario (pasos de 0.1)",
+            "enum": ["DERIVED", "MANUAL"],
+            "type": "string"
+          },
+          "startValue": {
+            "description": "Decimal como string",
+            "nullable": true,
+            "type": "string"
+          },
+          "targetValue": {
+            "description": "Decimal como string",
+            "nullable": true,
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "unit": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "objectiveId",
+          "ownerId",
+          "title",
+          "scoring",
+          "unit",
+          "startValue",
+          "targetValue",
+          "currentValue",
+          "score",
+          "position",
+          "lastCheckInAt"
+        ],
+        "type": "object"
+      },
       "LoginDto": {
         "properties": {
           "email": {
@@ -325,6 +436,111 @@
           }
         },
         "required": ["teamId", "name", "isLead"],
+        "type": "object"
+      },
+      "ObjectiveDto": {
+        "properties": {
+          "achieved": {
+            "description": "Logrado según el umbral del ciclo",
+            "nullable": true,
+            "type": "boolean"
+          },
+          "closedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "createdById": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "cycleId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "description": {
+            "nullable": true,
+            "type": "string"
+          },
+          "finalScore": {
+            "description": "Score al cierre del ciclo",
+            "nullable": true,
+            "type": "number"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "keyResults": {
+            "items": {
+              "$ref": "#/components/schemas/KeyResultDto"
+            },
+            "type": "array"
+          },
+          "origin": {
+            "enum": ["TOP_DOWN", "BOTTOM_UP"],
+            "type": "string"
+          },
+          "ownerTeamId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "ownerUserId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "parentObjectiveId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "publishedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "score": {
+            "description": "Promedio de los KRs, 0..1 (4 decimales)",
+            "type": "number"
+          },
+          "status": {
+            "enum": ["DRAFT", "PUBLISHED", "CLOSED"],
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "type": {
+            "enum": ["COMMITTED", "ASPIRATIONAL"],
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "cycleId",
+          "ownerUserId",
+          "ownerTeamId",
+          "parentObjectiveId",
+          "title",
+          "description",
+          "origin",
+          "type",
+          "status",
+          "score",
+          "finalScore",
+          "achieved",
+          "createdById",
+          "publishedAt",
+          "closedAt",
+          "createdAt",
+          "keyResults"
+        ],
         "type": "object"
       },
       "OriginMixDto": {
@@ -499,6 +715,33 @@
           "startDate": {
             "description": "Solo en ciclos DRAFT",
             "example": "2026-01-01",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "UpdateObjectiveDto": {
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "origin": {
+            "description": "Solo en DRAFT",
+            "enum": ["TOP_DOWN", "BOTTOM_UP"],
+            "type": "string"
+          },
+          "parentObjectiveId": {
+            "description": "Objetivo PUBLISHED al que se alinea; null para desalinear",
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "type": {
+            "description": "Solo en DRAFT",
+            "enum": ["COMMITTED", "ASPIRATIONAL"],
             "type": "string"
           }
         },
@@ -959,6 +1202,294 @@
         },
         "summary": "Estado del servicio",
         "tags": ["health"]
+      }
+    },
+    "/objectives": {
+      "get": {
+        "operationId": "ObjectivesController_list",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "cycleId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Objetivos cuyo owner es este equipo",
+            "in": "query",
+            "name": "teamId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "ownerUserId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "enum": ["DRAFT", "PUBLISHED", "CLOSED"],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ObjectiveDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Lista objetivos (filtros opcionales). PUBLISHED/CLOSED son visibles para todos; los DRAFT solo para quienes pueden editarlos.",
+        "tags": ["objectives"]
+      },
+      "post": {
+        "operationId": "ObjectivesController_create",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateObjectiveDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectiveDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Owner no exclusivo, origin/type inválidos o campos no declarados"
+          },
+          "403": {
+            "description": "El actor no puede crear para ese owner"
+          },
+          "404": {
+            "description": "Ciclo, owner o padre inexistente"
+          },
+          "409": {
+            "description": "Ciclo cerrado"
+          },
+          "422": {
+            "description": "Límite de 5 objetivos (OBJECTIVE_LIMIT_EXCEEDED) o padre no publicado"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Crea un objetivo DRAFT. MEMBER: propio; LEADER: propio o de equipos que lidera; ADMIN: cualquiera.",
+        "tags": ["objectives"]
+      }
+    },
+    "/objectives/{id}": {
+      "delete": {
+        "operationId": "ObjectivesController_remove",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "403": {
+            "description": "Sin permiso de edición"
+          },
+          "404": {
+            "description": "Inexistente o DRAFT que el actor no puede ver"
+          },
+          "409": {
+            "description": "No está en DRAFT, o ciclo cerrado"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Borra un objetivo DRAFT (y sus KRs)",
+        "tags": ["objectives"]
+      },
+      "get": {
+        "operationId": "ObjectivesController_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectiveDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "Inexistente o DRAFT que el actor no puede ver"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Detalle del objetivo con sus KRs",
+        "tags": ["objectives"]
+      },
+      "patch": {
+        "operationId": "ObjectivesController_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateObjectiveDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectiveDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Campos no editables o alineación inválida (ciclo/auto)"
+          },
+          "403": {
+            "description": "Sin permiso de edición"
+          },
+          "404": {
+            "description": "Inexistente o DRAFT que el actor no puede ver"
+          },
+          "409": {
+            "description": "CLOSED, ciclo cerrado o campos bloqueados tras publicar"
+          },
+          "422": {
+            "description": "Padre no publicado"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Edita un objetivo (owner, líder del equipo owner o ADMIN). Tras publicar solo título, descripción y alineación.",
+        "tags": ["objectives"]
+      }
+    },
+    "/objectives/{id}/publish": {
+      "post": {
+        "operationId": "ObjectivesController_publish",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectiveDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "Sin permiso de edición"
+          },
+          "404": {
+            "description": "Inexistente o DRAFT que el actor no puede ver"
+          },
+          "409": {
+            "description": "No está en DRAFT, o ciclo cerrado"
+          },
+          "422": {
+            "description": "MIN_OBJECTIVES_NOT_MET o MIN_KRS_NOT_MET (o límites superados)"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Publica el objetivo (DRAFT -> PUBLISHED): exige al menos 3 objetivos del owner en el ciclo y 3 KRs en este",
+        "tags": ["objectives"]
       }
     },
     "/teams": {
