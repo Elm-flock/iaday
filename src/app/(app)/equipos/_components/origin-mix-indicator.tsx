@@ -13,8 +13,8 @@ export function OriginMixIndicator({ mix }: { mix: OriginMix | null }) {
   if (mix === null) {
     return (
       <p className="text-body text-ink-muted">
-        Elegí un ciclo para ver cómo se reparten los objetivos del equipo entre top-down y
-        bottom-up.
+        Elegí un ciclo para ver cómo se reparten entre top-down y bottom-up los objetivos del equipo
+        y los individuales de sus integrantes.
       </p>
     );
   }
@@ -23,7 +23,8 @@ export function OriginMixIndicator({ mix }: { mix: OriginMix | null }) {
   if (shares === null) {
     return (
       <p className="text-body text-ink-muted">
-        Todavía no hay objetivos del equipo en este ciclo, así que no hay mezcla para mostrar.
+        Todavía no hay objetivos en este ciclo, ni del equipo ni individuales de sus integrantes,
+        así que no hay mezcla para mostrar. La mezcla cuenta ambos tipos.
       </p>
     );
   }

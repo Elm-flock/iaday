@@ -159,6 +159,95 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/key-results/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** Borra un KR de un objetivo DRAFT */
+    delete: operations['KeyResultsController_remove'];
+    options?: never;
+    head?: never;
+    /** Edita un KR. Tras publicar, cambiar start/target solo lo hacen ADMIN o líderes (owner team / equipo del owner) y se audita como KR_TARGET_CHANGED. */
+    patch: operations['KeyResultsController_update'];
+    trace?: never;
+  };
+  '/objectives': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Lista objetivos (filtros opcionales). PUBLISHED/CLOSED son visibles para todos; los DRAFT solo para quienes pueden editarlos. */
+    get: operations['ObjectivesController_list'];
+    put?: never;
+    /** Crea un objetivo DRAFT. MEMBER: propio; LEADER: propio o de equipos que lidera; ADMIN: cualquiera. */
+    post: operations['ObjectivesController_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/objectives/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Detalle del objetivo con sus KRs */
+    get: operations['ObjectivesController_get'];
+    put?: never;
+    post?: never;
+    /** Borra un objetivo DRAFT (y sus KRs) */
+    delete: operations['ObjectivesController_remove'];
+    options?: never;
+    head?: never;
+    /** Edita un objetivo (owner, líder del equipo owner o ADMIN). Tras publicar solo título, descripción y alineación. */
+    patch: operations['ObjectivesController_update'];
+    trace?: never;
+  };
+  '/objectives/{id}/key-results': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Agrega un KR al objetivo (owner, líder del equipo owner o ADMIN). Máximo 5 por objetivo. */
+    post: operations['KeyResultsController_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/objectives/{id}/publish': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Publica el objetivo (DRAFT -> PUBLISHED): exige al menos 3 objetivos del owner en el ciclo y 3 KRs en este */
+    post: operations['ObjectivesController_publish'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/teams': {
     parameters: {
       query?: never;
@@ -312,6 +401,61 @@ export interface components {
       /** @example 2026-01-01 */
       startDate: string;
     };
+    CreateKeyResultDto: {
+      /**
+       * Format: uuid
+       * @description Responsable del KR
+       */
+      ownerId: string;
+      /**
+       * @description DERIVED = numérico (requiere start y target); MANUAL = binario (sin valores)
+       * @enum {string}
+       */
+      scoring: 'DERIVED' | 'MANUAL';
+      /**
+       * @description Decimal como string. Solo DERIVED.
+       * @example 0
+       */
+      startValue?: string;
+      /**
+       * @description Decimal como string. Solo DERIVED; puede ser menor que startValue.
+       * @example 100
+       */
+      targetValue?: string;
+      /** @example Llegar a 100 clientes */
+      title: string;
+      /** @example clientes */
+      unit?: string;
+    };
+    CreateObjectiveDto: {
+      /** Format: uuid */
+      cycleId: string;
+      description?: string;
+      /**
+       * @description Obligatorio
+       * @enum {string}
+       */
+      origin: 'TOP_DOWN' | 'BOTTOM_UP';
+      /**
+       * Format: uuid
+       * @description Owner equipo
+       */
+      ownerTeamId?: string;
+      /**
+       * Format: uuid
+       * @description Owner usuario. Exactamente uno entre ownerUserId y ownerTeamId.
+       */
+      ownerUserId?: string;
+      /**
+       * Format: uuid
+       * @description Objetivo PUBLISHED al que se alinea (puede ser de otro ciclo)
+       */
+      parentObjectiveId?: string;
+      /** @example Reducir el tiempo de entrega */
+      title: string;
+      /** @enum {string} */
+      type: 'COMMITTED' | 'ASPIRATIONAL';
+    };
     CreateTeamDto: {
       /** @example Plataforma */
       name: string;
@@ -399,6 +543,32 @@ export interface components {
       /** @enum {string} */
       status: 'DRAFT' | 'ACTIVE' | 'CLOSED';
     };
+    KeyResultDto: {
+      /** @description Decimal como string */
+      currentValue: string | null;
+      /** Format: uuid */
+      id: string;
+      /** Format: date-time */
+      lastCheckInAt: string | null;
+      /** Format: uuid */
+      objectiveId: string;
+      /** Format: uuid */
+      ownerId: string;
+      position: number;
+      /** @description Score 0..1 (4 decimales) */
+      score: number;
+      /**
+       * @description DERIVED = numérico; MANUAL = binario (pasos de 0.1)
+       * @enum {string}
+       */
+      scoring: 'DERIVED' | 'MANUAL';
+      /** @description Decimal como string */
+      startValue: string | null;
+      /** @description Decimal como string */
+      targetValue: string | null;
+      title: string;
+      unit: string | null;
+    };
     LoginDto: {
       /** @example ana@empresa.com */
       email: string;
@@ -420,12 +590,47 @@ export interface components {
       /** Format: uuid */
       teamId: string;
     };
+    ObjectiveDto: {
+      /** @description Logrado según el umbral del ciclo */
+      achieved: boolean | null;
+      /** Format: date-time */
+      closedAt: string | null;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: uuid */
+      createdById: string;
+      /** Format: uuid */
+      cycleId: string;
+      description: string | null;
+      /** @description Score al cierre del ciclo */
+      finalScore: number | null;
+      /** Format: uuid */
+      id: string;
+      keyResults: components['schemas']['KeyResultDto'][];
+      /** @enum {string} */
+      origin: 'TOP_DOWN' | 'BOTTOM_UP';
+      /** Format: uuid */
+      ownerTeamId: string | null;
+      /** Format: uuid */
+      ownerUserId: string | null;
+      /** Format: uuid */
+      parentObjectiveId: string | null;
+      /** Format: date-time */
+      publishedAt: string | null;
+      /** @description Promedio de los KRs, 0..1 (4 decimales) */
+      score: number;
+      /** @enum {string} */
+      status: 'DRAFT' | 'PUBLISHED' | 'CLOSED';
+      title: string;
+      /** @enum {string} */
+      type: 'COMMITTED' | 'ASPIRATIONAL';
+    };
     OriginMixDto: {
-      /** @description Objetivos BOTTOM_UP del equipo en el ciclo */
+      /** @description Objetivos BOTTOM_UP (del equipo + de sus miembros) en el ciclo */
       bottomUp: number;
       /** @description bottomUp / total; null sin objetivos */
       bottomUpRatio: number | null;
-      /** @description Objetivos TOP_DOWN del equipo en el ciclo */
+      /** @description Objetivos TOP_DOWN (del equipo + de sus miembros) en el ciclo */
       topDown: number;
       /** @description true si el % BOTTOM_UP queda fuera de [40%, 60%]. Indicador blando. */
       warning: boolean;
@@ -446,7 +651,7 @@ export interface components {
       id: string;
       members: components['schemas']['TeamMemberDto'][];
       name: string;
-      /** @description Indicador 50/50 de los objetivos propios del equipo; null si no se indica cycleId */
+      /** @description Indicador 50/50: objetivos propios del equipo + individuales de sus miembros directos en el ciclo; null si no se indica cycleId */
       originMix: components['schemas']['OriginMixDto'] | null;
       /** Format: uuid */
       parentId: string | null;
@@ -488,6 +693,35 @@ export interface components {
        * @example 2026-01-01
        */
       startDate?: string;
+    };
+    UpdateKeyResultDto: {
+      /** Format: uuid */
+      ownerId?: string;
+      /** @description Decimal como string. Tras publicar solo ADMIN o líder (con auditoría KR_TARGET_CHANGED). */
+      startValue?: string;
+      /** @description Decimal como string. Tras publicar solo ADMIN o líder (con auditoría KR_TARGET_CHANGED). */
+      targetValue?: string;
+      title?: string;
+      unit?: string | null;
+    };
+    UpdateObjectiveDto: {
+      description?: string;
+      /**
+       * @description Solo en DRAFT
+       * @enum {string}
+       */
+      origin?: 'TOP_DOWN' | 'BOTTOM_UP';
+      /**
+       * Format: uuid
+       * @description Objetivo PUBLISHED al que se alinea; null para desalinear
+       */
+      parentObjectiveId?: string | null;
+      title?: string;
+      /**
+       * @description Solo en DRAFT
+       * @enum {string}
+       */
+      type?: 'COMMITTED' | 'ASPIRATIONAL';
     };
     UpdateTeamDto: {
       name?: string;
@@ -862,6 +1096,419 @@ export interface operations {
             status: 'ok';
           };
         };
+      };
+    };
+  };
+  KeyResultsController_remove: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Sin permiso de edición */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description KR inexistente o de un DRAFT no visible */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description El objetivo no está en DRAFT, o ciclo cerrado */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  KeyResultsController_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateKeyResultDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KeyResultDto'];
+        };
+      };
+      /** @description Valores inconsistentes o campos no declarados */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Sin permiso de edición / de cambio de meta */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description KR (o su DRAFT no visible) o responsable inexistente */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Objetivo CLOSED o ciclo cerrado */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  ObjectivesController_list: {
+    parameters: {
+      query?: {
+        cycleId?: string;
+        /** @description Objetivos cuyo owner es este equipo */
+        teamId?: string;
+        ownerUserId?: string;
+        status?: 'DRAFT' | 'PUBLISHED' | 'CLOSED';
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ObjectiveDto'][];
+        };
+      };
+    };
+  };
+  ObjectivesController_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateObjectiveDto'];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ObjectiveDto'];
+        };
+      };
+      /** @description Owner no exclusivo, origin/type inválidos o campos no declarados */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description El actor no puede crear para ese owner */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Ciclo, owner o padre inexistente */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Ciclo cerrado */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Límite de 5 objetivos (OBJECTIVE_LIMIT_EXCEEDED) o padre no publicado */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  ObjectivesController_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ObjectiveDto'];
+        };
+      };
+      /** @description Inexistente o DRAFT que el actor no puede ver */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  ObjectivesController_remove: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Sin permiso de edición */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Inexistente o DRAFT que el actor no puede ver */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description No está en DRAFT, o ciclo cerrado */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  ObjectivesController_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateObjectiveDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ObjectiveDto'];
+        };
+      };
+      /** @description Campos no editables o alineación inválida (ciclo/auto) */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Sin permiso de edición */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Inexistente o DRAFT que el actor no puede ver */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description CLOSED, ciclo cerrado o campos bloqueados tras publicar */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Padre no publicado */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  KeyResultsController_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateKeyResultDto'];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KeyResultDto'];
+        };
+      };
+      /** @description Valores inconsistentes: start == target, faltan o sobran valores según el tipo */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Sin permiso de edición */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Objetivo (o DRAFT no visible) o responsable inexistente */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Objetivo CLOSED o ciclo cerrado */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description KR_LIMIT_EXCEEDED (máximo 5) */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  ObjectivesController_publish: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ObjectiveDto'];
+        };
+      };
+      /** @description Sin permiso de edición */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Inexistente o DRAFT que el actor no puede ver */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description No está en DRAFT, o ciclo cerrado */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description MIN_OBJECTIVES_NOT_MET o MIN_KRS_NOT_MET (o límites superados) */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
     };
   };

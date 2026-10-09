@@ -151,10 +151,10 @@ test.describe('shell de la app', () => {
     const box = await tooltip.boundingBox();
     expect(box!.x).toBeGreaterThanOrEqual(0);
 
-    const objetivos = page
-      .getByText('Objetivos', { exact: true })
+    const checkIns = page
+      .getByText('Check-ins', { exact: true })
       .locator('xpath=ancestor::*[@aria-disabled="true"][1]');
-    await expect(objetivos).toHaveAttribute('title', /todavía no está disponible/);
+    await expect(checkIns).toHaveAttribute('title', /todavía no está disponible/);
     await expect(page.getByRole('link', { name: 'Inicio' })).toHaveAttribute(
       'aria-current',
       'page',

@@ -20,7 +20,7 @@ export function CycleSelect({
   const [pending, startTransition] = useTransition();
 
   return (
-    <FormField label="Ciclo" className="w-full max-w-xs">
+    <FormField label="Ciclo" className="w-full max-w-md">
       <Select
         value={selectedId ?? ''}
         disabled={pending}

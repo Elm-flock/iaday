@@ -21,7 +21,8 @@ describe('OriginMixIndicator', () => {
     render(
       <OriginMixIndicator mix={{ topDown: 0, bottomUp: 0, bottomUpRatio: null, warning: false }} />,
     );
-    expect(screen.getByText(/Todavía no hay objetivos/)).toBeInTheDocument();
+    const copy = screen.getByText(/Todavía no hay objetivos/);
+    expect(copy).toHaveTextContent(/ni del equipo ni individuales de sus integrantes/);
   });
 
   it('50/50 se muestra equilibrado', () => {

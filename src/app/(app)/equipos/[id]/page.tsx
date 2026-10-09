@@ -11,7 +11,7 @@ import { listCycles, type Cycle } from '@/lib/dal/cycles';
 import { getCurrentUser } from '@/lib/dal/session';
 import { getTeamDetail, getTeamTree } from '@/lib/dal/teams';
 import { listUsers } from '@/lib/dal/users';
-import { formatDate } from '@/lib/format';
+import { cycleLabel } from '@/lib/cycle-label';
 
 export const metadata: Metadata = { title: 'Equipo' };
 
@@ -54,7 +54,7 @@ async function TeamContent({
   const parent = team.parentId ? flattenTeams(tree).find((t) => t.id === team.parentId) : undefined;
   const cycleOptions = cycles.map((c) => ({
     id: c.id,
-    label: `${c.name} (${formatDate(c.startDate)} al ${formatDate(c.endDate)})`,
+    label: cycleLabel(c),
   }));
 
   return (

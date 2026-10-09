@@ -18,7 +18,7 @@ Al terminar, actualizá `src/app/(app)/<módulo>/CLAUDE.md` para reflejar los ca
 
 | Módulo         | Ruta                                              |
 | -------------- | ------------------------------------------------- |
-| okrs           | `src/app/(app)/okrs/CLAUDE.md`                    |
+| objetivos      | `src/app/(app)/objetivos/CLAUDE.md` (creado)      |
 | check-ins      | `src/app/(app)/check-ins/CLAUDE.md`               |
 | cfr            | `src/app/(app)/cfr/CLAUDE.md`                     |
 | auth           | `src/app/(auth)/CLAUDE.md` (creado)               |
@@ -78,7 +78,7 @@ src/
     ├── api/                  # cliente openapi-fetch, schema.d.ts generado, errores
     ├── auth/                 # cookies, safeNext, token
     ├── actions/              # FormState + useActionForm (forms sin reset tras la action)
-    └── dal/                  # acceso a datos server-only (session, cycles, teams, users)
+    └── dal/                  # acceso a datos server-only (session, cycles, teams, users, objectives)
 test/      # setup y mocks de Vitest
 e2e/       # specs de Playwright
 ```

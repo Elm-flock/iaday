@@ -15,20 +15,21 @@ describe('AppNav', () => {
 
     expect(screen.getByRole('link', { name: 'Inicio' })).toHaveAttribute('aria-current', 'page');
 
-    const objetivos = screen.getByText('Objetivos').closest('[aria-disabled="true"]');
-    expect(objetivos).toBeInTheDocument();
-    expect(objetivos).toHaveAccessibleDescription(/todavía no está disponible/i);
-    for (const label of ['Check-ins', 'Feedback', 'Reconocimientos']) {
+    const checkIns = screen.getByText('Check-ins').closest('[aria-disabled="true"]');
+    expect(checkIns).toBeInTheDocument();
+    expect(checkIns).toHaveAccessibleDescription(/todavía no está disponible/i);
+    for (const label of ['Feedback', 'Reconocimientos']) {
       expect(screen.getByText(label).closest('[aria-disabled="true"]')).toBeInTheDocument();
     }
   });
 
-  it('habilita Equipos y Ciclos', () => {
+  it('habilita Objetivos, Equipos y Ciclos', () => {
     render(
       <AppShell sidebar={<AppNav role="MEMBER" />} header={<div />}>
         x
       </AppShell>,
     );
+    expect(screen.getByRole('link', { name: 'Objetivos' })).toHaveAttribute('href', '/objetivos');
     expect(screen.getByRole('link', { name: 'Equipos' })).toHaveAttribute('href', '/equipos');
     expect(screen.getByRole('link', { name: 'Ciclos' })).toHaveAttribute('href', '/ciclos');
   });
