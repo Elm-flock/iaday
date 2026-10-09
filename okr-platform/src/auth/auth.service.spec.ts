@@ -168,14 +168,36 @@ describe('AuthService', () => {
       });
     });
 
-    it('REUSED sobre una familia ya revocada (count 0): 401 sin auditar de nuevo', async () => {
+    it('REUSED sobre una familia ya revocada (count 0): 401 y evento REFRESH_REVOKED_USED (no REUSE_DETECTED)', async () => {
       prisma.refreshToken.findUnique.mockResolvedValue(
         rec({ revokedAt: new Date(Date.now() - 5000) }),
       );
       prisma.refreshToken.updateMany.mockResolvedValue({ count: 0 });
 
       await expect(svc.refresh('x')).rejects.toBeInstanceOf(UnauthorizedException);
-      expect(prisma.auditLog.create).not.toHaveBeenCalled();
+      expect(prisma.auditLog.create).toHaveBeenCalledTimes(1);
+      expect(prisma.auditLog.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          action: 'REFRESH_REVOKED_USED',
+          entityType: 'User',
+          entityId: 'u1',
+          actorId: 'u1',
+          after: { familyId: 'f1' },
+        }),
+      });
+    });
+
+    it('primera detección (count > 0): solo REFRESH_REUSE_DETECTED, sin duplicar con REVOKED_USED', async () => {
+      prisma.refreshToken.findUnique.mockResolvedValue(
+        rec({ replacedAt: new Date(Date.now() - 60_000) }),
+      );
+      prisma.refreshToken.updateMany.mockResolvedValue({ count: 1 });
+
+      await expect(svc.refresh('x')).rejects.toBeInstanceOf(UnauthorizedException);
+      expect(prisma.auditLog.create).toHaveBeenCalledTimes(1);
+      expect(prisma.auditLog.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({ action: 'REFRESH_REUSE_DETECTED' }),
+      });
     });
 
     it('usuario desactivado: 401 y revoca la familia', async () => {

@@ -142,12 +142,13 @@ export class AuthService {
   private revokeFamilyWithAudit(familyId: string, userId: string, now: Date): Promise<unknown> {
     return this.prisma.$transaction(async (tx) => {
       const { count } = await this.revokeFamily(tx, familyId, now);
-      // Solo se audita la primera detección: re-presentar un token de una familia ya revocada no suma ruido.
-      if (count === 0) return;
+      // count > 0: primera detección (esta request revocó la familia). count === 0: la familia ya
+      // estaba revocada (logout o reuso previo) y se está re-presentando un token -> evento aparte,
+      // sin duplicar REFRESH_REUSE_DETECTED.
       await tx.auditLog.create({
         data: {
           actorId: userId,
-          action: 'REFRESH_REUSE_DETECTED',
+          action: count > 0 ? 'REFRESH_REUSE_DETECTED' : 'REFRESH_REVOKED_USED',
           entityType: 'User',
           entityId: userId,
           after: { familyId },

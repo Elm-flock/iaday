@@ -44,9 +44,22 @@ export function serializeOpenApi(document: object): string {
   return JSON.stringify(sortKeys(document), null, 2) + '\n';
 }
 
+/**
+ * Aplica la config de prettier del repo al texto emitido: así el archivo que se escribe es
+ * idéntico al que dejaría lint-staged y la re-emisión no genera diffs de formato.
+ * Import dinámico: solo lo usa el script (en jest el import dinámico de prettier no funciona).
+ */
+async function formatWithPrettier(text: string): Promise<string> {
+  const prettier = await import('prettier');
+  const config = (await prettier.resolveConfig(OPENAPI_PATH)) ?? {};
+  return prettier.format(text, { ...config, filepath: OPENAPI_PATH });
+}
+
 if (require.main === module) {
-  void buildOpenApiDocument().then((doc) => {
-    writeFileSync(OPENAPI_PATH, serializeOpenApi(doc), 'utf8');
-    console.log(`openapi.json emitido en ${OPENAPI_PATH}`);
-  });
+  void buildOpenApiDocument()
+    .then((doc) => formatWithPrettier(serializeOpenApi(doc)))
+    .then((text) => {
+      writeFileSync(OPENAPI_PATH, text, 'utf8');
+      console.log(`openapi.json emitido en ${OPENAPI_PATH}`);
+    });
 }

@@ -193,6 +193,19 @@ describe('Auth (e2e)', () => {
       await refresh(session.refreshToken).expect(401);
       await http().post('/auth/logout').send({ refreshToken: 'desconocido' }).expect(204);
     });
+
+    it('replay de un refresh tras logout -> 401 y AuditLog REFRESH_REVOKED_USED (sin REUSE_DETECTED)', async () => {
+      const { user, session } = await loginOk();
+      await http().post('/auth/logout').send({ refreshToken: session.refreshToken }).expect(204);
+
+      await refresh(session.refreshToken).expect(401);
+      await refresh(session.refreshToken).expect(401);
+
+      const used = await prisma.auditLog.findMany({ where: { action: 'REFRESH_REVOKED_USED' } });
+      expect(used).toHaveLength(2);
+      expect(used[0]).toMatchObject({ actorId: user.id, entityType: 'User', entityId: user.id });
+      expect(await prisma.auditLog.count({ where: { action: 'REFRESH_REUSE_DETECTED' } })).toBe(0);
+    });
   });
 
   describe('GET /auth/me', () => {
