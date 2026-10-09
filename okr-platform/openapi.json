@@ -46,6 +46,85 @@
         "required": ["id", "name", "email", "role"],
         "type": "object"
       },
+      "CheckInDto": {
+        "properties": {
+          "action": {
+            "enum": ["CONTINUE", "UPDATE", "START", "STOP"],
+            "type": "string"
+          },
+          "authorId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "band": {
+            "description": "Banda al momento del check-in (snapshot)",
+            "enum": ["RED", "YELLOW", "GREEN"],
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "keyResultId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "note": {
+            "nullable": true,
+            "type": "string"
+          },
+          "score": {
+            "description": "Score 0..1 al momento del check-in (snapshot inmutable)",
+            "type": "number"
+          },
+          "value": {
+            "description": "Decimal como string (snapshot)",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "keyResultId",
+          "authorId",
+          "value",
+          "score",
+          "band",
+          "action",
+          "note",
+          "createdAt"
+        ],
+        "type": "object"
+      },
+      "CreateCheckInDto": {
+        "properties": {
+          "action": {
+            "description": "Exactamente una acción",
+            "enum": ["CONTINUE", "UPDATE", "START", "STOP"],
+            "type": "string"
+          },
+          "manualScore": {
+            "description": "Score 0..1 en pasos de 0.1. Obligatorio en KR binario (MANUAL).",
+            "example": 0.7,
+            "type": "number"
+          },
+          "note": {
+            "maxLength": 2000,
+            "type": "string"
+          },
+          "value": {
+            "description": "Nuevo valor actual (decimal como string). Obligatorio en KR numérico (DERIVED).",
+            "example": "50",
+            "type": "string"
+          }
+        },
+        "required": ["action"],
+        "type": "object"
+      },
       "CreateCycleDto": {
         "properties": {
           "aspirationalThreshold": {
@@ -600,6 +679,49 @@
         "required": ["topDown", "bottomUp", "bottomUpRatio", "warning"],
         "type": "object"
       },
+      "PendingCheckInDto": {
+        "properties": {
+          "cadence": {
+            "description": "Cadencia del ciclo",
+            "enum": ["WEEKLY", "BIWEEKLY", "MONTHLY"],
+            "type": "string"
+          },
+          "keyResultId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "keyResultTitle": {
+            "type": "string"
+          },
+          "lastCheckInAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "objectiveId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "objectiveTitle": {
+            "type": "string"
+          },
+          "referenceAt": {
+            "description": "Referencia del vencimiento: último check-in o, si no hay, la publicación",
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "keyResultId",
+          "keyResultTitle",
+          "objectiveId",
+          "objectiveTitle",
+          "cadence",
+          "lastCheckInAt",
+          "referenceAt"
+        ],
+        "type": "object"
+      },
       "RefreshDto": {
         "properties": {
           "refreshToken": {
@@ -997,6 +1119,34 @@
         "tags": ["auth"]
       }
     },
+    "/check-ins/pending": {
+      "get": {
+        "operationId": "CheckInsController_pending",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PendingCheckInDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Mis KRs vencidos: pasó más que la cadencia del ciclo desde el último check-in (o la publicación). Solo indicador, sin notificaciones.",
+        "tags": ["check-ins"]
+      }
+    },
     "/cycles": {
       "get": {
         "operationId": "CyclesController_list",
@@ -1350,6 +1500,100 @@
         ],
         "summary": "Edita un KR. Tras publicar, cambiar start/target solo lo hacen ADMIN o líderes (owner team / equipo del owner) y se audita como KR_TARGET_CHANGED.",
         "tags": ["key-results"]
+      }
+    },
+    "/key-results/{id}/check-ins": {
+      "get": {
+        "operationId": "CheckInsController_history",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CheckInDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "KR inexistente u objetivo DRAFT no visible"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Historial de check-ins del KR, del más nuevo al más viejo",
+        "tags": ["check-ins"]
+      },
+      "post": {
+        "operationId": "CheckInsController_create",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCheckInDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckInDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Acción inválida o valor/score incoherente con el tipo de KR"
+          },
+          "403": {
+            "description": "No sos responsable ni del equipo owner"
+          },
+          "404": {
+            "description": "KR inexistente u objetivo DRAFT no visible"
+          },
+          "409": {
+            "description": "Objetivo DRAFT/CLOSED o ciclo cerrado"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Registra un check-in del KR (responsable del KR, dueño del objetivo, miembros del equipo owner o su líder; sin bypass de ADMIN). Guarda snapshot de score y banda, recalcula KR y objetivo y audita KR_SCORE_CHANGED.",
+        "tags": ["check-ins"]
       }
     },
     "/objectives": {

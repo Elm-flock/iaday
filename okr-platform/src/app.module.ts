@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './auth/auth.module';
+import { CheckInsModule } from './check-ins/check-ins.module';
 import { CyclesModule } from './cycles/cycles.module';
 import { OkrsModule } from './okrs/okrs.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -24,6 +25,7 @@ import { UsersModule } from './users/users.module';
     TeamsModule,
     CyclesModule,
     OkrsModule,
+    CheckInsModule,
   ],
   controllers: [HealthController],
   providers: [

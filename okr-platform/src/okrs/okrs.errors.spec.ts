@@ -10,11 +10,18 @@ describe('okrDomainError (convención de códigos HTTP)', () => {
     'INVALID_KR_RANGE',
     'KR_VALUES_REQUIRED',
     'KR_VALUES_NOT_ALLOWED',
+    'CHECKIN_VALUE_REQUIRED',
+    'CHECKIN_VALUE_NOT_ALLOWED',
+    'CHECKIN_MANUAL_SCORE_REQUIRED',
+    'CHECKIN_MANUAL_SCORE_NOT_ALLOWED',
   ])('%s -> 400', (code) => expect(status(code)).toBe(400));
-  it.each(['OBJECTIVE_CLOSED', 'OBJECTIVE_FIELD_LOCKED', 'OBJECTIVE_NOT_DRAFT', 'CYCLE_CLOSED'])(
-    '%s -> 409',
-    (code) => expect(status(code)).toBe(409),
-  );
+  it.each([
+    'OBJECTIVE_CLOSED',
+    'OBJECTIVE_FIELD_LOCKED',
+    'OBJECTIVE_NOT_DRAFT',
+    'OBJECTIVE_NOT_PUBLISHED',
+    'CYCLE_CLOSED',
+  ])('%s -> 409', (code) => expect(status(code)).toBe(409));
   it.each([
     'OBJECTIVE_LIMIT_EXCEEDED',
     'KR_LIMIT_EXCEEDED',
