@@ -4,24 +4,24 @@
 
 ## Sub-Agentes por Módulo
 
-Cada módulo/feature tendrá su propio `CLAUDE.md` en `src/app/<módulo>/CLAUDE.md` (rutas, componentes, hooks, dependencias).
+Cada módulo/feature tendrá su propio `CLAUDE.md` en `src/app/(app)/<módulo>/CLAUDE.md` (rutas, componentes, hooks, dependencias).
 
 **Cuándo usar un sub-agente:** si la tarea involucra principalmente un módulo, delegala a un sub-agente `general-purpose` con este prompt base:
 
 ```
-Leé primero `src/app/<módulo>/CLAUDE.md` para entender el contexto del módulo.
+Leé primero `src/app/(app)/<módulo>/CLAUDE.md` para entender el contexto del módulo.
 Luego realizá la siguiente tarea: <descripción>
-Al terminar, actualizá `src/app/<módulo>/CLAUDE.md` para reflejar los cambios.
+Al terminar, actualizá `src/app/(app)/<módulo>/CLAUDE.md` para reflejar los cambios.
 ```
 
 **Módulos planificados** (se crean durante el SDD; actualizar esta tabla al crearlos):
 
-| Módulo    | Ruta                          |
-| --------- | ----------------------------- |
-| okrs      | `src/app/okrs/CLAUDE.md`      |
-| check-ins | `src/app/check-ins/CLAUDE.md` |
-| cfr       | `src/app/cfr/CLAUDE.md`       |
-| auth      | `src/app/(auth)/CLAUDE.md`    |
+| Módulo    | Ruta                                |
+| --------- | ----------------------------------- |
+| okrs      | `src/app/(app)/okrs/CLAUDE.md`      |
+| check-ins | `src/app/(app)/check-ins/CLAUDE.md` |
+| cfr       | `src/app/(app)/cfr/CLAUDE.md`       |
+| auth      | `src/app/(auth)/CLAUDE.md`          |
 
 ---
 
@@ -56,6 +56,8 @@ src/
     ├── layout.tsx
     ├── page.tsx
     └── globals.css
+test/      # setup y mocks de Vitest
+e2e/       # specs de Playwright
 ```
 
 ## Comandos Principales
@@ -65,11 +67,19 @@ npm run dev        # next dev
 npm run lint       # eslint
 npm run typecheck  # tsc --noEmit
 npm run format     # prettier --write .
+npm test           # vitest run (unit/componentes)
+npm run test:watch # vitest en watch
+npm run test:e2e   # playwright test (levanta next dev en :3001)
 ```
 
 ## Testing
 
-Sin test runner todavía. Propuesto: Vitest + React Testing Library (componentes, hooks, `src/lib`) y Playwright para e2e.
+Dos capas con responsabilidades separadas:
+
+- **Vitest + React Testing Library** (`npm test`): unit/componentes/hooks y `src/lib` (DAL, helpers, spec del PDF). Tests junto al código: `*.test.ts(x)` en `src/`. Entorno jsdom, setup en `test/setup.ts`, config en `vitest.config.mts`. No soporta Server Components `async`: esos se cubren con E2E.
+- **Playwright** (`npm run test:e2e`): flujos E2E en `e2e/*.spec.ts`. `playwright.config.ts` levanta `next dev` en el puerto **3001** (el back usa 3000 y su `FRONT_ORIGIN` es `http://localhost:3001`). Requiere `npx playwright install chromium` la primera vez.
+- Vitest solo incluye `src/**` y `test/**`; Playwright solo `e2e/**`. No mezclar.
+- Mocks de Vitest en `test/mocks/`: `server-only` (no-op) y `next/headers` (stub con `__setCookies`/`__setHeaders`), aliasados en `vitest.config.mts`.
 
 ## Reglas de Negocio Importantes
 
