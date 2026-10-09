@@ -12,5 +12,17 @@ services:
     ports:
       - "5432:5432"
 
+  # Base efímera para tests e2e (datos en RAM, puerto 5433)
+  db-test:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: okr-platform-test
+    tmpfs:
+      - /var/lib/postgresql/data
+    ports:
+      - "${DB_TEST_PORT:-5433}:5432"
+
 volumes:
   db-data:
