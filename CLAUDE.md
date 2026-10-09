@@ -16,15 +16,16 @@ Al terminar, actualizá `src/app/(app)/<módulo>/CLAUDE.md` para reflejar los ca
 
 **Módulos planificados** (se crean durante el SDD; actualizar esta tabla al crearlos):
 
-| Módulo         | Ruta                                              |
-| -------------- | ------------------------------------------------- |
-| objetivos      | `src/app/(app)/objetivos/CLAUDE.md` (creado)      |
-| check-ins      | `src/app/(app)/check-ins/CLAUDE.md` (creado)      |
-| cfr            | `src/app/(app)/cfr/CLAUDE.md`                     |
-| auth           | `src/app/(auth)/CLAUDE.md` (creado)               |
-| ciclos         | `src/app/(app)/ciclos/CLAUDE.md` (creado)         |
-| equipos        | `src/app/(app)/equipos/CLAUDE.md` (creado)        |
-| admin/usuarios | `src/app/(app)/admin/usuarios/CLAUDE.md` (creado) |
+| Módulo          | Ruta                                               |
+| --------------- | -------------------------------------------------- |
+| objetivos       | `src/app/(app)/objetivos/CLAUDE.md` (creado)       |
+| check-ins       | `src/app/(app)/check-ins/CLAUDE.md` (creado)       |
+| feedback        | `src/app/(app)/feedback/CLAUDE.md` (creado)        |
+| reconocimientos | `src/app/(app)/reconocimientos/CLAUDE.md` (creado) |
+| auth            | `src/app/(auth)/CLAUDE.md` (creado)                |
+| ciclos          | `src/app/(app)/ciclos/CLAUDE.md` (creado)          |
+| equipos         | `src/app/(app)/equipos/CLAUDE.md` (creado)         |
+| admin/usuarios  | `src/app/(app)/admin/usuarios/CLAUDE.md` (creado)  |
 
 ---
 
@@ -78,7 +79,7 @@ src/
     ├── api/                  # cliente openapi-fetch, schema.d.ts generado, errores
     ├── auth/                 # cookies, safeNext, token
     ├── actions/              # FormState + useActionForm (forms sin reset tras la action)
-    └── dal/                  # acceso a datos server-only (session, cycles, teams, users, objectives, check-ins)
+    └── dal/                  # acceso a datos server-only (session, cycles, teams, users, objectives, check-ins, recognitions; feedback SIN cache)
 test/      # setup y mocks de Vitest
 e2e/       # specs de Playwright
 ```

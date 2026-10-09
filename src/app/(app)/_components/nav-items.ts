@@ -20,9 +20,6 @@ export type NavItem = {
   adminOnly?: boolean;
 };
 
-const soon = (module: string) =>
-  `${module} todavía no está disponible. Lo vamos a habilitar pronto.`;
-
 export const ADMIN_ONLY_REASON = 'Solo administración puede gestionar usuarios.';
 
 export const NAV_ITEMS: NavItem[] = [
@@ -31,17 +28,7 @@ export const NAV_ITEMS: NavItem[] = [
   { href: '/check-ins', label: 'Check-ins', icon: RefreshCw },
   { href: '/equipos', label: 'Equipos', icon: Users },
   { href: '/ciclos', label: 'Ciclos', icon: CalendarRange },
-  {
-    href: '/cfr/feedback',
-    label: 'Feedback',
-    icon: MessageSquare,
-    unavailableReason: soon('Feedback'),
-  },
-  {
-    href: '/cfr/recognitions',
-    label: 'Reconocimientos',
-    icon: Award,
-    unavailableReason: soon('Reconocimientos'),
-  },
+  { href: '/feedback', label: 'Feedback', icon: MessageSquare },
+  { href: '/reconocimientos', label: 'Reconocimientos', icon: Award },
   { href: '/admin/usuarios', label: 'Usuarios', icon: Shield, adminOnly: true },
 ];

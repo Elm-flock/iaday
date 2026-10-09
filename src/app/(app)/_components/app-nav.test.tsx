@@ -6,7 +6,7 @@ import { AppShell } from '@/components/ui/app-shell';
 vi.mock('next/navigation', () => ({ usePathname: () => '/' }));
 
 describe('AppNav', () => {
-  it('marca Inicio como actual y explica por qué los módulos futuros están deshabilitados', () => {
+  it('marca Inicio como actual y habilita Check-ins, Feedback y Reconocimientos', () => {
     render(
       <AppShell sidebar={<AppNav />} header={<div />}>
         x
@@ -16,9 +16,11 @@ describe('AppNav', () => {
     expect(screen.getByRole('link', { name: 'Inicio' })).toHaveAttribute('aria-current', 'page');
 
     expect(screen.getByRole('link', { name: 'Check-ins' })).toHaveAttribute('href', '/check-ins');
-    for (const label of ['Feedback', 'Reconocimientos']) {
-      expect(screen.getByText(label).closest('[aria-disabled="true"]')).toBeInTheDocument();
-    }
+    expect(screen.getByRole('link', { name: 'Feedback' })).toHaveAttribute('href', '/feedback');
+    expect(screen.getByRole('link', { name: 'Reconocimientos' })).toHaveAttribute(
+      'href',
+      '/reconocimientos',
+    );
   });
 
   it('habilita Objetivos, Equipos y Ciclos', () => {

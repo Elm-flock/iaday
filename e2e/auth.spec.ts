@@ -138,7 +138,7 @@ test.describe('autenticación', () => {
 });
 
 test.describe('shell de la app', () => {
-  test('el tooltip del botón de menú no se recorta en el borde izquierdo y los módulos futuros explican por qué están deshabilitados', async ({
+  test('el tooltip del botón de menú no se recorta en el borde izquierdo y Feedback y Reconocimientos están habilitados', async ({
     page,
   }) => {
     await login(page);
@@ -151,10 +151,11 @@ test.describe('shell de la app', () => {
     const box = await tooltip.boundingBox();
     expect(box!.x).toBeGreaterThanOrEqual(0);
 
-    const feedback = page
-      .getByText('Feedback', { exact: true })
-      .locator('xpath=ancestor::*[@aria-disabled="true"][1]');
-    await expect(feedback).toHaveAttribute('title', /todavía no está disponible/);
+    await expect(page.getByRole('link', { name: 'Feedback' })).toHaveAttribute('href', '/feedback');
+    await expect(page.getByRole('link', { name: 'Reconocimientos' })).toHaveAttribute(
+      'href',
+      '/reconocimientos',
+    );
     await expect(page.getByRole('link', { name: 'Inicio' })).toHaveAttribute(
       'aria-current',
       'page',
