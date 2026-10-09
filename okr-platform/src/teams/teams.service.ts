@@ -52,9 +52,15 @@ export class TeamsService {
         select: { id: true },
       });
       if (!cycle) throw new NotFoundException('Ciclo no encontrado');
-      // Indicador del equipo: sus objetivos propios (ownerTeamId) en el ciclo. Es blando, nunca bloquea.
+      // Indicador del equipo (blando, nunca bloquea): objetivos propios del equipo MÁS los
+      // individuales de sus miembros directos en el ciclo (ronda 5). Una sola consulta con OR:
+      // cada objetivo se cuenta una vez aunque el usuario esté en varios equipos del árbol.
+      // Los subequipos (y sus miembros) no se agregan: cada equipo tiene su propio indicador.
       const objectives = await this.prisma.objective.findMany({
-        where: { cycleId, ownerTeamId: id },
+        where: {
+          cycleId,
+          OR: [{ ownerTeamId: id }, { ownerUser: { memberships: { some: { teamId: id } } } }],
+        },
         select: { origin: true },
       });
       mix = originMix(objectives);

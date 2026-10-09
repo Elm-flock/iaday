@@ -22,8 +22,10 @@ export class TeamMemberDto {
 }
 
 export class OriginMixDto {
-  @ApiProperty({ description: 'Objetivos TOP_DOWN del equipo en el ciclo' }) topDown!: number;
-  @ApiProperty({ description: 'Objetivos BOTTOM_UP del equipo en el ciclo' }) bottomUp!: number;
+  @ApiProperty({ description: 'Objetivos TOP_DOWN (del equipo + de sus miembros) en el ciclo' })
+  topDown!: number;
+  @ApiProperty({ description: 'Objetivos BOTTOM_UP (del equipo + de sus miembros) en el ciclo' })
+  bottomUp!: number;
   @ApiProperty({
     type: Number,
     nullable: true,
@@ -42,7 +44,7 @@ export class TeamDetailDto extends TeamDto {
     type: OriginMixDto,
     nullable: true,
     description:
-      'Indicador 50/50 de los objetivos propios del equipo; null si no se indica cycleId',
+      'Indicador 50/50: objetivos propios del equipo + individuales de sus miembros directos en el ciclo; null si no se indica cycleId',
   })
   originMix!: OriginMixDto | null;
 }

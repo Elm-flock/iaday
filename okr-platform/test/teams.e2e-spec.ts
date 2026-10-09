@@ -194,6 +194,109 @@ describe('Teams (e2e)', () => {
       });
     });
 
+    describe('originMix incluye objetivos individuales de los miembros (decisión ronda 5)', () => {
+      const addMember = (userId: string, teamId: string) =>
+        prisma.teamMember.create({ data: { userId, teamId } });
+
+      it('cuenta objetivos propios del equipo MÁS los individuales de sus miembros en el ciclo', async () => {
+        const { auth, user } = await as('MEMBER');
+        const team = await createTeam(prisma);
+        const cycle = await createCycle(prisma);
+        const ana = await createUser(prisma);
+        const beto = await createUser(prisma);
+        await addMember(ana.id, team.id);
+        await addMember(beto.id, team.id);
+        const base = { cycleId: cycle.id, createdById: user.id };
+        await createObjective(prisma, { ...base, ownerTeamId: team.id, origin: 'TOP_DOWN' });
+        await createObjective(prisma, { ...base, ownerUserId: ana.id, origin: 'BOTTOM_UP' });
+        await createObjective(prisma, { ...base, ownerUserId: ana.id, origin: 'BOTTOM_UP' });
+        await createObjective(prisma, { ...base, ownerUserId: beto.id, origin: 'TOP_DOWN' });
+
+        const res = await http()
+          .get(`/teams/${team.id}?cycleId=${cycle.id}`)
+          .set('Authorization', auth)
+          .expect(200);
+        expect(res.body.originMix).toEqual({
+          topDown: 2,
+          bottomUp: 2,
+          bottomUpRatio: 0.5,
+          warning: false,
+        });
+      });
+
+      it('un objetivo individual de un miembro BOTTOM_UP evita el falso warning del equipo', async () => {
+        const { auth, user } = await as('MEMBER');
+        const team = await createTeam(prisma);
+        const cycle = await createCycle(prisma);
+        const ana = await createUser(prisma);
+        await addMember(ana.id, team.id);
+        // Solo con el objetivo del equipo (100% TOP_DOWN) habría warning; con el individual, 50%.
+        await createObjective(prisma, {
+          cycleId: cycle.id,
+          createdById: user.id,
+          ownerTeamId: team.id,
+          origin: 'TOP_DOWN',
+        });
+        await createObjective(prisma, {
+          cycleId: cycle.id,
+          createdById: user.id,
+          ownerUserId: ana.id,
+          origin: 'BOTTOM_UP',
+        });
+        const res = await http()
+          .get(`/teams/${team.id}?cycleId=${cycle.id}`)
+          .set('Authorization', auth)
+          .expect(200);
+        expect(res.body.originMix).toMatchObject({ topDown: 1, bottomUp: 1, warning: false });
+      });
+
+      it('no cuenta individuales de no miembros, de otro ciclo, ni de miembros solo de subequipos', async () => {
+        const { auth, user } = await as('MEMBER');
+        const team = await createTeam(prisma);
+        const child = await createTeam(prisma, { name: 'Hijo', parentId: team.id });
+        const cycle = await createCycle(prisma);
+        const cycle2 = await createCycle(prisma);
+        const ana = await createUser(prisma);
+        const outsider = await createUser(prisma);
+        const childOnly = await createUser(prisma);
+        await addMember(ana.id, team.id);
+        await addMember(childOnly.id, child.id);
+        const base = { createdById: user.id, origin: 'BOTTOM_UP' as const };
+        await createObjective(prisma, { ...base, cycleId: cycle.id, ownerUserId: ana.id });
+        await createObjective(prisma, { ...base, cycleId: cycle2.id, ownerUserId: ana.id });
+        await createObjective(prisma, { ...base, cycleId: cycle.id, ownerUserId: outsider.id });
+        await createObjective(prisma, { ...base, cycleId: cycle.id, ownerUserId: childOnly.id });
+        const res = await http()
+          .get(`/teams/${team.id}?cycleId=${cycle.id}`)
+          .set('Authorization', auth)
+          .expect(200);
+        expect(res.body.originMix).toMatchObject({ topDown: 0, bottomUp: 1 });
+      });
+
+      it('un usuario en varios equipos del árbol cuenta una sola vez por equipo consultado', async () => {
+        const { auth, user } = await as('MEMBER');
+        const parent = await createTeam(prisma);
+        const child = await createTeam(prisma, { name: 'Hijo', parentId: parent.id });
+        const cycle = await createCycle(prisma);
+        const ana = await createUser(prisma);
+        await addMember(ana.id, parent.id);
+        await addMember(ana.id, child.id);
+        await createObjective(prisma, {
+          cycleId: cycle.id,
+          createdById: user.id,
+          ownerUserId: ana.id,
+          origin: 'BOTTOM_UP',
+        });
+        for (const team of [parent, child]) {
+          const res = await http()
+            .get(`/teams/${team.id}?cycleId=${cycle.id}`)
+            .set('Authorization', auth)
+            .expect(200);
+          expect(res.body.originMix).toMatchObject({ topDown: 0, bottomUp: 1 });
+        }
+      });
+    });
+
     it('equipo o ciclo inexistente -> 404; ids inválidos -> 400', async () => {
       const { auth } = await as('MEMBER');
       const team = await createTeam(prisma);

@@ -330,7 +330,7 @@
       "OriginMixDto": {
         "properties": {
           "bottomUp": {
-            "description": "Objetivos BOTTOM_UP del equipo en el ciclo",
+            "description": "Objetivos BOTTOM_UP (del equipo + de sus miembros) en el ciclo",
             "type": "number"
           },
           "bottomUpRatio": {
@@ -339,7 +339,7 @@
             "type": "number"
           },
           "topDown": {
-            "description": "Objetivos TOP_DOWN del equipo en el ciclo",
+            "description": "Objetivos TOP_DOWN (del equipo + de sus miembros) en el ciclo",
             "type": "number"
           },
           "warning": {
@@ -401,7 +401,7 @@
                 "$ref": "#/components/schemas/OriginMixDto"
               }
             ],
-            "description": "Indicador 50/50 de los objetivos propios del equipo; null si no se indica cycleId",
+            "description": "Indicador 50/50: objetivos propios del equipo + individuales de sus miembros directos en el ciclo; null si no se indica cycleId",
             "nullable": true,
             "type": "object"
           },
