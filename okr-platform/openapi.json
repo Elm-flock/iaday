@@ -46,6 +46,50 @@
         "required": ["id", "name", "email", "role"],
         "type": "object"
       },
+      "CreateCycleDto": {
+        "properties": {
+          "aspirationalThreshold": {
+            "default": 0.7,
+            "maximum": 1,
+            "minimum": 0.01,
+            "type": "number"
+          },
+          "checkInCadence": {
+            "default": "WEEKLY",
+            "enum": ["WEEKLY", "BIWEEKLY", "MONTHLY"],
+            "type": "string"
+          },
+          "committedThreshold": {
+            "default": 1,
+            "maximum": 1,
+            "minimum": 0.01,
+            "type": "number"
+          },
+          "endDate": {
+            "example": "2026-12-31",
+            "type": "string"
+          },
+          "kind": {
+            "enum": ["ANNUAL", "QUARTER"],
+            "type": "string"
+          },
+          "name": {
+            "example": "OKR 2026",
+            "type": "string"
+          },
+          "parentId": {
+            "description": "ANNUAL padre (solo para QUARTER)",
+            "format": "uuid",
+            "type": "string"
+          },
+          "startDate": {
+            "example": "2026-01-01",
+            "type": "string"
+          }
+        },
+        "required": ["name", "kind", "startDate", "endDate"],
+        "type": "object"
+      },
       "CreateTeamDto": {
         "properties": {
           "name": {
@@ -85,6 +129,146 @@
           }
         },
         "required": ["email", "name", "password"],
+        "type": "object"
+      },
+      "CycleCloseDto": {
+        "properties": {
+          "achievedObjectives": {
+            "description": "De los cerrados, cuántos alcanzaron el umbral del ciclo",
+            "type": "number"
+          },
+          "aspirationalThreshold": {
+            "description": "Umbral de logro de objetivos ASPIRATIONAL, en (0, 1]",
+            "type": "number"
+          },
+          "checkInCadence": {
+            "enum": ["WEEKLY", "BIWEEKLY", "MONTHLY"],
+            "type": "string"
+          },
+          "closedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "closedObjectives": {
+            "description": "Objetivos PUBLISHED que se cerraron con finalScore/achieved",
+            "type": "number"
+          },
+          "committedThreshold": {
+            "description": "Umbral de logro de objetivos COMMITTED, en (0, 1]",
+            "type": "number"
+          },
+          "endDate": {
+            "description": "Fecha (YYYY-MM-DD)",
+            "example": "2026-12-31",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "kind": {
+            "enum": ["ANNUAL", "QUARTER"],
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parentId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "startDate": {
+            "description": "Fecha (YYYY-MM-DD)",
+            "example": "2026-01-01",
+            "type": "string"
+          },
+          "status": {
+            "enum": ["DRAFT", "ACTIVE", "CLOSED"],
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "parentId",
+          "startDate",
+          "endDate",
+          "status",
+          "checkInCadence",
+          "committedThreshold",
+          "aspirationalThreshold",
+          "closedAt",
+          "closedObjectives",
+          "achievedObjectives"
+        ],
+        "type": "object"
+      },
+      "CycleDto": {
+        "properties": {
+          "aspirationalThreshold": {
+            "description": "Umbral de logro de objetivos ASPIRATIONAL, en (0, 1]",
+            "type": "number"
+          },
+          "checkInCadence": {
+            "enum": ["WEEKLY", "BIWEEKLY", "MONTHLY"],
+            "type": "string"
+          },
+          "closedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "committedThreshold": {
+            "description": "Umbral de logro de objetivos COMMITTED, en (0, 1]",
+            "type": "number"
+          },
+          "endDate": {
+            "description": "Fecha (YYYY-MM-DD)",
+            "example": "2026-12-31",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "kind": {
+            "enum": ["ANNUAL", "QUARTER"],
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parentId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "startDate": {
+            "description": "Fecha (YYYY-MM-DD)",
+            "example": "2026-01-01",
+            "type": "string"
+          },
+          "status": {
+            "enum": ["DRAFT", "ACTIVE", "CLOSED"],
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "parentId",
+          "startDate",
+          "endDate",
+          "status",
+          "checkInCadence",
+          "committedThreshold",
+          "aspirationalThreshold",
+          "closedAt"
+        ],
         "type": "object"
       },
       "LoginDto": {
@@ -288,6 +472,38 @@
         "required": ["id", "name", "parentId", "children"],
         "type": "object"
       },
+      "UpdateCycleDto": {
+        "properties": {
+          "aspirationalThreshold": {
+            "maximum": 1,
+            "minimum": 0.01,
+            "type": "number"
+          },
+          "checkInCadence": {
+            "enum": ["WEEKLY", "BIWEEKLY", "MONTHLY"],
+            "type": "string"
+          },
+          "committedThreshold": {
+            "maximum": 1,
+            "minimum": 0.01,
+            "type": "number"
+          },
+          "endDate": {
+            "description": "Solo en ciclos DRAFT",
+            "example": "2026-12-31",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "startDate": {
+            "description": "Solo en ciclos DRAFT",
+            "example": "2026-01-01",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "UpdateTeamDto": {
         "properties": {
           "name": {
@@ -478,6 +694,244 @@
         },
         "summary": "Rota el refresh token y emite un nuevo access token",
         "tags": ["auth"]
+      }
+    },
+    "/cycles": {
+      "get": {
+        "operationId": "CyclesController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CycleDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Lista los ciclos por fecha de inicio",
+        "tags": ["cycles"]
+      },
+      "post": {
+        "operationId": "CyclesController_create",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCycleDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CycleDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Fechas, jerarquía o umbrales inválidos (REQ-CYC-1/2)"
+          },
+          "403": {
+            "description": "Rol insuficiente"
+          },
+          "404": {
+            "description": "Ciclo padre inexistente"
+          },
+          "422": {
+            "description": "El QUARTER se solapa con un hermano"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Crea un ciclo ANNUAL o QUARTER con cadencia y umbrales (solo ADMIN)",
+        "tags": ["cycles"]
+      }
+    },
+    "/cycles/{id}": {
+      "get": {
+        "operationId": "CyclesController_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CycleDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "Ciclo inexistente"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Detalle de un ciclo",
+        "tags": ["cycles"]
+      },
+      "patch": {
+        "operationId": "CyclesController_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCycleDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CycleDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "Ciclo inexistente"
+          },
+          "409": {
+            "description": "Ciclo cerrado, o fechas en un ciclo que no es DRAFT"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Edita nombre, cadencia, umbrales (hasta el cierre) y fechas (solo DRAFT). Solo ADMIN.",
+        "tags": ["cycles"]
+      }
+    },
+    "/cycles/{id}/activate": {
+      "post": {
+        "operationId": "CyclesController_activate",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CycleDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "Ciclo inexistente"
+          },
+          "422": {
+            "description": "Transición inválida"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "DRAFT -> ACTIVE (solo ADMIN)",
+        "tags": ["cycles"]
+      }
+    },
+    "/cycles/{id}/close": {
+      "post": {
+        "operationId": "CyclesController_close",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CycleCloseDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "Ciclo inexistente"
+          },
+          "422": {
+            "description": "Transición inválida"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "ACTIVE -> CLOSED: calcula finalScore y achieved de los objetivos PUBLISHED con los umbrales vigentes y audita (solo ADMIN)",
+        "tags": ["cycles"]
       }
     },
     "/health": {
