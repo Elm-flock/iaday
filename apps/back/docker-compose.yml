@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: okr-platform
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  # Base efímera para tests e2e (datos en RAM, puerto 55433)
+  db-test:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: okr-platform-test
+    tmpfs:
+      - /var/lib/postgresql/data
+    ports:
+      - "${DB_TEST_PORT:-55433}:5432"
+
+volumes:
+  db-data:
