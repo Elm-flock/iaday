@@ -1,10 +1,12 @@
-// This is your Prisma schema file
-// https://pris.ly/d/prisma-schema
+// Schema Prisma de la plataforma OKR (Fase 1).
+// Los CHECK y el índice parcial de raíz única se agregan a mano en la migración 0001_init
+// (Prisma no los modela ni los elimina en diffs posteriores).
 
 generator client {
-  provider     = "prisma-client"
-  output       = "../generated/prisma"
-  moduleFormat = "cjs"
+  provider            = "prisma-client"
+  output              = "../generated/prisma"
+  moduleFormat        = "cjs"
+  importFileExtension = ""
 }
 
 datasource db {
@@ -12,4 +14,300 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Agregá tus modelos aquí
+enum Role {
+  ADMIN
+  LEADER
+  MEMBER
+}
+
+enum CycleKind {
+  ANNUAL
+  QUARTER
+}
+
+enum CycleStatus {
+  DRAFT
+  ACTIVE
+  CLOSED
+}
+
+enum CheckInCadence {
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+}
+
+enum ObjectiveOrigin {
+  TOP_DOWN
+  BOTTOM_UP
+}
+
+enum ObjectiveType {
+  COMMITTED
+  ASPIRATIONAL
+}
+
+enum ObjectiveStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+}
+
+enum KrScoring {
+  DERIVED
+  MANUAL
+}
+
+enum ScoreBand {
+  RED
+  YELLOW
+  GREEN
+}
+
+enum CheckInAction {
+  CONTINUE
+  UPDATE
+  START
+  STOP
+}
+
+enum AuditAction {
+  OBJECTIVE_PUBLISHED
+  OBJECTIVE_CLOSED
+  KR_TARGET_CHANGED
+  KR_SCORE_CHANGED
+  CYCLE_ACTIVATED
+  CYCLE_CLOSED
+  CYCLE_THRESHOLDS_CHANGED
+  USER_ROLE_CHANGED
+  USER_DEACTIVATED
+  REFRESH_REUSE_DETECTED
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         Role     @default(MEMBER)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  refreshTokens     RefreshToken[]
+  memberships       TeamMember[]
+  ownedObjectives   Objective[]    @relation("ObjectiveOwnerUser")
+  createdObjectives Objective[]    @relation("ObjectiveCreator")
+  ownedKeyResults   KeyResult[]
+  checkIns          CheckIn[]
+  feedbackSent      Feedback[]     @relation("FeedbackFrom")
+  feedbackReceived  Feedback[]     @relation("FeedbackTo")
+  recognitionsSent  Recognition[]  @relation("RecognitionFrom")
+  recognitionsRecv  Recognition[]  @relation("RecognitionTo")
+  auditLogs         AuditLog[]
+}
+
+model RefreshToken {
+  id              String    @id @default(uuid()) @db.Uuid
+  userId          String    @db.Uuid
+  familyId        String    @db.Uuid
+  tokenHash       String    @unique
+  expiresAt       DateTime
+  familyExpiresAt DateTime
+  revokedAt       DateTime?
+  replacedAt      DateTime?
+  createdAt       DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([familyId])
+}
+
+model Team {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  parentId  String?  @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parent     Team?        @relation("TeamTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children   Team[]       @relation("TeamTree")
+  members    TeamMember[]
+  objectives Objective[]  @relation("ObjectiveOwnerTeam")
+
+  @@unique([parentId, name])
+}
+
+model TeamMember {
+  userId    String   @db.Uuid
+  teamId    String   @db.Uuid
+  isLead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@id([userId, teamId])
+  @@index([teamId])
+}
+
+model Cycle {
+  id                    String         @id @default(uuid()) @db.Uuid
+  name                  String
+  kind                  CycleKind
+  parentId              String?        @db.Uuid
+  startDate             DateTime       @db.Date
+  endDate               DateTime       @db.Date
+  status                CycleStatus    @default(DRAFT)
+  checkInCadence        CheckInCadence @default(WEEKLY)
+  committedThreshold    Decimal        @default(1.00) @db.Decimal(3, 2)
+  aspirationalThreshold Decimal        @default(0.70) @db.Decimal(3, 2)
+  closedAt              DateTime?
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+
+  parent     Cycle?      @relation("CycleTree", fields: [parentId], references: [id])
+  children   Cycle[]     @relation("CycleTree")
+  objectives Objective[]
+
+  @@index([parentId])
+  @@index([status])
+}
+
+model Objective {
+  id                String          @id @default(uuid()) @db.Uuid
+  cycleId           String          @db.Uuid
+  ownerUserId       String?         @db.Uuid
+  ownerTeamId       String?         @db.Uuid
+  parentObjectiveId String?         @db.Uuid
+  title             String
+  description       String?
+  origin            ObjectiveOrigin
+  type              ObjectiveType
+  status            ObjectiveStatus @default(DRAFT)
+  score             Decimal         @default(0) @db.Decimal(5, 4)
+  finalScore        Decimal?        @db.Decimal(5, 4)
+  achieved          Boolean?
+  createdById       String          @db.Uuid
+  publishedAt       DateTime?
+  closedAt          DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  cycle           Cycle         @relation(fields: [cycleId], references: [id])
+  ownerUser       User?         @relation("ObjectiveOwnerUser", fields: [ownerUserId], references: [id])
+  ownerTeam       Team?         @relation("ObjectiveOwnerTeam", fields: [ownerTeamId], references: [id])
+  parentObjective Objective?    @relation("ObjectiveAlignment", fields: [parentObjectiveId], references: [id])
+  alignedChildren Objective[]   @relation("ObjectiveAlignment")
+  createdBy       User          @relation("ObjectiveCreator", fields: [createdById], references: [id])
+  keyResults      KeyResult[]
+  feedback        Feedback[]
+  recognitions    Recognition[]
+
+  @@index([cycleId, ownerUserId])
+  @@index([cycleId, ownerTeamId])
+  @@index([cycleId, status])
+  @@index([parentObjectiveId])
+}
+
+model KeyResult {
+  id            String    @id @default(uuid()) @db.Uuid
+  objectiveId   String    @db.Uuid
+  ownerId       String    @db.Uuid
+  title         String
+  scoring       KrScoring
+  unit          String?
+  startValue    Decimal?  @db.Decimal(18, 4)
+  targetValue   Decimal?  @db.Decimal(18, 4)
+  currentValue  Decimal?  @db.Decimal(18, 4)
+  score         Decimal   @default(0) @db.Decimal(5, 4)
+  position      Int
+  lastCheckInAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  objective    Objective     @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
+  owner        User          @relation(fields: [ownerId], references: [id])
+  checkIns     CheckIn[]
+  feedback     Feedback[]
+  recognitions Recognition[]
+
+  @@index([objectiveId])
+  @@index([ownerId])
+}
+
+// Inmutable: sin updatedAt.
+model CheckIn {
+  id          String        @id @default(uuid()) @db.Uuid
+  keyResultId String        @db.Uuid
+  authorId    String        @db.Uuid
+  value       Decimal?      @db.Decimal(18, 4)
+  score       Decimal       @db.Decimal(5, 4)
+  band        ScoreBand
+  action      CheckInAction
+  note        String?       @db.VarChar(2000)
+  createdAt   DateTime      @default(now())
+
+  keyResult KeyResult @relation(fields: [keyResultId], references: [id], onDelete: Cascade)
+  author    User      @relation(fields: [authorId], references: [id])
+
+  @@index([keyResultId, createdAt(sort: Desc)])
+}
+
+model Feedback {
+  id          String    @id @default(uuid()) @db.Uuid
+  fromUserId  String    @db.Uuid
+  toUserId    String    @db.Uuid
+  content     String
+  objectiveId String?   @db.Uuid
+  keyResultId String?   @db.Uuid
+  readAt      DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  fromUser  User       @relation("FeedbackFrom", fields: [fromUserId], references: [id])
+  toUser    User       @relation("FeedbackTo", fields: [toUserId], references: [id])
+  objective Objective? @relation(fields: [objectiveId], references: [id], onDelete: SetNull)
+  keyResult KeyResult? @relation(fields: [keyResultId], references: [id], onDelete: SetNull)
+
+  @@index([toUserId, createdAt])
+  @@index([fromUserId, createdAt])
+}
+
+model Recognition {
+  id                String   @id @default(uuid()) @db.Uuid
+  fromUserId        String   @db.Uuid
+  toUserId          String   @db.Uuid
+  message           String
+  objectiveId       String?  @db.Uuid
+  keyResultId       String?  @db.Uuid
+  milestoneVerified Boolean  @default(false)
+  createdAt         DateTime @default(now())
+
+  fromUser  User       @relation("RecognitionFrom", fields: [fromUserId], references: [id])
+  toUser    User       @relation("RecognitionTo", fields: [toUserId], references: [id])
+  objective Objective? @relation(fields: [objectiveId], references: [id], onDelete: SetNull)
+  keyResult KeyResult? @relation(fields: [keyResultId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([toUserId])
+}
+
+// Append-only: sin updatedAt.
+model AuditLog {
+  id         String      @id @default(uuid()) @db.Uuid
+  actorId    String?     @db.Uuid
+  action     AuditAction
+  entityType String
+  entityId   String      @db.Uuid
+  before     Json?
+  after      Json?
+  createdAt  DateTime    @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId, createdAt])
+  @@index([actorId])
+}
