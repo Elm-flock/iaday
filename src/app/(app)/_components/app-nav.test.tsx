@@ -18,8 +18,46 @@ describe('AppNav', () => {
     const objetivos = screen.getByText('Objetivos').closest('[aria-disabled="true"]');
     expect(objetivos).toBeInTheDocument();
     expect(objetivos).toHaveAccessibleDescription(/todavía no está disponible/i);
-    for (const label of ['Check-ins', 'Equipos', 'Ciclos', 'Feedback', 'Reconocimientos']) {
+    for (const label of ['Check-ins', 'Feedback', 'Reconocimientos']) {
       expect(screen.getByText(label).closest('[aria-disabled="true"]')).toBeInTheDocument();
     }
+  });
+
+  it('habilita Equipos y Ciclos', () => {
+    render(
+      <AppShell sidebar={<AppNav role="MEMBER" />} header={<div />}>
+        x
+      </AppShell>,
+    );
+    expect(screen.getByRole('link', { name: 'Equipos' })).toHaveAttribute('href', '/equipos');
+    expect(screen.getByRole('link', { name: 'Ciclos' })).toHaveAttribute('href', '/ciclos');
+  });
+
+  it('Usuarios: oculto sin rol conocido, habilitado para ADMIN y deshabilitado con explicación para el resto', () => {
+    const { rerender } = render(
+      <AppShell sidebar={<AppNav />} header={<div />}>
+        x
+      </AppShell>,
+    );
+    expect(screen.queryByText('Usuarios')).not.toBeInTheDocument();
+
+    rerender(
+      <AppShell sidebar={<AppNav role="ADMIN" />} header={<div />}>
+        x
+      </AppShell>,
+    );
+    expect(screen.getByRole('link', { name: 'Usuarios' })).toHaveAttribute(
+      'href',
+      '/admin/usuarios',
+    );
+
+    rerender(
+      <AppShell sidebar={<AppNav role="LEADER" />} header={<div />}>
+        x
+      </AppShell>,
+    );
+    const item = screen.getByText('Usuarios').closest('[aria-disabled="true"]');
+    expect(item).toBeInTheDocument();
+    expect(item).toHaveAccessibleDescription('Solo administración puede gestionar usuarios.');
   });
 });

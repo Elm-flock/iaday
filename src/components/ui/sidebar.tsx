@@ -31,6 +31,8 @@ type SidebarItemProps = {
   current?: boolean;
   /** Si está, el ítem queda deshabilitado y este texto explica por qué (visible como título y para lectores de pantalla). */
   unavailableReason?: string;
+  /** Rótulo corto junto al ítem deshabilitado (default: "Pronto"). */
+  unavailableLabel?: string;
   children: string;
 };
 
@@ -39,6 +41,7 @@ export function SidebarItem({
   icon,
   current = false,
   unavailableReason,
+  unavailableLabel = 'Pronto',
   children,
 }: SidebarItemProps) {
   const { collapsed } = useShell();
@@ -65,7 +68,7 @@ export function SidebarItem({
           <>
             <span className="truncate">{children}</span>
             <span className="ml-auto text-caption" aria-hidden="true">
-              Pronto
+              {unavailableLabel}
             </span>
           </>
         )}

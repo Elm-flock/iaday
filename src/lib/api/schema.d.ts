@@ -72,6 +72,76 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/cycles': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Lista los ciclos por fecha de inicio */
+    get: operations['CyclesController_list'];
+    put?: never;
+    /** Crea un ciclo ANNUAL o QUARTER con cadencia y umbrales (solo ADMIN) */
+    post: operations['CyclesController_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/cycles/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Detalle de un ciclo */
+    get: operations['CyclesController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** Edita nombre, cadencia, umbrales (hasta el cierre) y fechas (solo DRAFT). Solo ADMIN. */
+    patch: operations['CyclesController_update'];
+    trace?: never;
+  };
+  '/cycles/{id}/activate': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** DRAFT -> ACTIVE (solo ADMIN) */
+    post: operations['CyclesController_activate'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/cycles/{id}/close': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** ACTIVE -> CLOSED: calcula finalScore y achieved de los objetivos PUBLISHED con los umbrales vigentes y audita (solo ADMIN) */
+    post: operations['CyclesController_close'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/health': {
     parameters: {
       query?: never;
@@ -83,6 +153,112 @@ export interface paths {
     get: operations['HealthController_check'];
     put?: never;
     post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/teams': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Árbol de equipos anidado (raíz única = organización) */
+    get: operations['TeamsController_tree'];
+    put?: never;
+    /** Crea un equipo (solo ADMIN) */
+    post: operations['TeamsController_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/teams/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Detalle del equipo con miembros e indicador 50/50 (si se pasa cycleId) */
+    get: operations['TeamsController_detail'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** Renombra o mueve un equipo (solo ADMIN). Sin ciclos en el árbol. */
+    patch: operations['TeamsController_update'];
+    trace?: never;
+  };
+  '/teams/{id}/members/{userId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /** Agrega un miembro o actualiza isLead (solo ADMIN) */
+    put: operations['TeamsController_setMember'];
+    post?: never;
+    /** Quita un miembro del equipo (solo ADMIN) */
+    delete: operations['TeamsController_removeMember'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/users': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Directorio de usuarios (cualquier usuario autenticado) */
+    get: operations['UsersController_list'];
+    put?: never;
+    /** Crea un usuario (solo ADMIN; no hay auto-registro) */
+    post: operations['UsersController_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/users/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** Edita nombre, rol o estado activo (solo ADMIN) */
+    patch: operations['UsersController_update'];
+    trace?: never;
+  };
+  '/users/{id}/password': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Resetea la clave de un usuario y revoca sus sesiones (solo ADMIN) */
+    post: operations['UsersController_resetPassword'];
     delete?: never;
     options?: never;
     head?: never;
@@ -112,6 +288,117 @@ export interface components {
       /** @enum {string} */
       role: 'ADMIN' | 'LEADER' | 'MEMBER';
     };
+    CreateCycleDto: {
+      /** @default 0.7 */
+      aspirationalThreshold: number;
+      /**
+       * @default WEEKLY
+       * @enum {string}
+       */
+      checkInCadence: 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY';
+      /** @default 1 */
+      committedThreshold: number;
+      /** @example 2026-12-31 */
+      endDate: string;
+      /** @enum {string} */
+      kind: 'ANNUAL' | 'QUARTER';
+      /** @example OKR 2026 */
+      name: string;
+      /**
+       * Format: uuid
+       * @description ANNUAL padre (solo para QUARTER)
+       */
+      parentId?: string;
+      /** @example 2026-01-01 */
+      startDate: string;
+    };
+    CreateTeamDto: {
+      /** @example Plataforma */
+      name: string;
+      /**
+       * Format: uuid
+       * @description Omitir solo para la raíz (organización)
+       */
+      parentId?: string;
+    };
+    CreateUserDto: {
+      /**
+       * @description Se guarda en minúsculas
+       * @example ana@empresa.com
+       */
+      email: string;
+      /** @example Ana Pérez */
+      name: string;
+      /** @description Clave inicial (se guarda con argon2id) */
+      password: string;
+      /**
+       * @default MEMBER
+       * @enum {string}
+       */
+      role: 'ADMIN' | 'LEADER' | 'MEMBER';
+    };
+    CycleCloseDto: {
+      /** @description De los cerrados, cuántos alcanzaron el umbral del ciclo */
+      achievedObjectives: number;
+      /** @description Umbral de logro de objetivos ASPIRATIONAL, en (0, 1] */
+      aspirationalThreshold: number;
+      /** @enum {string} */
+      checkInCadence: 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY';
+      /** Format: date-time */
+      closedAt: string | null;
+      /** @description Objetivos PUBLISHED que se cerraron con finalScore/achieved */
+      closedObjectives: number;
+      /** @description Umbral de logro de objetivos COMMITTED, en (0, 1] */
+      committedThreshold: number;
+      /**
+       * @description Fecha (YYYY-MM-DD)
+       * @example 2026-12-31
+       */
+      endDate: string;
+      /** Format: uuid */
+      id: string;
+      /** @enum {string} */
+      kind: 'ANNUAL' | 'QUARTER';
+      name: string;
+      /** Format: uuid */
+      parentId: string | null;
+      /**
+       * @description Fecha (YYYY-MM-DD)
+       * @example 2026-01-01
+       */
+      startDate: string;
+      /** @enum {string} */
+      status: 'DRAFT' | 'ACTIVE' | 'CLOSED';
+    };
+    CycleDto: {
+      /** @description Umbral de logro de objetivos ASPIRATIONAL, en (0, 1] */
+      aspirationalThreshold: number;
+      /** @enum {string} */
+      checkInCadence: 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY';
+      /** Format: date-time */
+      closedAt: string | null;
+      /** @description Umbral de logro de objetivos COMMITTED, en (0, 1] */
+      committedThreshold: number;
+      /**
+       * @description Fecha (YYYY-MM-DD)
+       * @example 2026-12-31
+       */
+      endDate: string;
+      /** Format: uuid */
+      id: string;
+      /** @enum {string} */
+      kind: 'ANNUAL' | 'QUARTER';
+      name: string;
+      /** Format: uuid */
+      parentId: string | null;
+      /**
+       * @description Fecha (YYYY-MM-DD)
+       * @example 2026-01-01
+       */
+      startDate: string;
+      /** @enum {string} */
+      status: 'DRAFT' | 'ACTIVE' | 'CLOSED';
+    };
     LoginDto: {
       /** @example ana@empresa.com */
       email: string;
@@ -133,9 +420,98 @@ export interface components {
       /** Format: uuid */
       teamId: string;
     };
+    OriginMixDto: {
+      /** @description Objetivos BOTTOM_UP del equipo en el ciclo */
+      bottomUp: number;
+      /** @description bottomUp / total; null sin objetivos */
+      bottomUpRatio: number | null;
+      /** @description Objetivos TOP_DOWN del equipo en el ciclo */
+      topDown: number;
+      /** @description true si el % BOTTOM_UP queda fuera de [40%, 60%]. Indicador blando. */
+      warning: boolean;
+    };
     RefreshDto: {
       /** @description Refresh token opaco recibido en login/refresh */
       refreshToken: string;
+    };
+    ResetPasswordDto: {
+      password: string;
+    };
+    SetMemberDto: {
+      /** @default false */
+      isLead: boolean;
+    };
+    TeamDetailDto: {
+      /** Format: uuid */
+      id: string;
+      members: components['schemas']['TeamMemberDto'][];
+      name: string;
+      /** @description Indicador 50/50 de los objetivos propios del equipo; null si no se indica cycleId */
+      originMix: components['schemas']['OriginMixDto'] | null;
+      /** Format: uuid */
+      parentId: string | null;
+    };
+    TeamDto: {
+      /** Format: uuid */
+      id: string;
+      name: string;
+      /** Format: uuid */
+      parentId: string | null;
+    };
+    TeamMemberDto: {
+      isLead: boolean;
+      name: string;
+      /** Format: uuid */
+      userId: string;
+    };
+    TeamNodeDto: {
+      children: components['schemas']['TeamNodeDto'][];
+      /** Format: uuid */
+      id: string;
+      name: string;
+      /** Format: uuid */
+      parentId: string | null;
+    };
+    UpdateCycleDto: {
+      aspirationalThreshold?: number;
+      /** @enum {string} */
+      checkInCadence?: 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY';
+      committedThreshold?: number;
+      /**
+       * @description Solo en ciclos DRAFT
+       * @example 2026-12-31
+       */
+      endDate?: string;
+      name?: string;
+      /**
+       * @description Solo en ciclos DRAFT
+       * @example 2026-01-01
+       */
+      startDate?: string;
+    };
+    UpdateTeamDto: {
+      name?: string;
+      /**
+       * Format: uuid
+       * @description Nuevo padre (mover). No puede crear ciclos.
+       */
+      parentId?: string;
+    };
+    UpdateUserDto: {
+      /** @description false desactiva al usuario y revoca sus sesiones */
+      active?: boolean;
+      name?: string;
+      /** @enum {string} */
+      role?: 'ADMIN' | 'LEADER' | 'MEMBER';
+    };
+    UserDto: {
+      active: boolean;
+      email: string;
+      /** Format: uuid */
+      id: string;
+      name: string;
+      /** @enum {string} */
+      role: 'ADMIN' | 'LEADER' | 'MEMBER';
     };
   };
   responses: never;
@@ -260,6 +636,213 @@ export interface operations {
       };
     };
   };
+  CyclesController_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CycleDto'][];
+        };
+      };
+    };
+  };
+  CyclesController_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateCycleDto'];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CycleDto'];
+        };
+      };
+      /** @description Fechas, jerarquía o umbrales inválidos (REQ-CYC-1/2) */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Rol insuficiente */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Ciclo padre inexistente */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description El QUARTER se solapa con un hermano */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  CyclesController_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CycleDto'];
+        };
+      };
+      /** @description Ciclo inexistente */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  CyclesController_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateCycleDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CycleDto'];
+        };
+      };
+      /** @description Ciclo inexistente */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Ciclo cerrado, o fechas en un ciclo que no es DRAFT */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  CyclesController_activate: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CycleDto'];
+        };
+      };
+      /** @description Ciclo inexistente */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Transición inválida */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  CyclesController_close: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['CycleCloseDto'];
+        };
+      };
+      /** @description Ciclo inexistente */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Transición inválida */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
   HealthController_check: {
     parameters: {
       query?: never;
@@ -279,6 +862,324 @@ export interface operations {
             status: 'ok';
           };
         };
+      };
+    };
+  };
+  TeamsController_tree: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TeamNodeDto'][];
+        };
+      };
+    };
+  };
+  TeamsController_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateTeamDto'];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TeamDto'];
+        };
+      };
+      /** @description Rol insuficiente */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Padre inexistente */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Raíz duplicada o nombre repetido bajo el mismo padre */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  TeamsController_detail: {
+    parameters: {
+      query?: {
+        /** @description Ciclo para el cálculo de originMix */
+        cycleId?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TeamDetailDto'];
+        };
+      };
+      /** @description Equipo o ciclo inexistente */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  TeamsController_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateTeamDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TeamDto'];
+        };
+      };
+      /** @description Equipo o padre inexistente */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description El movimiento crearía un ciclo o un nombre repetido */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  TeamsController_setMember: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+        userId: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SetMemberDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TeamMemberDto'];
+        };
+      };
+      /** @description Equipo o usuario inexistente */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  TeamsController_removeMember: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+        userId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description El usuario no es miembro del equipo */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  UsersController_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserDto'][];
+        };
+      };
+    };
+  };
+  UsersController_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateUserDto'];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserDto'];
+        };
+      };
+      /** @description Rol insuficiente */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description El email ya existe */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  UsersController_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateUserDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UserDto'];
+        };
+      };
+      /** @description Usuario inexistente */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description El ADMIN no puede cambiar su propio rol ni desactivarse */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  UsersController_resetPassword: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ResetPasswordDto'];
+      };
+    };
+    responses: {
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Usuario inexistente */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
     };
   };

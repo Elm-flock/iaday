@@ -1,4 +1,13 @@
-import { Award, CalendarRange, Home, MessageSquare, RefreshCw, Target, Users } from 'lucide-react';
+import {
+  Award,
+  CalendarRange,
+  Home,
+  MessageSquare,
+  RefreshCw,
+  Shield,
+  Target,
+  Users,
+} from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export type NavItem = {
@@ -7,17 +16,21 @@ export type NavItem = {
   icon: LucideIcon;
   /** Si está, el ítem se muestra deshabilitado y este texto explica por qué. */
   unavailableReason?: string;
+  /** Solo administración: el resto lo ve deshabilitado con explicación (y no se muestra hasta conocer el rol). */
+  adminOnly?: boolean;
 };
 
 const soon = (module: string) =>
   `${module} todavía no está disponible. Lo vamos a habilitar pronto.`;
 
+export const ADMIN_ONLY_REASON = 'Solo administración puede gestionar usuarios.';
+
 export const NAV_ITEMS: NavItem[] = [
   { href: '/', label: 'Inicio', icon: Home },
   { href: '/okrs', label: 'Objetivos', icon: Target, unavailableReason: soon('Objetivos') },
   { href: '/check-ins', label: 'Check-ins', icon: RefreshCw, unavailableReason: soon('Check-ins') },
-  { href: '/teams', label: 'Equipos', icon: Users, unavailableReason: soon('Equipos') },
-  { href: '/cycles', label: 'Ciclos', icon: CalendarRange, unavailableReason: soon('Ciclos') },
+  { href: '/equipos', label: 'Equipos', icon: Users },
+  { href: '/ciclos', label: 'Ciclos', icon: CalendarRange },
   {
     href: '/cfr/feedback',
     label: 'Feedback',
@@ -30,4 +43,5 @@ export const NAV_ITEMS: NavItem[] = [
     icon: Award,
     unavailableReason: soon('Reconocimientos'),
   },
+  { href: '/admin/usuarios', label: 'Usuarios', icon: Shield, adminOnly: true },
 ];

@@ -16,12 +16,15 @@ Al terminar, actualizá `src/app/(app)/<módulo>/CLAUDE.md` para reflejar los ca
 
 **Módulos planificados** (se crean durante el SDD; actualizar esta tabla al crearlos):
 
-| Módulo    | Ruta                                |
-| --------- | ----------------------------------- |
-| okrs      | `src/app/(app)/okrs/CLAUDE.md`      |
-| check-ins | `src/app/(app)/check-ins/CLAUDE.md` |
-| cfr       | `src/app/(app)/cfr/CLAUDE.md`       |
-| auth      | `src/app/(auth)/CLAUDE.md` (creado) |
+| Módulo         | Ruta                                              |
+| -------------- | ------------------------------------------------- |
+| okrs           | `src/app/(app)/okrs/CLAUDE.md`                    |
+| check-ins      | `src/app/(app)/check-ins/CLAUDE.md`               |
+| cfr            | `src/app/(app)/cfr/CLAUDE.md`                     |
+| auth           | `src/app/(auth)/CLAUDE.md` (creado)               |
+| ciclos         | `src/app/(app)/ciclos/CLAUDE.md` (creado)         |
+| equipos        | `src/app/(app)/equipos/CLAUDE.md` (creado)        |
+| admin/usuarios | `src/app/(app)/admin/usuarios/CLAUDE.md` (creado) |
 
 ---
 
@@ -74,7 +77,8 @@ src/
 └── lib/
     ├── api/                  # cliente openapi-fetch, schema.d.ts generado, errores
     ├── auth/                 # cookies, safeNext, token
-    └── dal/                  # acceso a datos server-only (session.ts)
+    ├── actions/              # FormState + useActionForm (forms sin reset tras la action)
+    └── dal/                  # acceso a datos server-only (session, cycles, teams, users)
 test/      # setup y mocks de Vitest
 e2e/       # specs de Playwright
 ```
