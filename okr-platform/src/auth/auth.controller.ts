@@ -67,6 +67,7 @@ export class AuthController {
   @Get('me')
   @ApiOperation({ summary: 'Perfil del usuario autenticado' })
   @ApiOkResponse({ type: MeDto })
+  @ApiUnauthorizedResponse({ description: 'Token ausente, inválido o usuario desactivado' })
   me(@CurrentUser() user: AuthUser): Promise<MeDto> {
     return this.auth.me(user.id);
   }

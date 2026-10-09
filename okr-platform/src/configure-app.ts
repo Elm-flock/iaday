@@ -14,7 +14,12 @@ export function configureApp(app: INestApplication): void {
     }),
   );
 
-  const config = new DocumentBuilder()
+  SwaggerModule.setup('api', app, SwaggerModule.createDocument(app, buildOpenApiConfig()));
+}
+
+/** Config base del documento OpenAPI; compartida con el emisor (src/openapi.ts). */
+export function buildOpenApiConfig() {
+  return new DocumentBuilder()
     .setTitle('okr-platform API')
     .setDescription('Documentación de la API de okr-platform')
     .setVersion('1.0')
@@ -30,5 +35,4 @@ export function configureApp(app: INestApplication): void {
       'JWT-auth',
     )
     .build();
-  SwaggerModule.setup('api', app, SwaggerModule.createDocument(app, config));
 }
