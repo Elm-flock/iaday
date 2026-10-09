@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
+import { KeyResultsController } from './key-results.controller';
+import { KeyResultsService } from './key-results.service';
 import { ObjectivesController } from './objectives.controller';
 import { ObjectivesService } from './objectives.service';
 import { OkrsAccess } from './okrs-access.service';
 
 @Module({
-  controllers: [ObjectivesController],
-  providers: [ObjectivesService, OkrsAccess],
+  controllers: [ObjectivesController, KeyResultsController],
+  providers: [ObjectivesService, KeyResultsService, OkrsAccess],
 })
 export class OkrsModule {}

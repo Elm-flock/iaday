@@ -35,4 +35,9 @@ export class OkrsAccess {
     }
     return objective;
   }
+
+  /** Lock de aplicación (se libera al terminar la transacción) para serializar conteos y altas. */
+  async advisoryLock(tx: Prisma.TransactionClient, key: string): Promise<void> {
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${key}))`;
+  }
 }

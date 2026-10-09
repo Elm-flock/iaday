@@ -177,6 +177,8 @@ export class ObjectivesService {
           status: { in: [...COUNTED_STATUSES] },
         },
       });
+      // Mismo lock que las altas/bajas de KRs: el conteo de KRs no cambia mientras se valida.
+      await this.access.advisoryLock(tx, `krs:${id}`);
       const krCount = await tx.keyResult.count({ where: { objectiveId: id } });
       const verdict = validatePublish({ ownerObjectiveCount, krCount });
       if (!verdict.ok) throw okrDomainError(verdict);
@@ -263,7 +265,7 @@ export class ObjectivesService {
   }
 
   /** Serializa altas/publicaciones del mismo owner en el mismo ciclo (límite 5 / mínimo 3). */
-  private async lockOwner(tx: Prisma.TransactionClient, cycleId: string, ownerId: string) {
-    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`objectives:${cycleId}:${ownerId}`}))`;
+  private lockOwner(tx: Prisma.TransactionClient, cycleId: string, ownerId: string) {
+    return this.access.advisoryLock(tx, `objectives:${cycleId}:${ownerId}`);
   }
 }

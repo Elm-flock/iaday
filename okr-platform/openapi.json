@@ -90,6 +90,40 @@
         "required": ["name", "kind", "startDate", "endDate"],
         "type": "object"
       },
+      "CreateKeyResultDto": {
+        "properties": {
+          "ownerId": {
+            "description": "Responsable del KR",
+            "format": "uuid",
+            "type": "string"
+          },
+          "scoring": {
+            "description": "DERIVED = numérico (requiere start y target); MANUAL = binario (sin valores)",
+            "enum": ["DERIVED", "MANUAL"],
+            "type": "string"
+          },
+          "startValue": {
+            "description": "Decimal como string. Solo DERIVED.",
+            "example": "0",
+            "type": "string"
+          },
+          "targetValue": {
+            "description": "Decimal como string. Solo DERIVED; puede ser menor que startValue.",
+            "example": "100",
+            "type": "string"
+          },
+          "title": {
+            "example": "Llegar a 100 clientes",
+            "type": "string"
+          },
+          "unit": {
+            "example": "clientes",
+            "type": "string"
+          }
+        },
+        "required": ["title", "ownerId", "scoring"],
+        "type": "object"
+      },
       "CreateObjectiveDto": {
         "properties": {
           "cycleId": {
@@ -720,6 +754,30 @@
         },
         "type": "object"
       },
+      "UpdateKeyResultDto": {
+        "properties": {
+          "ownerId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "startValue": {
+            "description": "Decimal como string. Tras publicar solo ADMIN o líder (con auditoría KR_TARGET_CHANGED).",
+            "type": "string"
+          },
+          "targetValue": {
+            "description": "Decimal como string. Tras publicar solo ADMIN o líder (con auditoría KR_TARGET_CHANGED).",
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "unit": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "UpdateObjectiveDto": {
         "properties": {
           "description": {
@@ -1204,6 +1262,96 @@
         "tags": ["health"]
       }
     },
+    "/key-results/{id}": {
+      "delete": {
+        "operationId": "KeyResultsController_remove",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "403": {
+            "description": "Sin permiso de edición"
+          },
+          "404": {
+            "description": "KR inexistente o de un DRAFT no visible"
+          },
+          "409": {
+            "description": "El objetivo no está en DRAFT, o ciclo cerrado"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Borra un KR de un objetivo DRAFT",
+        "tags": ["key-results"]
+      },
+      "patch": {
+        "operationId": "KeyResultsController_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateKeyResultDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeyResultDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Valores inconsistentes o campos no declarados"
+          },
+          "403": {
+            "description": "Sin permiso de edición / de cambio de meta"
+          },
+          "404": {
+            "description": "KR (o su DRAFT no visible) o responsable inexistente"
+          },
+          "409": {
+            "description": "Objetivo CLOSED o ciclo cerrado"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Edita un KR. Tras publicar, cambiar start/target solo lo hacen ADMIN o líderes (owner team / equipo del owner) y se audita como KR_TARGET_CHANGED.",
+        "tags": ["key-results"]
+      }
+    },
     "/objectives": {
       "get": {
         "operationId": "ObjectivesController_list",
@@ -1444,6 +1592,65 @@
         ],
         "summary": "Edita un objetivo (owner, líder del equipo owner o ADMIN). Tras publicar solo título, descripción y alineación.",
         "tags": ["objectives"]
+      }
+    },
+    "/objectives/{id}/key-results": {
+      "post": {
+        "operationId": "KeyResultsController_create",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateKeyResultDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeyResultDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Valores inconsistentes: start == target, faltan o sobran valores según el tipo"
+          },
+          "403": {
+            "description": "Sin permiso de edición"
+          },
+          "404": {
+            "description": "Objetivo (o DRAFT no visible) o responsable inexistente"
+          },
+          "409": {
+            "description": "Objetivo CLOSED o ciclo cerrado"
+          },
+          "422": {
+            "description": "KR_LIMIT_EXCEEDED (máximo 5)"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Agrega un KR al objetivo (owner, líder del equipo owner o ADMIN). Máximo 5 por objetivo.",
+        "tags": ["key-results"]
       }
     },
     "/objectives/{id}/publish": {
