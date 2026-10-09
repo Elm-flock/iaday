@@ -11,7 +11,7 @@ const publicSans = Public_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'OKR Platform',
+  title: { default: 'OKR Platform', template: '%s · OKR Platform' },
   description: 'Plataforma de gestión de OKRs, check-ins y CFR de Flock IT',
 };
 

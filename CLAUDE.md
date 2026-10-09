@@ -21,7 +21,7 @@ Al terminar, actualizá `src/app/(app)/<módulo>/CLAUDE.md` para reflejar los ca
 | okrs      | `src/app/(app)/okrs/CLAUDE.md`      |
 | check-ins | `src/app/(app)/check-ins/CLAUDE.md` |
 | cfr       | `src/app/(app)/cfr/CLAUDE.md`       |
-| auth      | `src/app/(auth)/CLAUDE.md`          |
+| auth      | `src/app/(auth)/CLAUDE.md` (creado) |
 
 ---
 
@@ -38,7 +38,8 @@ Plataforma de gestión de OKRs: objetivos y resultados clave (comprometidos/aspi
 - **UI**: Tailwind CSS 4 (sin config JS) + Flock UI propio (ver Sistema de diseño), lucide-react
 - **Estado**: a definir en SDD (por defecto: Server Components + fetch)
 - **Datos**: REST contra la API NestJS (`okr-platform-back`)
-- **Auth**: JWT emitido por el back
+- **Auth**: JWT emitido por el back, guardado en cookies httpOnly (`okr_at`/`okr_rt`); Next actúa de BFF (ver `src/app/(auth)/CLAUDE.md`)
+- **Env**: `API_URL` (server-only, default `http://localhost:3000`)
 
 ## Reglas de Desarrollo
 
@@ -62,10 +63,18 @@ Flock UI implementado de forma nativa sobre Tailwind 4 (sin bundle `fk-*`, sin `
 
 ```
 src/
-└── app/
-    ├── layout.tsx
-    ├── page.tsx
-    └── globals.css
+├── proxy.ts                  # auth optimista + refresh silencioso (Node runtime)
+├── app/
+│   ├── layout.tsx
+│   ├── globals.css
+│   ├── (auth)/               # login, actions (login/logout) → CLAUDE.md
+│   ├── (app)/                # shell autenticado (AppShell + UserMenu), Inicio
+│   └── (dev)/ui/             # catálogo de componentes (solo dev)
+├── components/ui/            # Flock UI
+└── lib/
+    ├── api/                  # cliente openapi-fetch, schema.d.ts generado, errores
+    ├── auth/                 # cookies, safeNext, token
+    └── dal/                  # acceso a datos server-only (session.ts)
 test/      # setup y mocks de Vitest
 e2e/       # specs de Playwright
 ```
@@ -79,7 +88,8 @@ npm run typecheck  # tsc --noEmit
 npm run format     # prettier --write .
 npm test           # vitest run (unit/componentes)
 npm run test:watch # vitest en watch
-npm run test:e2e   # playwright test (levanta next dev en :3001)
+npm run test:e2e   # playwright test (levanta next dev en :3001; auth requiere el back real)
+npm run api:types  # regenera src/lib/api/schema.d.ts desde ../okr-platform-back/okr-platform/openapi.json
 ```
 
 ## Testing
@@ -88,6 +98,7 @@ Dos capas con responsabilidades separadas:
 
 - **Vitest + React Testing Library** (`npm test`): unit/componentes/hooks y `src/lib` (DAL, helpers, spec del PDF). Tests junto al código: `*.test.ts(x)` en `src/`. Entorno jsdom, setup en `test/setup.ts`, config en `vitest.config.mts`. No soporta Server Components `async`: esos se cubren con E2E.
 - **Playwright** (`npm run test:e2e`): flujos E2E en `e2e/*.spec.ts`. `playwright.config.ts` levanta `next dev` en el puerto **3001** (el back usa 3000 y su `FRONT_ORIGIN` es `http://localhost:3001`). Requiere `npx playwright install chromium` la primera vez.
+- Los e2e de auth necesitan el back corriendo (`API_URL`, default `:3000`) con un admin sembrado (`E2E_ADMIN_EMAIL`/`E2E_ADMIN_PASSWORD`). Ver `src/app/(auth)/CLAUDE.md`.
 - Vitest solo incluye `src/**` y `test/**`; Playwright solo `e2e/**`. No mezclar.
 - Mocks de Vitest en `test/mocks/`: `server-only` (no-op) y `next/headers` (stub con `__setCookies`/`__setHeaders`), aliasados en `vitest.config.mts`.
 

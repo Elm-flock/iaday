@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useId, type ReactNode } from 'react';
 import { cn } from '@/lib/cn';
 import { useShell } from './app-shell';
 import { Link } from './link';
@@ -29,11 +29,53 @@ type SidebarItemProps = {
   icon: ReactNode;
   /** Ítem de la página actual. */
   current?: boolean;
+  /** Si está, el ítem queda deshabilitado y este texto explica por qué (visible como título y para lectores de pantalla). */
+  unavailableReason?: string;
   children: string;
 };
 
-export function SidebarItem({ href, icon, current = false, children }: SidebarItemProps) {
+export function SidebarItem({
+  href,
+  icon,
+  current = false,
+  unavailableReason,
+  children,
+}: SidebarItemProps) {
   const { collapsed } = useShell();
+  const reasonId = useId();
+
+  if (unavailableReason) {
+    return (
+      <span
+        role="link"
+        aria-disabled="true"
+        tabIndex={0}
+        aria-describedby={reasonId}
+        aria-label={collapsed ? children : undefined}
+        title={unavailableReason}
+        className={cn(
+          'flex h-10 cursor-not-allowed items-center gap-s10 rounded-md px-s10 text-body text-ink-muted opacity-60',
+          collapsed && 'justify-center px-0',
+        )}
+      >
+        <span aria-hidden="true" className="flex shrink-0">
+          {icon}
+        </span>
+        {collapsed ? null : (
+          <>
+            <span className="truncate">{children}</span>
+            <span className="ml-auto text-caption" aria-hidden="true">
+              Pronto
+            </span>
+          </>
+        )}
+        <span id={reasonId} className="sr-only">
+          {unavailableReason}
+        </span>
+      </span>
+    );
+  }
+
   return (
     <Link
       href={href}

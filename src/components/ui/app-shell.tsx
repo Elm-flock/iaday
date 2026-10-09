@@ -57,6 +57,7 @@ export function SidebarToggle() {
       aria-label={collapsed ? 'Expandir menú lateral' : 'Colapsar menú lateral'}
       aria-expanded={!collapsed}
       onClick={toggle}
+      tooltipAlign="start"
       className="text-on-brand hover:bg-white/10 hover:text-on-brand"
     >
       {collapsed ? (

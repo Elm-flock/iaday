@@ -8,18 +8,21 @@ type IconButtonProps = Omit<ComponentProps<'button'>, 'children' | 'aria-label'>
   /** El ícono (Lucide, 16–20px). */
   children: ReactNode;
   variant?: 'ghost' | 'secondary';
+  /** Alineación del tooltip; `start` para botones pegados al borde izquierdo. */
+  tooltipAlign?: 'center' | 'start';
 };
 
 export function IconButton({
   'aria-label': label,
   children,
   variant = 'ghost',
+  tooltipAlign,
   className,
   type = 'button',
   ...props
 }: IconButtonProps) {
   return (
-    <Tooltip label={label}>
+    <Tooltip label={label} align={tooltipAlign}>
       <button
         type={type}
         aria-label={label}
