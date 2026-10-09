@@ -29,6 +29,7 @@ const STATUS_BY_CODE: Record<string, HttpStatus> = {
   MIN_OBJECTIVES_NOT_MET: HttpStatus.UNPROCESSABLE_ENTITY,
   MIN_KRS_NOT_MET: HttpStatus.UNPROCESSABLE_ENTITY,
   ALIGNMENT_PARENT_NOT_PUBLISHED: HttpStatus.UNPROCESSABLE_ENTITY,
+  MILESTONE_NOT_REACHED: HttpStatus.UNPROCESSABLE_ENTITY,
 };
 
 export function okrDomainError(error: Pick<Err, 'code' | 'message'>): HttpException {

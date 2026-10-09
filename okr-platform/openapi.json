@@ -352,6 +352,32 @@
         "required": ["cycleId", "title", "origin", "type"],
         "type": "object"
       },
+      "CreateRecognitionDto": {
+        "properties": {
+          "keyResultId": {
+            "description": "KR hito (score >= 0.7, o de un objetivo CLOSED) al que se vincula",
+            "format": "uuid",
+            "type": "string"
+          },
+          "message": {
+            "maxLength": 1000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "objectiveId": {
+            "description": "Objetivo hito (CLOSED) al que se vincula el reconocimiento",
+            "format": "uuid",
+            "type": "string"
+          },
+          "toUserId": {
+            "description": "Persona reconocida (no puede ser uno mismo)",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": ["toUserId", "message"],
+        "type": "object"
+      },
       "CreateTeamDto": {
         "properties": {
           "name": {
@@ -897,6 +923,75 @@
           "lastCheckInAt",
           "referenceAt"
         ],
+        "type": "object"
+      },
+      "RecognitionDto": {
+        "properties": {
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "fromUserId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "keyResultId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "milestoneVerified": {
+            "description": "true si el enlace a un hito fue validado al crearlo",
+            "type": "boolean"
+          },
+          "objectiveId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "toUserId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "fromUserId",
+          "toUserId",
+          "message",
+          "objectiveId",
+          "keyResultId",
+          "milestoneVerified",
+          "createdAt"
+        ],
+        "type": "object"
+      },
+      "RecognitionPageDto": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RecognitionDto"
+            },
+            "type": "array"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "page": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": ["items", "total", "page", "limit"],
         "type": "object"
       },
       "RefreshDto": {
@@ -2491,6 +2586,105 @@
         ],
         "summary": "Publica el objetivo (DRAFT -> PUBLISHED): exige al menos 3 objetivos del owner en el ciclo y 3 KRs en este",
         "tags": ["objectives"]
+      }
+    },
+    "/recognitions": {
+      "get": {
+        "operationId": "RecognitionsController_list",
+        "parameters": [
+          {
+            "description": "Solo los dirigidos a esta persona",
+            "in": "query",
+            "name": "toUserId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecognitionPageDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Muro público de reconocimientos (cualquier autenticado), del más nuevo al más viejo",
+        "tags": ["recognitions"]
+      },
+      "post": {
+        "operationId": "RecognitionsController_create",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRecognitionDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecognitionDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Autoreconocimiento, mensaje inválido o KR de otro objetivo"
+          },
+          "404": {
+            "description": "Persona, objetivo o KR inexistente o no visible"
+          },
+          "422": {
+            "description": "El enlace no es un hito (MILESTONE_NOT_REACHED)"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Reconoce a otra persona, con enlace opcional a un hito (KR con score >= 0.7 u objetivo CLOSED).",
+        "tags": ["recognitions"]
       }
     },
     "/teams": {

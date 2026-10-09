@@ -6,6 +6,7 @@ import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
 import { CheckInsModule } from './check-ins/check-ins.module';
 import { FeedbackModule } from './cfr/feedback/feedback.module';
+import { RecognitionsModule } from './cfr/recognitions/recognitions.module';
 import { CyclesModule } from './cycles/cycles.module';
 import { OkrsModule } from './okrs/okrs.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -29,6 +30,7 @@ import { UsersModule } from './users/users.module';
     OkrsModule,
     CheckInsModule,
     FeedbackModule,
+    RecognitionsModule,
     AuditModule,
   ],
   controllers: [HealthController],
