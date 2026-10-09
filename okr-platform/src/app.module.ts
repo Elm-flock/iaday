@@ -5,6 +5,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
 import { CheckInsModule } from './check-ins/check-ins.module';
+import { FeedbackModule } from './cfr/feedback/feedback.module';
 import { CyclesModule } from './cycles/cycles.module';
 import { OkrsModule } from './okrs/okrs.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -27,6 +28,7 @@ import { UsersModule } from './users/users.module';
     CyclesModule,
     OkrsModule,
     CheckInsModule,
+    FeedbackModule,
     AuditModule,
   ],
   controllers: [HealthController],

@@ -251,6 +251,32 @@
         "required": ["name", "kind", "startDate", "endDate"],
         "type": "object"
       },
+      "CreateFeedbackDto": {
+        "properties": {
+          "content": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "keyResultId": {
+            "description": "KR visible al que se refiere",
+            "format": "uuid",
+            "type": "string"
+          },
+          "objectiveId": {
+            "description": "Objetivo visible al que se refiere",
+            "format": "uuid",
+            "type": "string"
+          },
+          "toUserId": {
+            "description": "Destinatario (no puede ser uno mismo)",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": ["toUserId", "content"],
+        "type": "object"
+      },
       "CreateKeyResultDto": {
         "properties": {
           "ownerId": {
@@ -504,6 +530,60 @@
           "committedThreshold",
           "aspirationalThreshold",
           "closedAt"
+        ],
+        "type": "object"
+      },
+      "FeedbackDto": {
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "fromUserId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "keyResultId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "objectiveId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "readAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "toUserId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "fromUserId",
+          "toUserId",
+          "content",
+          "objectiveId",
+          "keyResultId",
+          "readAt",
+          "createdAt",
+          "updatedAt"
         ],
         "type": "object"
       },
@@ -961,6 +1041,17 @@
             "type": "string"
           }
         },
+        "type": "object"
+      },
+      "UpdateFeedbackDto": {
+        "properties": {
+          "content": {
+            "maxLength": 2000,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": ["content"],
         "type": "object"
       },
       "UpdateKeyResultDto": {
@@ -1592,6 +1683,246 @@
         ],
         "summary": "ACTIVE -> CLOSED: calcula finalScore y achieved de los objetivos PUBLISHED con los umbrales vigentes y audita (solo ADMIN)",
         "tags": ["cycles"]
+      }
+    },
+    "/feedback": {
+      "get": {
+        "operationId": "FeedbackController_list",
+        "parameters": [
+          {
+            "description": "Sin valor: recibidos y enviados",
+            "in": "query",
+            "name": "box",
+            "required": false,
+            "schema": {
+              "enum": ["received", "sent"],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/FeedbackDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "box inválido"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Mi feedback (recibido y/o enviado, según `box`), del más nuevo al más viejo. El filtro de privacidad está en el WHERE.",
+        "tags": ["feedback"]
+      },
+      "post": {
+        "operationId": "FeedbackController_create",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateFeedbackDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Autoenvío, contenido inválido o KR de otro objetivo"
+          },
+          "404": {
+            "description": "Destinatario, objetivo o KR inexistente o no visible"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Envía feedback privado a otro usuario (no a uno mismo)",
+        "tags": ["feedback"]
+      }
+    },
+    "/feedback/{id}": {
+      "delete": {
+        "operationId": "FeedbackController_remove",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "403": {
+            "description": "Lo ve pero no es el autor"
+          },
+          "404": {
+            "description": "Inexistente o ajeno"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "El autor borra su feedback",
+        "tags": ["feedback"]
+      },
+      "get": {
+        "operationId": "FeedbackController_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "Inexistente o ajeno (indistinguibles)"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Detalle: solo emisor o receptor (cualquier otro, incluido ADMIN, recibe 404)",
+        "tags": ["feedback"]
+      },
+      "patch": {
+        "operationId": "FeedbackController_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateFeedbackDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Contenido inválido"
+          },
+          "403": {
+            "description": "Lo ve pero no es el autor"
+          },
+          "404": {
+            "description": "Inexistente o ajeno"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "El autor edita el contenido de su feedback",
+        "tags": ["feedback"]
+      }
+    },
+    "/feedback/{id}/read": {
+      "patch": {
+        "operationId": "FeedbackController_markRead",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "Lo ve pero no es el destinatario"
+          },
+          "404": {
+            "description": "Inexistente o ajeno"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "El destinatario marca el feedback como leído (idempotente)",
+        "tags": ["feedback"]
       }
     },
     "/health": {
