@@ -290,7 +290,7 @@ test.describe('check-ins (contra el back real)', () => {
     await page.getByRole('link', { name: 'Check-ins' }).click();
     await expect(page.getByRole('heading', { level: 1, name: 'Pendientes' })).toBeVisible();
     await expect(page.getByRole('heading', { name: second.title })).toBeVisible();
-    await expect(page.getByText('Check-in vencido')).toHaveCount(3);
+    await expect(page.getByText('Check-in vencido').filter({ visible: true })).toHaveCount(3);
     await expect(page.getByText(/Sin check-ins desde la publicación/).first()).toBeVisible();
     await page.screenshot({ path: `${SHOTS}/check-ins-pendientes.png`, fullPage: true });
 
@@ -309,7 +309,9 @@ test.describe('check-ins (contra el back real)', () => {
       await drawer(page).getByRole('button', { name: 'Registrar check-in' }).click();
       await expect(drawer(page)).toHaveCount(0);
     }
-    await expect(page.getByText('Estás al día con tus check-ins.')).toBeVisible();
+    await expect(
+      page.getByText('Estás al día con tus check-ins.').filter({ visible: true }),
+    ).toBeVisible();
 
     // El objetivo refleja los datos nuevos (updateTag): ya no hay "Sin check-ins".
     await page.goto(`/objetivos/${second.id}`);

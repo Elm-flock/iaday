@@ -1,16 +1,23 @@
-import { Target } from 'lucide-react';
-import { EmptyState } from '@/components/ui/empty-state';
+import type { Metadata } from 'next';
+import { DashboardSections } from './_components/dashboard/sections';
 import { PageHeader } from '@/components/ui/page-header';
 
-export default function DashboardPage() {
+export const metadata: Metadata = { title: 'Inicio' };
+
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+/**
+ * Inicio: "¿cómo vengo?" de un vistazo. La cabecera es estática; cada card resuelve sus datos
+ * dentro de su propio <Suspense> (ver `_components/dashboard/sections.tsx`).
+ */
+export default function DashboardPage({ searchParams }: { searchParams: SearchParams }) {
   return (
     <>
-      <PageHeader title="Inicio" description="Objetivos, check-ins y CFR del equipo de Flock IT." />
-      <EmptyState
-        icon={<Target size={32} strokeWidth={1.75} aria-hidden="true" />}
-        title="Todavía no hay nada para mostrar"
-        description="Cuando estén disponibles los objetivos y los check-ins, vas a ver acá tu avance y lo que tenés pendiente."
+      <PageHeader
+        title="Inicio"
+        description="Cómo venís con tus objetivos y qué tenés pendiente."
       />
+      <DashboardSections searchParams={searchParams} />
     </>
   );
 }

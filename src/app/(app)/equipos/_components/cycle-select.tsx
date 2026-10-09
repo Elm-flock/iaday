@@ -11,9 +11,12 @@ export type CycleOption = { id: string; label: string };
 export function CycleSelect({
   options,
   selectedId,
+  allowNone = true,
 }: {
   options: CycleOption[];
   selectedId: string | undefined;
+  /** Ofrece la opción "Sin ciclo" (default). El dashboard siempre trabaja con un ciclo. */
+  allowNone?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -29,7 +32,7 @@ export function CycleSelect({
           startTransition(() => router.push(next ? `${pathname}?cycleId=${next}` : pathname));
         }}
       >
-        <option value="">Sin ciclo</option>
+        {allowNone ? <option value="">Sin ciclo</option> : null}
         {options.map((o) => (
           <option key={o.id} value={o.id}>
             {o.label}

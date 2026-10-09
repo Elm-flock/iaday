@@ -22,7 +22,7 @@ Registro de avances de los resultados clave y vista "Pendientes" (`/check-ins`).
 - Matemática del preview en `src/lib/check-in-preview.ts` (espejo del back): `clamp((actual - inicio) / (meta - inicio), 0, 1)` redondeado a 4 decimales; funciona con meta < inicio. Banda con `scoreBand`.
 - **Estado neutro**: un KR/objetivo sin check-ins (`hasCheckIns=false`) muestra "Sin check-ins" (gris, ícono + palabra) en lugar de banda y sin barra de score; si está `overdue`, "Check-in vencido". Con datos: banda verde/amarilla/roja (y aviso de vencido aparte). Los componentes están en `components/ui/status-badge.tsx` (`NoCheckInsBadge`, `OverdueBadge`) y se componen en `objetivos/_components/progress-badge.tsx` (`KrProgressBadge`, `ObjectiveProgressBadge`). Un objetivo está vencido si algún KR lo está (el DTO del objetivo no trae `overdue`).
 - La acción "Registrar check-in" no se oculta sin permiso: queda deshabilitada y la razón se ve en pantalla.
-- El nav "Check-ins" está habilitado sin contador (un contador exigiría pedir los pendientes en el layout; se evaluará en el dashboard, 8.5).
+- El nav "Check-ins" muestra un contador de pendientes (8.5): se pide dentro de `AppNavWithRole`, que ya está en su `<Suspense>` del layout, así que el shell sigue estático (ver `src/app/(app)/CLAUDE.md`).
 
 ## Tests
 

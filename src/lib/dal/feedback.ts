@@ -31,3 +31,12 @@ export async function getFeedback(id: string): Promise<Feedback | null> {
   if (result.response.status === 404 || result.response.status === 400) return null;
   return unwrap(result);
 }
+
+/**
+ * Cantidad de feedback recibido sin leer (solo para quien mira su propia bandeja): el dashboard muestra
+ * este número y NUNCA contenido, remitente ni fecha. Mismo régimen que el resto: sin cache.
+ */
+export async function countUnreadFeedback(): Promise<number> {
+  const received = await listFeedback('received');
+  return received.filter((f) => f.readAt === null).length;
+}

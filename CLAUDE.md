@@ -26,6 +26,7 @@ Al terminar, actualizá `src/app/(app)/<módulo>/CLAUDE.md` para reflejar los ca
 | ciclos          | `src/app/(app)/ciclos/CLAUDE.md` (creado)          |
 | equipos         | `src/app/(app)/equipos/CLAUDE.md` (creado)         |
 | admin/usuarios  | `src/app/(app)/admin/usuarios/CLAUDE.md` (creado)  |
+| inicio          | `src/app/(app)/CLAUDE.md` (creado)                 |
 
 ---
 
@@ -110,7 +111,7 @@ Dos capas con responsabilidades separadas:
 
 ## Reporte PDF (`src/lib/pdf/`)
 
-PDF del equipo por ciclo con `@json-render/core` + `@json-render/react-pdf` **fijados en 0.21.0 (exactos, sin `^`)** y `zod` 4.6.5 (peer obligatorio). Se eligió json-render (ronda 9, tras el spike 9.1) para que el spec sea JSON testeable sin renderizar. Es pre-1.0 y saca minors rápido: no actualizar sin re-correr los tests y mirar el PDF. `@react-pdf/renderer` (4.9) entra de forma transitiva y se importa directo en `registry.tsx`/`fonts.ts` (misma instancia hoisteada que usa json-render).
+PDF del equipo por ciclo con `@json-render/core` + `@json-render/react-pdf` **fijados en 0.21.0 (exactos, sin `^`)** y `zod` 4.6.5 (peer obligatorio). Se eligió json-render (ronda 9, tras el spike 9.1) para que el spec sea JSON testeable sin renderizar. Es pre-1.0 y saca minors rápido: no actualizar sin re-correr los tests y mirar el PDF. `@react-pdf/renderer` está declarado y **fijado en 4.9.0 (exacto)** porque `registry.tsx`/`fonts.ts` lo importan directo (antes era una dependencia fantasma transitiva de json-render). `npm ls @react-pdf/renderer` debe mostrarlo deduplicado bajo `@json-render/react-pdf` (una sola instancia: dos copias romperían el registro de fuentes y los componentes). Al subir `@json-render/react-pdf`, subir este en conjunto y verificar el dedupe.
 
 | Archivo                                     | Rol                                                                                                                                                                                                                                                                                                                                                |
 | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

@@ -26,6 +26,10 @@ async function login(page: Page, email: string, password: string) {
 
 const dialog = (page: Page) => page.getByRole('dialog');
 
+/** Enlace del menú lateral: el dashboard de ADMIN también tiene enlaces con esos nombres. */
+const navLink = (page: Page, name: string) =>
+  page.getByRole('navigation', { name: 'Navegación principal' }).getByRole('link', { name });
+
 /** Elige el ciclo anual creado en este test por su texto (selectOption no acepta regex). */
 async function pickAnnual(page: Page) {
   const option = dialog(page)
@@ -43,7 +47,7 @@ test.describe('ciclos, equipos y usuarios (admin)', () => {
     page,
   }) => {
     await login(page, ADMIN_EMAIL, ADMIN_PASSWORD);
-    await page.getByRole('link', { name: 'Ciclos' }).click();
+    await navLink(page, 'Ciclos').click();
     await expect(page.getByRole('heading', { level: 1, name: 'Ciclos' })).toBeVisible();
 
     // Anual
@@ -141,7 +145,7 @@ test.describe('ciclos, equipos y usuarios (admin)', () => {
     await login(page, ADMIN_EMAIL, ADMIN_PASSWORD);
 
     // Usuario
-    await page.getByRole('link', { name: 'Usuarios' }).click();
+    await navLink(page, 'Usuarios').click();
     await expect(page.getByRole('heading', { level: 1, name: 'Usuarios' })).toBeVisible();
     await page.getByRole('button', { name: 'Crear usuario' }).click();
     await dialog(page)
@@ -173,7 +177,7 @@ test.describe('ciclos, equipos y usuarios (admin)', () => {
     await page.screenshot({ path: `${SHOTS}/admin-usuarios.png`, fullPage: true });
 
     // Equipo
-    await page.getByRole('link', { name: 'Equipos' }).click();
+    await navLink(page, 'Equipos').click();
     await page.getByRole('button', { name: 'Crear equipo' }).click();
     await dialog(page)
       .getByLabel(/Nombre/)
@@ -223,14 +227,14 @@ test.describe('ciclos, equipos y usuarios (admin)', () => {
 
     // 1) Se visita el detalle del equipo por navegación cliente: queda en la cache del router
     //    (`'use cache: private'` + stale 60 s) con la lista de ciclos de ese momento.
-    await page.getByRole('link', { name: 'Equipos' }).click();
+    await navLink(page, 'Equipos').click();
     await page.getByRole('link', { name: teamName }).click();
-    const cycleSelect = page.getByLabel('Ciclo', { exact: true });
+    const cycleSelect = page.getByLabel('Ciclo', { exact: true }).filter({ visible: true });
     await expect(cycleSelect).toBeVisible();
     await expect(cycleSelect.locator('option', { hasText: freshName })).toHaveCount(0);
 
     // 2) Se crea un ciclo con una Server Action que llama a updateTag('cycles').
-    await page.getByRole('link', { name: 'Ciclos' }).click();
+    await navLink(page, 'Ciclos').click();
     await page.getByRole('button', { name: 'Crear ciclo' }).click();
     await dialog(page)
       .getByLabel(/Nombre/)
@@ -243,10 +247,13 @@ test.describe('ciclos, equipos y usuarios (admin)', () => {
     await expect(page.getByRole('region', { name: freshName })).toBeVisible();
 
     // 3) Navegación cliente de vuelta (sin recargar): el selector ya incluye el ciclo nuevo.
-    await page.getByRole('link', { name: 'Equipos' }).click();
+    await navLink(page, 'Equipos').click();
     await page.getByRole('link', { name: teamName }).click();
     await expect(
-      page.getByLabel('Ciclo', { exact: true }).locator('option', { hasText: freshName }),
+      page
+        .getByLabel('Ciclo', { exact: true })
+        .filter({ visible: true })
+        .locator('option', { hasText: freshName }),
     ).toHaveCount(1);
   });
 });
@@ -265,10 +272,7 @@ test.describe('usuario sin permisos de administración', () => {
       'title',
       'Solo administración puede gestionar usuarios.',
     );
-    await expect(page.getByRole('link', { name: 'Usuarios' })).toHaveAttribute(
-      'aria-disabled',
-      'true',
-    );
+    await expect(navLink(page, 'Usuarios')).toHaveAttribute('aria-disabled', 'true');
 
     // Acceso directo: notFound(). Con Cache Components el shell ya se envió, así que el status HTTP
     // es 200 pero el contenido es el 404 y nunca se renderiza la lista (la API igual exige ADMIN).

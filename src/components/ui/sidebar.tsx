@@ -33,6 +33,8 @@ type SidebarItemProps = {
   unavailableReason?: string;
   /** Rótulo corto junto al ítem deshabilitado (default: "Pronto"). */
   unavailableLabel?: string;
+  /** Contador junto al ítem (p. ej. pendientes). Se anuncia como texto; no depende del color. */
+  count?: number;
   children: string;
 };
 
@@ -42,6 +44,7 @@ export function SidebarItem({
   current = false,
   unavailableReason,
   unavailableLabel = 'Pronto',
+  count,
   children,
 }: SidebarItemProps) {
   const { collapsed } = useShell();
@@ -95,6 +98,15 @@ export function SidebarItem({
         {icon}
       </span>
       {collapsed ? null : <span className="truncate">{children}</span>}
+      {count ? (
+        <span
+          data-testid="nav-count"
+          className="ml-auto inline-flex h-5 min-w-5 items-center justify-center rounded-pill bg-primary px-s5 text-caption text-on-primary tabular-nums"
+        >
+          <span aria-hidden="true">{count > 99 ? '99+' : count}</span>
+          <span className="sr-only">{count === 1 ? '1 pendiente' : `${count} pendientes`}</span>
+        </span>
+      ) : null}
     </Link>
   );
 }

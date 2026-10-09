@@ -62,3 +62,22 @@ describe('AppNav', () => {
     expect(item).toHaveAccessibleDescription('Solo administración puede gestionar usuarios.');
   });
 });
+
+describe('AppNav contador de check-ins', () => {
+  it('muestra los pendientes junto a Check-ins (como texto) y nada si no hay', () => {
+    const { rerender } = render(
+      <AppShell sidebar={<AppNav role="MEMBER" pendingCheckIns={3} />} header={<div />}>
+        x
+      </AppShell>,
+    );
+    expect(screen.getByRole('link', { name: /Check-ins/ })).toHaveTextContent('3 pendientes');
+    expect(screen.getAllByTestId('nav-count')).toHaveLength(1);
+
+    rerender(
+      <AppShell sidebar={<AppNav role="MEMBER" pendingCheckIns={0} />} header={<div />}>
+        x
+      </AppShell>,
+    );
+    expect(screen.queryByTestId('nav-count')).not.toBeInTheDocument();
+  });
+});
