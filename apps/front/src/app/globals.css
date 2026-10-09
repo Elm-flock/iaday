@@ -1,0 +1,240 @@
+@import 'tailwindcss';
+
+/* Flock UI sobre Tailwind 4. Fuente: docs/design-system.md.
+   Los tokens viven como variables CSS; `.dark` cambia los valores y `@theme inline`
+   los expone como utilidades (bg-surface, text-ink, border-border, ...). */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --bg: #f7f5fa;
+  --accent: #ff5102;
+  --focus: #ff5102;
+  --surface: #ffffff;
+  --surface-subtle: #f1ecf7;
+  --surface-raised: #ffffff;
+  --surface-brand: #1c002c;
+  --ink: #1c002c;
+  --ink-muted: #5e4e6b;
+  --ink-subtle: #766687;
+  --on-brand: #ffffff;
+  --on-primary: #ffffff;
+  --on-accent: #1c002c;
+  --on-danger: #ffffff;
+  --border: #e3daec;
+  --border-strong: #8e7fa0;
+  --primary: #7f07c5;
+  --primary-hover: #7500b7;
+  --primary-text: #7f07c5;
+  --primary-subtle: #e9deff;
+  --success: #16794a;
+  --success-subtle: #e3f5ec;
+  --warning: #9a5b00;
+  --warning-subtle: #fff1d6;
+  --danger: #c4123f;
+  --danger-subtle: #fde4ea;
+  --info: #4f3ae2;
+  --info-subtle: #e8e5fc;
+  --chart-1: #7f07c5;
+  --chart-2: #ff5102;
+  --chart-3: #4f3ae2;
+  --chart-4: #fb116f;
+  --chart-other: #a698b3;
+  --shadow-sm-value: 0 1px 2px rgb(28 0 44 / 0.08), 0 1px 3px rgb(28 0 44 / 0.06);
+  --shadow-overlay-value: 0 12px 32px rgb(28 0 44 / 0.24), 0 2px 8px rgb(28 0 44 / 0.12);
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #1c002c;
+  --surface: #331a42;
+  --surface-subtle: #2a0f39;
+  --surface-raised: #40294e;
+  --surface-brand: #3c0c5e;
+  --ink: #ffffff;
+  --ink-muted: #c9bfd1;
+  --ink-subtle: #a698b3;
+  --on-danger: #1c002c;
+  --border: #493356;
+  --border-strong: #82738b;
+  --primary: #9c2ef5;
+  --primary-hover: #8a1fe0;
+  --primary-text: #b98af5;
+  --primary-subtle: #420e68;
+  --success: #5fd39a;
+  --success-subtle: #123a2a;
+  --warning: #ffc266;
+  --warning-subtle: #3d2a0a;
+  --danger: #ff7a9c;
+  --danger-subtle: #45102a;
+  --info: #a99bff;
+  --info-subtle: #2a2160;
+  --chart-1: #a463f0;
+  --chart-2: #f04d00;
+  --chart-3: #7a6af2;
+  --chart-4: #f0408a;
+  --chart-other: #82738b;
+  /* La elevación no usa sombra en oscuro: se separa por surface y borde. */
+  --shadow-sm-value: none;
+  --shadow-overlay-value: 0 12px 32px rgb(0 0 0 / 0.5), 0 2px 8px rgb(0 0 0 / 0.3);
+  color-scheme: dark;
+}
+
+/* Colores fijos de marca (iguales en ambos temas). */
+@theme {
+  --color-brand-night: #1c002c;
+  --color-brand-purple: #7f07c5;
+  --color-brand-purple-deep: #7500b7;
+  --color-brand-orchid: #9c2ef5;
+  --color-brand-violet: #4f3ae2;
+  --color-brand-orange: #ff5102;
+  --color-brand-lilac: #e9deff;
+  --color-brand-magenta: #fb116f;
+}
+
+/* Colores semánticos que cambian con el tema. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-accent: var(--accent);
+  --color-focus: var(--focus);
+  --color-surface: var(--surface);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-brand: var(--surface-brand);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-subtle: var(--ink-subtle);
+  --color-on-brand: var(--on-brand);
+  --color-on-primary: var(--on-primary);
+  --color-on-accent: var(--on-accent);
+  --color-on-danger: var(--on-danger);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-text: var(--primary-text);
+  --color-primary-subtle: var(--primary-subtle);
+  --color-success: var(--success);
+  --color-success-subtle: var(--success-subtle);
+  --color-warning: var(--warning);
+  --color-warning-subtle: var(--warning-subtle);
+  --color-danger: var(--danger);
+  --color-danger-subtle: var(--danger-subtle);
+  --color-info: var(--info);
+  --color-info-subtle: var(--info-subtle);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-other: var(--chart-other);
+
+  --shadow-sm: var(--shadow-sm-value);
+  --shadow-overlay: var(--shadow-overlay-value);
+
+  --font-sans: var(--font-public-sans), system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+
+@theme {
+  /* Radios: pill = acción, lg = contenedor, md = campo, sm = detalle. */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 9999px;
+
+  /* Escala de espaciado en ritmo de 10px: p-s10, gap-s20, mt-s40, etc. */
+  --spacing-s5: 5px;
+  --spacing-s10: 10px;
+  --spacing-s15: 15px;
+  --spacing-s20: 20px;
+  --spacing-s30: 30px;
+  --spacing-s40: 40px;
+  --spacing-s60: 60px;
+
+  /* Tipografía: títulos livianos (300) con tracking de marca. */
+  --text-body: 14px;
+  --text-body--line-height: 20px;
+  --text-body-sm: 13px;
+  --text-body-sm--line-height: 18px;
+  --text-caption: 12px;
+  --text-caption--line-height: 16px;
+  --text-button: 16px;
+  --text-button--line-height: 24px;
+  --text-button-sm: 14px;
+  --text-button-sm--line-height: 20px;
+  --text-heading-3: 18px;
+  --text-heading-3--line-height: 26px;
+  --text-heading-2: 22px;
+  --text-heading-2--line-height: 30px;
+  --text-heading-1: 28px;
+  --text-heading-1--line-height: 36px;
+  --text-display: 40px;
+  --text-display--line-height: 48px;
+
+  --tracking-heading: 0.9px;
+  --tracking-display: 1.12px;
+}
+
+/* Degradés de marca: solo en superficies de marca (login, portadas, encabezados de reportes). */
+@utility bg-horizonte {
+  background-image: linear-gradient(to right, #4f3ae2, #ff5102);
+}
+
+@utility bg-brasa {
+  background-image: linear-gradient(to right, #f04d18, #8c00b8);
+}
+
+@utility bg-noche {
+  background-image: linear-gradient(90deg, #7f07c5 0%, #1c002c 100%);
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@keyframes fk-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fk-slide {
+  from {
+    transform: translateX(32px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
