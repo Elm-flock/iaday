@@ -34,7 +34,7 @@ Al terminar, actualizá `src/app/(app)/<módulo>/CLAUDE.md` para reflejar los ca
 
 ## Proyecto
 
-Plataforma de gestión de OKRs: objetivos y resultados clave (comprometidos/aspiracionales), check-ins con scoring 0.0–1.0, y módulo CFR (conversaciones 1:1, feedback entre pares, reconocimientos). Consume la API NestJS de `../okr-platform-back`.
+Plataforma de gestión de OKRs: objetivos y resultados clave (comprometidos/aspiracionales), check-ins con scoring 0.0–1.0, y módulo CFR (feedback entre pares y reconocimientos; las conversaciones 1:1 son fase 2, aún no implementadas). Consume la API NestJS de `../okr-platform-back`.
 
 ## Stack
 
@@ -134,7 +134,8 @@ PDF del equipo por ciclo con `@json-render/core` + `@json-render/react-pdf` **fi
 ## Reglas de Negocio Importantes
 
 - 3 a 5 Objetivos por ciclo, 3 a 5 Resultados Clave por objetivo.
-- Score 0.0–1.0: verde 0.7–1.0, amarillo 0.4–0.6, rojo 0.0–0.3.
-- Comprometidos esperan 1.0; aspiracionales se consideran éxito en 0.6–0.7.
+- Score 0.0–1.0: verde ≥ 0.70, amarillo 0.40–0.69, rojo < 0.40 (`src/lib/score-band.ts`).
+- Un objetivo se considera logrado si su score ≥ el umbral del ciclo según su tipo (configurable por ciclo; por defecto 1.00 comprometidos y 0.70 aspiracionales).
 - Los resultados de OKRs NUNCA se vinculan a compensación/bonos.
-- Ciclos anuales (estratégicos) y trimestrales/mensuales (tácticos) conectados.
+- Ciclos anuales (estratégicos) y trimestrales (tácticos) conectados: la UI solo ofrece tipo Anual o Trimestral. Lo mensual es la cadencia de check-in (Semanal, Quincenal o Mensual), no un tipo de ciclo.
+- Reporte PDF del equipo: solo ADMIN o líder (`isLead`) de ese equipo (`equipos/policy.ts`); el back responde 403 al resto y el front oculta el botón.

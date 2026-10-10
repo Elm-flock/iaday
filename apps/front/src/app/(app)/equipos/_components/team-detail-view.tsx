@@ -13,12 +13,15 @@ export function TeamDetailView({
   cycleOptions,
   selectedCycleId,
   canManage,
+  canDownloadReport,
   candidates,
 }: {
   team: TeamDetail;
   cycleOptions: CycleOption[];
   selectedCycleId: string | undefined;
   canManage: boolean;
+  /** Solo ADMIN o líder del equipo; el resto no ve el botón (el back respondería 403). */
+  canDownloadReport: boolean;
   candidates: Candidate[];
 }) {
   return (
@@ -27,7 +30,9 @@ export function TeamDetailView({
         <div className="flex flex-col gap-s20">
           <div className="flex flex-wrap items-end justify-between gap-s20">
             <CycleSelect options={cycleOptions} selectedId={selectedCycleId} />
-            <DownloadReportButton teamId={team.id} cycleId={selectedCycleId} />
+            {canDownloadReport ? (
+              <DownloadReportButton teamId={team.id} cycleId={selectedCycleId} />
+            ) : null}
           </div>
           <OriginMixIndicator mix={team.originMix} />
         </div>
