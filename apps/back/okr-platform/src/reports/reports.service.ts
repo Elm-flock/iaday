@@ -2,7 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import type { KeyResult, Objective } from '../../generated/prisma/client';
 import { bandOf } from '../okrs/domain/bands';
 import { originMix } from '../okrs/domain/origin-mix';
+import type { AuthUser } from '../common/types/auth-user';
+import { OkrsAccess } from '../okrs/okrs-access.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { canViewTeamReport } from './domain/policies';
+import { reportForbidden } from './reports.errors';
 import { ReportKeyResultDto, ReportObjectiveDto, TeamReportDto } from './dto/team-report.dto';
 
 const dec = (v: { toString(): string } | null): string | null => (v === null ? null : v.toString());
@@ -52,9 +56,17 @@ const OBJECTIVE_ORDER = [{ createdAt: 'asc' }, { id: 'asc' }] as const;
  */
 @Injectable()
 export class ReportsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly access: OkrsAccess,
+  ) {}
 
-  async teamReport(teamId: string, cycleId: string, now = new Date()): Promise<TeamReportDto> {
+  async teamReport(
+    user: AuthUser,
+    teamId: string,
+    cycleId: string,
+    now = new Date(),
+  ): Promise<TeamReportDto> {
     const team = await this.prisma.team.findUnique({
       where: { id: teamId },
       select: {
@@ -66,6 +78,10 @@ export class ReportsService {
       },
     });
     if (!team) throw new NotFoundException('Equipo no encontrado');
+    // Orden: equipo (404) -> permiso (403) -> ciclo (404). Los equipos son públicos (GET /teams), así que
+    // el 404 previo no revela nada; y a un no autorizado nunca se le confirma si el ciclo existe.
+    const actor = await this.access.loadActor(user);
+    if (!canViewTeamReport(actor, teamId)) throw reportForbidden();
     const cycle = await this.prisma.cycle.findUnique({ where: { id: cycleId } });
     if (!cycle) throw new NotFoundException('Ciclo no encontrado');
 
