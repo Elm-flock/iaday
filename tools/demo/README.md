@@ -10,10 +10,11 @@ cd tools\demo
 ```
 
 El script:
+0. Verifica Docker (`docker info`); si no corre, intenta abrir Docker Desktop y espera hasta 3 min.
 1. Levanta Postgres con `docker compose -p okr-demo up -d db-test` (puerto **55435**, contenedor `okr-demo-db-test-1`).
 2. Corre `prisma migrate deploy` y `prisma db seed` (admin + equipo raíz "Flockit").
 3. Inicia la API **sin compilar** (`ts-node src/main.ts`) en el puerto **3100** y guarda el PID en `.api.pid` (logs en `.api.log` / `.api.log.err`).
-4. Espera `GET /health` y ejecuta `seed-demo.mjs`, que carga todo por la API real y muestra un resumen.
+4. Espera `GET http://127.0.0.1:3100/health` (usa 127.0.0.1, no `localhost`: en Windows `localhost` resuelve primero a `::1`, tarda ~2 s en ser rechazado y `Invoke-WebRequest` agota su timeout; tope 300 s con progreso cada 10 s) y ejecuta `seed-demo.mjs`, que carga todo por la API real y muestra un resumen.
 
 > Si el loader ya cargó datos y lo volvés a correr, aborta avisando que la demo está sembrada.
 

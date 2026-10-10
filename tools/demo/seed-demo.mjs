@@ -1,8 +1,8 @@
-// Carga de datos DEMO vía la API real (Node 22, fetch nativo, sin dependencias).
+﻿// Carga de datos DEMO vÃ­a la API real (Node 22, fetch nativo, sin dependencias).
 // Uso: node seed-demo.mjs   (env opcionales: API_URL, ADMIN_EMAIL, ADMIN_PASSWORD, DEMO_PASSWORD)
 import { execFileSync } from 'node:child_process';
 
-const API = process.env.API_URL ?? 'http://localhost:3100';
+const API = process.env.API_URL ?? 'http://127.0.0.1:3100';
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'admin@flockit.com.ar';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? 'DemoFlock2026';
 const PASSWORD = process.env.DEMO_PASSWORD ?? 'DemoFlock2026';
@@ -30,35 +30,35 @@ const log = (m) => console.log(`[demo] ${m}`);
 
 // ---------- Datos ----------
 const PEOPLE = [
-  { key: 'laura', name: 'Laura Gómez', email: 'laura.gomez@flockit.com.ar', role: 'LEADER' },
-  { key: 'martin', name: 'Martín Ruiz', email: 'martin.ruiz@flockit.com.ar', role: 'MEMBER' },
-  { key: 'sofia', name: 'Sofía Pereyra', email: 'sofia.pereyra@flockit.com.ar', role: 'MEMBER' },
-  { key: 'diego', name: 'Diego Fernández', email: 'diego.fernandez@flockit.com.ar', role: 'MEMBER' },
-  { key: 'valentina', name: 'Valentina Ríos', email: 'valentina.rios@flockit.com.ar', role: 'LEADER' },
+  { key: 'laura', name: 'Laura GÃ³mez', email: 'laura.gomez@flockit.com.ar', role: 'LEADER' },
+  { key: 'martin', name: 'MartÃ­n Ruiz', email: 'martin.ruiz@flockit.com.ar', role: 'MEMBER' },
+  { key: 'sofia', name: 'SofÃ­a Pereyra', email: 'sofia.pereyra@flockit.com.ar', role: 'MEMBER' },
+  { key: 'diego', name: 'Diego FernÃ¡ndez', email: 'diego.fernandez@flockit.com.ar', role: 'MEMBER' },
+  { key: 'valentina', name: 'Valentina RÃ­os', email: 'valentina.rios@flockit.com.ar', role: 'LEADER' },
 ];
 
-// KR numérico: [titulo, inicio, meta, unidad, responsable, checkins?]
+// KR numÃ©rico: [titulo, inicio, meta, unidad, responsable, checkins?]
 // KR manual:   ['M', titulo, responsable, checkins?]
 // checkins: array de [fraccion de avance (o score 0..1 si es manual), accion, nota, flag?]
 const ANNUAL = [
   {
     key: 'A1', type: 'ASPIRATIONAL', origin: 'TOP_DOWN',
-    title: 'Convertirnos en la plataforma de referencia para equipos comerciales de la región',
-    description: 'Queremos que cuando un equipo comercial busque ordenar su gestión, piense primero en nosotros.',
+    title: 'Convertirnos en la plataforma de referencia para equipos comerciales de la regiÃ³n',
+    description: 'Queremos que cuando un equipo comercial busque ordenar su gestiÃ³n, piense primero en nosotros.',
     krs: [
       ['Llegar a 120 clientes activos', 40, 120, 'clientes'],
       ['Alcanzar un NPS de 60', 35, 60, 'puntos'],
-      ['M', 'Lanzar la versión 2.0 en los 3 mercados objetivo'],
+      ['M', 'Lanzar la versiÃ³n 2.0 en los 3 mercados objetivo'],
     ],
   },
   {
     key: 'A2', type: 'COMMITTED', origin: 'TOP_DOWN',
-    title: 'Construir una operación comercial predecible y rentable',
+    title: 'Construir una operaciÃ³n comercial predecible y rentable',
     description: 'Ingresos recurrentes estables y un ciclo de venta que podamos proyectar con confianza.',
     krs: [
       ['Alcanzar USD 80000 de ingresos recurrentes mensuales', 45000, 80000, 'USD'],
       ['Reducir el churn mensual de 8 a 3', 8, 3, '%'],
-      ['Acortar el ciclo de venta de 60 a 35', 60, 35, 'días'],
+      ['Acortar el ciclo de venta de 60 a 35', 60, 35, 'dÃ­as'],
     ],
   },
   {
@@ -67,8 +67,8 @@ const ANNUAL = [
     description: 'Un equipo que aprende, se cuida y se queda.',
     krs: [
       ['Subir el eNPS de 20 a 50', 20, 50, 'puntos'],
-      ['Bajar la rotación anual de 18 a 8', 18, 8, '%'],
-      ['M', 'Implementar el programa de mentoring en todas las áreas'],
+      ['Bajar la rotaciÃ³n anual de 18 a 8', 18, 8, '%'],
+      ['M', 'Implementar el programa de mentoring en todas las Ã¡reas'],
     ],
   },
 ];
@@ -79,30 +79,30 @@ const OBJECTIVES = [
   {
     key: 'P1', owner: 'team:pd', type: 'ASPIRATIONAL', origin: 'TOP_DOWN', parent: 'A1',
     title: 'Entregar una experiencia de producto que enamore a nuestros clientes',
-    description: 'Que usar la plataforma sea rápido, claro y hasta un poco placentero.',
+    description: 'Que usar la plataforma sea rÃ¡pido, claro y hasta un poco placentero.',
     krs: [
-      ['Subir la satisfacción (CSAT) de 72 a 90', 72, 90, '%', 'laura', [[0.5, 'UPDATE', 'Arrancamos la encuesta in-app, primeros resultados alentadores.'], [0.67, 'CONTINUE', 'Seguimos la misma línea, sin sorpresas.']]],
-      ['Reducir el tiempo de carga de la home de 4.2 a 1.5', 4.2, 1.5, 'segundos', 'martin', [[0.85, 'CONTINUE', 'Con el lazy loading y las imágenes optimizadas ya estamos en 1.9 s.']]],
-      ['Lanzar 4 funcionalidades del roadmap', 0, 4, 'funcionalidades', 'sofia', [[0.25, 'START', 'Salió la primera; empecemos a ordenar la segunda con ventas.']]],
+      ['Subir la satisfacciÃ³n (CSAT) de 72 a 90', 72, 90, '%', 'laura', [[0.5, 'UPDATE', 'Arrancamos la encuesta in-app, primeros resultados alentadores.'], [0.67, 'CONTINUE', 'Seguimos la misma lÃ­nea, sin sorpresas.']]],
+      ['Reducir el tiempo de carga de la home de 4.2 a 1.5', 4.2, 1.5, 'segundos', 'martin', [[0.85, 'CONTINUE', 'Con el lazy loading y las imÃ¡genes optimizadas ya estamos en 1.9 s.']]],
+      ['Lanzar 4 funcionalidades del roadmap', 0, 4, 'funcionalidades', 'sofia', [[0.25, 'START', 'SaliÃ³ la primera; empecemos a ordenar la segunda con ventas.']]],
     ],
   },
   {
     key: 'P2', owner: 'team:pd', type: 'COMMITTED', origin: 'TOP_DOWN', parent: 'A1',
     title: 'Tener una plataforma estable en la que podamos confiar',
-    description: 'Menos incendios y más previsibilidad para el equipo y para los clientes.',
+    description: 'Menos incendios y mÃ¡s previsibilidad para el equipo y para los clientes.',
     krs: [
-      ['Bajar los incidentes críticos de 9 a 2 por mes', 9, 2, 'incidentes', 'laura', [[0.3, 'UPDATE', 'Bajamos de 9 a 7, pero todavía falta mucho. Hay que parar con los hotfixes.']]],
-      ['Subir la cobertura de tests de 45 a 80', 45, 80, '%', 'martin', [[0.75, 'CONTINUE', 'Cubrimos los módulos de facturación y alineación; vamos bien.']]],
-      ['Reducir el tiempo de recuperación ante caídas de 240 a 30', 240, 30, 'minutos', 'laura', null],
+      ['Bajar los incidentes crÃ­ticos de 9 a 2 por mes', 9, 2, 'incidentes', 'laura', [[0.3, 'UPDATE', 'Bajamos de 9 a 7, pero todavÃ­a falta mucho. Hay que parar con los hotfixes.']]],
+      ['Subir la cobertura de tests de 45 a 80', 45, 80, '%', 'martin', [[0.75, 'CONTINUE', 'Cubrimos los mÃ³dulos de facturaciÃ³n y alineaciÃ³n; vamos bien.']]],
+      ['Reducir el tiempo de recuperaciÃ³n ante caÃ­das de 240 a 30', 240, 30, 'minutos', 'laura', null],
     ],
   },
   {
     key: 'P3', owner: 'team:pd', type: 'ASPIRATIONAL', origin: 'BOTTOM_UP',
     title: 'Aprender de nuestros usuarios antes de construir',
-    description: 'Decidir con evidencia y no con intuición.',
+    description: 'Decidir con evidencia y no con intuiciÃ³n.',
     krs: [
       ['Hacer 30 entrevistas con usuarios', 0, 30, 'entrevistas', 'sofia', [[0.1, 'START', 'Solo hicimos 3 entrevistas, cuesta coordinar agendas. Probemos con incentivos.']]],
-      ['Subir la adopción de las funcionalidades nuevas de 10 a 40', 10, 40, '%', 'laura', null],
+      ['Subir la adopciÃ³n de las funcionalidades nuevas de 10 a 40', 10, 40, '%', 'laura', null],
       ['M', 'Documentar el proceso de discovery del equipo', 'laura', null],
     ],
   },
@@ -110,20 +110,20 @@ const OBJECTIVES = [
   {
     key: 'C1', owner: 'team:com', type: 'ASPIRATIONAL', origin: 'TOP_DOWN', parent: 'A1',
     title: 'Crecer la base de clientes con cuentas de alto valor',
-    description: 'Menos volumen por volumen y más cuentas que crezcan con nosotros.',
+    description: 'Menos volumen por volumen y mÃ¡s cuentas que crezcan con nosotros.',
     krs: [
-      ['Llegar a 75 clientes activos', 40, 75, 'clientes', 'valentina', [[0.55, 'UPDATE', 'Cerramos 4 cuentas más esta semana, vamos por buen camino.']]],
+      ['Llegar a 75 clientes activos', 40, 75, 'clientes', 'valentina', [[0.55, 'UPDATE', 'Cerramos 4 cuentas mÃ¡s esta semana, vamos por buen camino.']]],
       ['Armar un pipeline calificado de USD 400000', 0, 400000, 'USD', 'diego', [[0.8, 'CONTINUE', 'El pipeline supera los 320 mil, hay que cuidar la calidad de las oportunidades.']]],
-      ['Publicar 5 casos de éxito', 0, 5, 'casos', 'valentina', null],
+      ['Publicar 5 casos de Ã©xito', 0, 5, 'casos', 'valentina', null],
     ],
   },
   {
     key: 'C2', owner: 'team:com', type: 'COMMITTED', origin: 'TOP_DOWN', parent: 'A2',
-    title: 'Cerrar ventas más rápido y con mejor calidad',
-    description: 'Un proceso de venta claro, medible y sin descuentos de desesperación.',
+    title: 'Cerrar ventas mÃ¡s rÃ¡pido y con mejor calidad',
+    description: 'Un proceso de venta claro, medible y sin descuentos de desesperaciÃ³n.',
     krs: [
-      ['Acortar el ciclo de venta de 60 a 35', 60, 35, 'días', 'valentina', [[0.2, 'START', 'Recién estamos midiendo etapas; el cuello de botella está en la legal.']]],
-      ['Subir la tasa de cierre de 18 a 28', 18, 28, '%', 'diego', [[0.35, 'UPDATE', 'Mejoró un poco, pero todavía perdemos demasiadas en la etapa de demo.']]],
+      ['Acortar el ciclo de venta de 60 a 35', 60, 35, 'dÃ­as', 'valentina', [[0.2, 'START', 'ReciÃ©n estamos midiendo etapas; el cuello de botella estÃ¡ en la legal.']]],
+      ['Subir la tasa de cierre de 18 a 28', 18, 28, '%', 'diego', [[0.35, 'UPDATE', 'MejorÃ³ un poco, pero todavÃ­a perdemos demasiadas en la etapa de demo.']]],
       ['Bajar el descuento promedio de 15 a 8', 15, 8, '%', 'valentina', null],
     ],
   },
@@ -132,47 +132,47 @@ const OBJECTIVES = [
     title: 'Que nuestros clientes se queden y recomienden',
     description: 'La mejor venta es la del cliente que nos recomienda.',
     krs: [
-      ['Reducir el churn de 8 a 3', 8, 3, '%', 'valentina', [[0.1, 'STOP', 'Dejamos de ofrecer descuentos de retención sin plan de uso; no estaba funcionando.']]],
+      ['Reducir el churn de 8 a 3', 8, 3, '%', 'valentina', [[0.1, 'STOP', 'Dejamos de ofrecer descuentos de retenciÃ³n sin plan de uso; no estaba funcionando.']]],
       ['Subir el NPS de clientes de 35 a 55', 35, 55, 'puntos', 'diego', null],
-      ['M', 'Lanzar el programa de referidos', 'valentina', [[0.4, 'UPDATE', 'Tenemos el diseño del programa; falta definir el beneficio.']]],
+      ['M', 'Lanzar el programa de referidos', 'valentina', [[0.4, 'UPDATE', 'Tenemos el diseÃ±o del programa; falta definir el beneficio.']]],
     ],
   },
-  // ---- Martín ----
+  // ---- MartÃ­n ----
   {
     key: 'M1', owner: 'martin', type: 'ASPIRATIONAL', origin: 'BOTTOM_UP', parent: 'P1',
     title: 'Hacer que la app vuele en cualquier dispositivo',
     description: 'Rendimiento percibido como una ventaja competitiva.',
     krs: [
       ['Subir el puntaje de Lighthouse de 52 a 90', 52, 90, 'puntos', 'martin', [[0.4, 'UPDATE', 'Pasamos de 52 a 67 con code splitting.'], [0.87, 'CONTINUE', 'Llegamos a 85; solo queda ajustar fuentes y CLS.']]],
-      ['Reducir el bundle principal de 2400 a 1200', 2400, 1200, 'KB', 'martin', [[0.6, 'CONTINUE', 'Sacamos dos librerías pesadas, ahora estamos en 1680 KB.']]],
-      ['Bajar el LCP en móviles de 4.2 a 2.0', 4.2, 2.0, 'segundos', 'martin', [[0.95, 'CONTINUE', 'LCP en 2.1 s en el 75% de las sesiones.']]],
+      ['Reducir el bundle principal de 2400 a 1200', 2400, 1200, 'KB', 'martin', [[0.6, 'CONTINUE', 'Sacamos dos librerÃ­as pesadas, ahora estamos en 1680 KB.']]],
+      ['Bajar el LCP en mÃ³viles de 4.2 a 2.0', 4.2, 2.0, 'segundos', 'martin', [[0.95, 'CONTINUE', 'LCP en 2.1 s en el 75% de las sesiones.']]],
     ],
   },
   {
     key: 'M2', owner: 'martin', type: 'COMMITTED', origin: 'TOP_DOWN', parent: 'P2',
-    title: 'Dejar el código de la plataforma más sano',
-    description: 'Pagar la deuda técnica que más frena al equipo.',
+    title: 'Dejar el cÃ³digo de la plataforma mÃ¡s sano',
+    description: 'Pagar la deuda tÃ©cnica que mÃ¡s frena al equipo.',
     krs: [
-      ['Subir la cobertura de tests de 45 a 80', 45, 80, '%', 'martin', [[0.3, 'UPDATE', 'Aún estamos en 55%; priorizamos lo crítico.']]],
-      ['Migrar 12 módulos al nuevo esquema de componentes', 0, 12, 'módulos', 'martin', [[0.25, 'START', 'Migramos 3; falta acordar el criterio para los módulos legacy.']]],
-      ['M', 'Publicar la guía de arquitectura del frontend', 'martin', [[0.2, 'START', 'Tenemos el índice y el primer borrador.']]],
+      ['Subir la cobertura de tests de 45 a 80', 45, 80, '%', 'martin', [[0.3, 'UPDATE', 'AÃºn estamos en 55%; priorizamos lo crÃ­tico.']]],
+      ['Migrar 12 mÃ³dulos al nuevo esquema de componentes', 0, 12, 'mÃ³dulos', 'martin', [[0.25, 'START', 'Migramos 3; falta acordar el criterio para los mÃ³dulos legacy.']]],
+      ['M', 'Publicar la guÃ­a de arquitectura del frontend', 'martin', [[0.2, 'START', 'Tenemos el Ã­ndice y el primer borrador.']]],
     ],
   },
   {
     key: 'M3', owner: 'martin', type: 'ASPIRATIONAL', origin: 'BOTTOM_UP',
-    title: 'Crecer como referente técnico del equipo',
-    description: 'Compartir lo que sé y ayudar a que el resto crezca.',
+    title: 'Crecer como referente tÃ©cnico del equipo',
+    description: 'Compartir lo que sÃ© y ayudar a que el resto crezca.',
     krs: [
-      ['Dar 3 charlas técnicas internas', 0, 3, 'charlas', 'martin', null],
-      ['Reducir el tiempo medio de code review de 48 a 12', 48, 12, 'horas', 'martin', [[0.55, 'UPDATE', 'Bajamos a 28 horas con las revisiones acordadas a media mañana.']]],
-      ['M', 'Completar la certificación de arquitectura frontend', 'martin', null],
+      ['Dar 3 charlas tÃ©cnicas internas', 0, 3, 'charlas', 'martin', null],
+      ['Reducir el tiempo medio de code review de 48 a 12', 48, 12, 'horas', 'martin', [[0.55, 'UPDATE', 'Bajamos a 28 horas con las revisiones acordadas a media maÃ±ana.']]],
+      ['M', 'Completar la certificaciÃ³n de arquitectura frontend', 'martin', null],
     ],
   },
-  // ---- Sofía ----
+  // ---- SofÃ­a ----
   {
     key: 'S1', owner: 'sofia', type: 'ASPIRATIONAL', origin: 'BOTTOM_UP', parent: 'P3',
     title: 'Entender de verdad a quienes usan el producto',
-    description: 'Que cada decisión de diseño tenga una voz de usuario detrás.',
+    description: 'Que cada decisiÃ³n de diseÃ±o tenga una voz de usuario detrÃ¡s.',
     krs: [
       ['Realizar 20 entrevistas de descubrimiento', 0, 20, 'entrevistas', 'sofia', [[0.15, 'START', 'Hicimos 3, necesitamos acelerar el reclutamiento.']]],
       ['Sintetizar 10 insights accionables', 0, 10, 'insights', 'sofia', null],
@@ -184,19 +184,19 @@ const OBJECTIVES = [
     title: 'Simplificar el onboarding de los clientes nuevos',
     description: 'Que en la primera semana ya vean valor.',
     krs: [
-      ['Reducir el tiempo de onboarding de 14 a 5', 14, 5, 'días', 'sofia', [[0.9, 'CONTINUE', 'El nuevo flujo guiado ya baja el onboarding a menos de 6 días.']]],
-      ['Subir la tasa de activación de 35 a 60', 35, 60, '%', 'sofia', [[0.45, 'UPDATE', 'Activación en 46%; el paso de integración sigue frenando.']]],
-      ['Bajar los tickets de soporte de onboarding de 120 a 40', 120, 40, 'tickets', 'sofia', [[0.1, 'STOP', 'Dejamos de enviar el manual en PDF, genera más dudas que respuestas.']]],
+      ['Reducir el tiempo de onboarding de 14 a 5', 14, 5, 'dÃ­as', 'sofia', [[0.9, 'CONTINUE', 'El nuevo flujo guiado ya baja el onboarding a menos de 6 dÃ­as.']]],
+      ['Subir la tasa de activaciÃ³n de 35 a 60', 35, 60, '%', 'sofia', [[0.45, 'UPDATE', 'ActivaciÃ³n en 46%; el paso de integraciÃ³n sigue frenando.']]],
+      ['Bajar los tickets de soporte de onboarding de 120 a 40', 120, 40, 'tickets', 'sofia', [[0.1, 'STOP', 'Dejamos de enviar el manual en PDF, genera mÃ¡s dudas que respuestas.']]],
     ],
   },
   {
     key: 'S3', owner: 'sofia', type: 'ASPIRATIONAL', origin: 'BOTTOM_UP',
-    title: 'Construir un sistema de diseño que nos haga más rápidos',
+    title: 'Construir un sistema de diseÃ±o que nos haga mÃ¡s rÃ¡pidos',
     description: 'Componentes consistentes y documentados para todo el equipo.',
     krs: [
       ['Documentar 40 componentes', 0, 40, 'componentes', 'sofia', null],
-      ['Subir la reutilización de componentes de 30 a 70', 30, 70, '%', 'sofia', null],
-      ['M', 'Lograr que los 2 equipos adopten el sistema de diseño', 'sofia', null],
+      ['Subir la reutilizaciÃ³n de componentes de 30 a 70', 30, 70, '%', 'sofia', null],
+      ['M', 'Lograr que los 2 equipos adopten el sistema de diseÃ±o', 'sofia', null],
     ],
   },
   // ---- Diego ----
@@ -206,27 +206,27 @@ const OBJECTIVES = [
     description: 'Llegar a quienes deciden con un mensaje que resuelva su problema.',
     krs: [
       ['Concretar 40 reuniones con decisores', 0, 40, 'reuniones', 'diego', [[0.6, 'CONTINUE', 'Llevamos 24 reuniones; el outbound personalizado funciona mejor.']]],
-      ['Sumar 15 clientes nuevos', 0, 15, 'clientes', 'diego', [[0.2, 'START', 'Tenemos 3 cierres, y varios en negociación avanzada.']]],
+      ['Sumar 15 clientes nuevos', 0, 15, 'clientes', 'diego', [[0.2, 'START', 'Tenemos 3 cierres, y varios en negociaciÃ³n avanzada.']]],
       ['Generar USD 150000 de pipeline propio', 0, 150000, 'USD', 'diego', null],
     ],
   },
   {
     key: 'D2', owner: 'diego', type: 'COMMITTED', origin: 'BOTTOM_UP', parent: 'C2',
-    title: 'Responder rápido y acompañar mejor a cada prospecto',
+    title: 'Responder rÃ¡pido y acompaÃ±ar mejor a cada prospecto',
     description: 'La velocidad de respuesta como parte de la propuesta de valor.',
     krs: [
       ['Reducir el tiempo de respuesta de 48 a 12', 48, 12, 'horas', 'diego', [[0.4, 'UPDATE', 'Bajamos a 34 horas con las respuestas guardadas.'], [0.89, 'CONTINUE', 'Estamos respondiendo en 16 horas en promedio.']]],
       ['Subir el seguimiento registrado en CRM de 55 a 95', 55, 95, '%', 'diego', [[0.7, 'CONTINUE', 'Llegamos a 83%, falta sumar las llamadas.']]],
-      ['M', 'Armar y validar el playbook de primera reunión', 'diego', null],
+      ['M', 'Armar y validar el playbook de primera reuniÃ³n', 'diego', null],
     ],
   },
   {
     key: 'D3', owner: 'diego', type: 'COMMITTED', origin: 'TOP_DOWN', parent: 'C3',
-    title: 'Profundizar la relación con los clientes actuales',
-    description: 'Acompañar a cada cuenta para que crezca y nos recomiende.',
+    title: 'Profundizar la relaciÃ³n con los clientes actuales',
+    description: 'AcompaÃ±ar a cada cuenta para que crezca y nos recomiende.',
     krs: [
       ['Visitar a 12 clientes clave', 0, 12, 'visitas', 'diego', [[0.5, 'UPDATE', 'Hicimos 6 visitas, todas con buen feedback.', 'overdue']]],
-      ['Documentar 3 casos de éxito con clientes', 0, 3, 'casos', 'diego', null],
+      ['Documentar 3 casos de Ã©xito con clientes', 0, 3, 'casos', 'diego', null],
       ['Bajar el churn de mis cuentas de 10 a 4', 10, 4, '%', 'diego', [[0.15, 'START', 'Identificamos 4 cuentas en riesgo y armamos plan de rescate.']]],
     ],
   },
@@ -234,14 +234,14 @@ const OBJECTIVES = [
 
 const round = (n) => Math.round(n * 10) / 10;
 
-// ---------- Ejecución ----------
+// ---------- EjecuciÃ³n ----------
 const startedAt = Date.now();
 const adminToken = await login(ADMIN_EMAIL, ADMIN_PASSWORD);
 log('Login admin OK');
 
 const existing = await call(adminToken, 'GET', '/cycles');
 if (existing.length > 0) {
-  console.error('[demo] Ya hay ciclos cargados: la DEMO parece estar sembrada. Ejecutá demo-down.ps1 y volvé a levantar.');
+  console.error('[demo] Ya hay ciclos cargados: la DEMO parece estar sembrada. EjecutÃ¡ demo-down.ps1 y volvÃ© a levantar.');
   process.exit(2);
 }
 
@@ -305,7 +305,7 @@ async function createKrs(token, objectiveId, def) {
   return krs;
 }
 
-// Anuales (admin, dueño: equipo raíz)
+// Anuales (admin, dueÃ±o: equipo raÃ­z)
 for (const a of ANNUAL) {
   const o = await call(adminToken, 'POST', '/objectives', {
     cycleId: annual.id, ownerTeamId: root.id, title: a.title, description: a.description, origin: a.origin, type: a.type,
@@ -363,49 +363,49 @@ log(`Check-ins creados: ${checkIns}`);
 // Vencidos: la API no permite retrodatar. SQL SOLO contra la DB demo (contenedor okr-demo-db-test-1, puerto 55435).
 const psql = (sql) =>
   execFileSync('docker', ['exec', 'okr-demo-db-test-1', 'psql', '-U', 'postgres', '-d', 'okr-platform-test', '-v', 'ON_ERROR_STOP=1', '-c', sql], { encoding: 'utf8' });
-psql(`UPDATE "Objective" SET "publishedAt" = now() - interval '15 days' WHERE id = '${objs.S3.id}';`); // Sofía: 3 KRs sin check-in, vencidos
+psql(`UPDATE "Objective" SET "publishedAt" = now() - interval '15 days' WHERE id = '${objs.S3.id}';`); // SofÃ­a: 3 KRs sin check-in, vencidos
 for (const id of overdueKrs) {
   psql(`UPDATE "CheckIn" SET "createdAt" = now() - interval '12 days' WHERE "keyResultId" = '${id}';`);
   psql(`UPDATE "KeyResult" SET "lastCheckInAt" = now() - interval '12 days' WHERE id = '${id}';`); // Diego: KR con check-in viejo
 }
-log('KRs vencidos retrodatados en la DB demo (objetivo S3 de Sofía y una visita de Diego)');
+log('KRs vencidos retrodatados en la DB demo (objetivo S3 de SofÃ­a y una visita de Diego)');
 
 // Feedback
 const f1 = await call(tokens.laura, 'POST', '/feedback', {
   toUserId: users.martin.id, objectiveId: objs.M1.id,
-  content: 'Martín, el trabajo con el bundle fue excelente. Me gustaría que compartas con el equipo cómo lo encaraste; podría ser tu primera charla del trimestre.',
+  content: 'MartÃ­n, el trabajo con el bundle fue excelente. Me gustarÃ­a que compartas con el equipo cÃ³mo lo encaraste; podrÃ­a ser tu primera charla del trimestre.',
 });
 await call(tokens.laura, 'POST', '/feedback', {
   toUserId: users.sofia.id, objectiveId: objs.S1.id,
-  content: 'Sofía, noto que las entrevistas van lento. ¿Querés que veamos juntas cómo reclutar usuarios con ayuda de Comercial? Creo que Diego puede conectarte con clientes.',
+  content: 'SofÃ­a, noto que las entrevistas van lento. Â¿QuerÃ©s que veamos juntas cÃ³mo reclutar usuarios con ayuda de Comercial? Creo que Diego puede conectarte con clientes.',
 });
 const f3 = await call(tokens.valentina, 'POST', '/feedback', {
   toUserId: users.diego.id, objectiveId: objs.D2.id,
-  content: 'Diego, bajar el tiempo de respuesta a 16 horas fue un gran avance. Para llegar a 12 probá priorizar primero los leads que vienen de referidos.',
+  content: 'Diego, bajar el tiempo de respuesta a 16 horas fue un gran avance. Para llegar a 12 probÃ¡ priorizar primero los leads que vienen de referidos.',
 });
 await call(tokens.valentina, 'PATCH', `/feedback/${f3.id}`, {
-  content: 'Diego, bajar el tiempo de respuesta a 16 horas fue un gran avance. Para llegar a 12 probá priorizar primero los leads que vienen de referidos y automatizar el primer contacto.',
+  content: 'Diego, bajar el tiempo de respuesta a 16 horas fue un gran avance. Para llegar a 12 probÃ¡ priorizar primero los leads que vienen de referidos y automatizar el primer contacto.',
 });
 await call(tokens.martin, 'POST', '/feedback', {
   toUserId: users.laura.id,
-  content: 'Laura, me sirvió mucho que me des tiempo protegido para los tests. Si podemos sostenerlo el próximo mes, llegamos a la meta de cobertura.',
+  content: 'Laura, me sirviÃ³ mucho que me des tiempo protegido para los tests. Si podemos sostenerlo el prÃ³ximo mes, llegamos a la meta de cobertura.',
 });
 await call(tokens.martin, 'PATCH', `/feedback/${f1.id}/read`);
 await call(tokens.diego, 'PATCH', `/feedback/${f3.id}/read`);
-log('Feedback: 4 mensajes (1 editado; sin leer: el de Sofía y el de Laura)');
+log('Feedback: 4 mensajes (1 editado; sin leer: el de SofÃ­a y el de Laura)');
 
 // Reconocimientos (hitos: KR con score >= 0.7)
 await call(tokens.laura, 'POST', '/recognitions', {
   toUserId: users.martin.id, keyResultId: objs.M1.krs[2].id,
-  message: 'Llevar el LCP móvil de 4.2 a 2.1 segundos no fue magia: fue constancia y mucho criterio técnico. ¡Gracias, Martín!',
+  message: 'Llevar el LCP mÃ³vil de 4.2 a 2.1 segundos no fue magia: fue constancia y mucho criterio tÃ©cnico. Â¡Gracias, MartÃ­n!',
 });
 await call(tokens.laura, 'POST', '/recognitions', {
   toUserId: users.sofia.id, keyResultId: objs.S2.krs[0].id,
-  message: 'El nuevo onboarding guiado hizo que los clientes vean valor en menos de una semana. Un trabajo impecable, Sofía.',
+  message: 'El nuevo onboarding guiado hizo que los clientes vean valor en menos de una semana. Un trabajo impecable, SofÃ­a.',
 });
 await call(tokens.valentina, 'POST', '/recognitions', {
   toUserId: users.diego.id, keyResultId: objs.D2.krs[0].id,
-  message: 'Pasar de 48 a 16 horas de respuesta cambió la conversación con los prospectos. ¡Muy bien, Diego!',
+  message: 'Pasar de 48 a 16 horas de respuesta cambiÃ³ la conversaciÃ³n con los prospectos. Â¡Muy bien, Diego!',
 });
 log('Reconocimientos: 3');
 

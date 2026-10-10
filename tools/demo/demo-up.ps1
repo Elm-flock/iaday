@@ -1,4 +1,4 @@
-# Levanta el entorno DEMO: DB efimera (:55435) + API (:3100) + datos de ejemplo.
+﻿# Levanta el entorno DEMO: DB efimera (:55435) + API (:3100) + datos de ejemplo.
 # No compila nada. No toca puertos 3000/3001/55434 ni otros contenedores.
 $ErrorActionPreference = 'Continue'
 $demoDir  = $PSScriptRoot
@@ -20,6 +20,23 @@ foreach ($p in 3100, 55435) {
 
 $dbUrl = 'postgresql://postgres:postgres@localhost:55435/okr-platform-test'
 
+# 0) Docker (Docker Desktop puede no estar corriendo tras un reinicio)
+docker info *> $null
+if ($LASTEXITCODE -ne 0) {
+  $dd = 'C:\Program Files\Docker\Docker\Docker Desktop.exe'
+  if (Test-Path $dd) {
+    Write-Host '[demo] Docker no responde. Iniciando Docker Desktop y esperando hasta 3 min...'
+    Start-Process -FilePath $dd | Out-Null
+    $dsw = [System.Diagnostics.Stopwatch]::StartNew()
+    while ($dsw.Elapsed.TotalSeconds -lt 180) {
+      Start-Sleep -Seconds 5
+      docker info *> $null
+      if ($LASTEXITCODE -eq 0) { break }
+    }
+  }
+  docker info *> $null
+  if ($LASTEXITCODE -ne 0) { Fail 'Docker no esta disponible. Inicia Docker Desktop, espera a que diga "running" y reintenta.' }
+}
 # 1) DB
 Write-Host '[demo] Levantando DB demo (compose project okr-demo, puerto 55435)...'
 Push-Location $backRoot
@@ -67,16 +84,33 @@ Pop-Location
 Set-Content -Path $pidFile -Value $proc.Id
 Write-Host "[demo] API PID $($proc.Id) (guardado en .api.pid, logs en .api.log)"
 
-$healthy = $false
-for ($i = 0; $i -lt 300; $i++) {
-  if ($proc.HasExited) { Fail "La API termino inesperadamente. Ver $apiLog.err" }
+# OJO: usar 127.0.0.1 y NO localhost. Node escucha en IPv4 (0.0.0.0); localhost resuelve primero a ::1,
+# Windows tarda ~2s en rechazar esa conexion y Invoke-WebRequest (-TimeoutSec 2) expira antes de reintentar en IPv4.
+function Test-Health($url) {
   try {
-    $r = Invoke-WebRequest -Uri 'http://localhost:3100/health' -UseBasicParsing -TimeoutSec 2
-    if ($r.StatusCode -eq 200) { $healthy = $true; break }
-  } catch { }
+    $req = [System.Net.HttpWebRequest]::Create($url)
+    $req.Proxy = $null
+    $req.Timeout = 2000
+    $req.ReadWriteTimeout = 2000
+    $req.KeepAlive = $false
+    $resp = $req.GetResponse()
+    $code = [int]$resp.StatusCode
+    $resp.Close()
+    return ($code -eq 200)
+  } catch { return $false }
+}
+
+$healthy = $false
+$sw = [System.Diagnostics.Stopwatch]::StartNew()
+$maxSeconds = 300
+while ($sw.Elapsed.TotalSeconds -lt $maxSeconds) {
+  $proc.Refresh()
+  if ($proc.HasExited) { Fail "La API termino inesperadamente. Ver $apiLog.err" }
+  if (Test-Health 'http://127.0.0.1:3100/health') { $healthy = $true; break }
+  if ([int]$sw.Elapsed.TotalSeconds % 10 -eq 0) { Write-Host "[demo] Esperando /health... $([int]$sw.Elapsed.TotalSeconds)s" }
   Start-Sleep -Seconds 1
 }
-if (-not $healthy) { Fail "La API no respondio en /health. Ver $apiLog.err" }
+if (-not $healthy) { Fail "La API no respondio en /health tras ${maxSeconds}s. Ver $apiLog.err" }
 Write-Host '[demo] API saludable.'
 
 # 4) Datos de ejemplo
