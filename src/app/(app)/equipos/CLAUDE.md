@@ -22,7 +22,7 @@
 
 ## Reporte PDF del equipo
 
-- Botón en el detalle (junto al selector de ciclo) -> Route Handler `src/app/api/reports/teams/[teamId]/pdf/route.ts` (`GET ?cycleId=`). Lee la cookie `okr_at` en el server y llama a `GET /reports/teams/:id` del back; responde `application/pdf`, `attachment; filename="reporte-<equipo>-<ciclo>.pdf"`, `Cache-Control: no-store`. 400 sin `cycleId`, 401 sin sesión (JSON, no redirect: `src/proxy.ts` también devuelve 401 para `/api/*`), 404/400 del back tal cual.
+- Botón en el detalle (junto al selector de ciclo), visible solo para ADMIN o líder de ese equipo (`canDownloadTeamReport` en `policy.ts`); el back responde 403 al resto y el handler lo pasa como JSON 403 -> Route Handler `src/app/api/reports/teams/[teamId]/pdf/route.ts` (`GET ?cycleId=`). Lee la cookie `okr_at` en el server y llama a `GET /reports/teams/:id` del back; responde `application/pdf`, `attachment; filename="reporte-<equipo>-<ciclo>.pdf"`, `Cache-Control: no-store`. 400 sin `cycleId`, 401 sin sesión (JSON, no redirect: `src/proxy.ts` también devuelve 401 para `/api/*`), 404/400 del back tal cual.
 - NO exportar `runtime` en el handler (error con `cacheComponents`). El token nunca entra en una función cacheada.
 - El PDF nunca incluye feedback, ranking ni datos de compensación; personas en orden alfabético. Detalle del armado en `src/lib/pdf/` (ver CLAUDE.md raíz).
 

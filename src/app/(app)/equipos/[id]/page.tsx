@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { EditTeamButton } from '../_components/team-admin-actions';
 import { TeamDetailView } from '../_components/team-detail-view';
+import { canDownloadTeamReport } from '../policy';
 import { flattenTeams, selfAndDescendantIds } from '../team-tree';
 import { DisabledAction } from '../../_components/disabled-action';
 import { PageSkeleton } from '../../_components/page-skeleton';
@@ -86,6 +87,7 @@ async function TeamContent({
         cycleOptions={cycleOptions}
         selectedCycleId={cycleId}
         canManage={isAdmin}
+        canDownloadReport={canDownloadTeamReport(user, team.id)}
         candidates={candidates}
       />
     </>

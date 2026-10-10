@@ -78,6 +78,18 @@ describe('GET /api/reports/teams/:teamId/pdf', () => {
     expect(render).not.toHaveBeenCalled();
   });
 
+  it('403 del back (ni ADMIN ni líder del equipo): JSON con copy claro, sin renderizar', async () => {
+    backResponds(403, { message: 'Forbidden' });
+    const res = await call();
+    expect(res.status).toBe(403);
+    expect(res.headers.get('content-type')).toContain('application/json');
+    expect(res.headers.get('cache-control')).toBe('no-store');
+    expect(await res.json()).toEqual({
+      message: 'Solo administración y líderes del equipo pueden descargar el reporte.',
+    });
+    expect(render).not.toHaveBeenCalled();
+  });
+
   it('401 del back (sesión vencida) también es 401, no un redirect', async () => {
     backResponds(401, { message: 'Unauthorized' });
     const res = await call();

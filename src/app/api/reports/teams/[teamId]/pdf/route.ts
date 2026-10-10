@@ -40,10 +40,11 @@ export async function GET(
 
   const { data, response } = result;
   if (response.status === 401) return problem(401, 'Tu sesión venció. Volvé a iniciar sesión.');
+  if (response.status === 403)
+    return problem(403, 'Solo administración y líderes del equipo pueden descargar el reporte.');
   if (response.status === 404) return problem(404, 'No encontramos el equipo o el ciclo.');
   if (response.status === 400) return problem(400, 'El equipo o el ciclo no son válidos.');
-  if (!response.ok || !data)
-    return problem(response.status === 403 ? 403 : 502, 'No pudimos generar el reporte.');
+  if (!response.ok || !data) return problem(502, 'No pudimos generar el reporte.');
 
   let pdf: Buffer;
   try {

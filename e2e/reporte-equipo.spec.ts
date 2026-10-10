@@ -217,7 +217,7 @@ test.describe('Reporte PDF del equipo y reconocimiento de KRs de equipo (contra 
     await page.context().close();
   });
 
-  test('el endpoint sin sesión responde 401 (no redirige) y con cycleId faltante 400', async ({
+  test('el endpoint responde 401 sin sesión, 400 sin cycleId, 404 si no existe y 403 a un integrante', async ({
     playwright,
     browser,
   }) => {
@@ -235,14 +235,33 @@ test.describe('Reporte PDF del equipo y reconocimiento de KRs de equipo (contra 
       `/api/reports/teams/00000000-0000-4000-8000-000000000000/pdf?cycleId=${ctx.cycleId}`,
     );
     expect(unknown.status()).toBe(404);
-    // Cualquier autenticado puede bajarlo (el back lo permite): headers de descarga y sin caché.
-    const ok = await page.request.get(
+    // Ana es integrante (no líder ni ADMIN): el back responde 403 y el front lo pasa como JSON.
+    const forbidden = await page.request.get(
+      `/api/reports/teams/${ctx.teamId}/pdf?cycleId=${ctx.cycleId}`,
+    );
+    expect(forbidden.status()).toBe(403);
+    expect(forbidden.headers()['content-type']).toContain('application/json');
+    await page.context().close();
+
+    // ADMIN sí: headers de descarga y sin caché.
+    const adminPage = await sessionFor(browser, 'admin');
+    const ok = await adminPage.request.get(
       `/api/reports/teams/${ctx.teamId}/pdf?cycleId=${ctx.cycleId}`,
     );
     expect(ok.status()).toBe(200);
     expect(ok.headers()['cache-control']).toBe('no-store');
     expect(ok.headers()['content-disposition']).toMatch(/^attachment; filename="reporte-/);
     expect((await ok.body()).subarray(0, 4).toString('latin1')).toBe('%PDF');
+    await adminPage.context().close();
+  });
+
+  test('un integrante no ve el botón de descarga del reporte', async ({ browser }) => {
+    const page = await sessionFor(browser, 'ana');
+    await page.goto(`/equipos/${ctx.teamId}?cycleId=${ctx.cycleId}`);
+    await expect(page.getByRole('heading', { level: 1, name: teamName })).toBeVisible();
+    await expect(page.getByText('Mezcla de objetivos (50/50)')).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Descargar reporte PDF' })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Descargar reporte PDF' })).toHaveCount(0);
     await page.context().close();
   });
 
