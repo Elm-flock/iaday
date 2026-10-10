@@ -2,7 +2,7 @@ import NextLink from 'next/link';
 import { Card } from '@/components/ui/card';
 import { ScoreBar } from '@/components/ui/score-bar';
 import type { Objective } from '@/lib/dal/objectives';
-import { ObjectiveStatusBadge, ObjectiveTags } from './objective-meta';
+import { FinalResult, ObjectiveStatusBadge, ObjectiveTags } from './objective-meta';
 import { hasScore, ObjectiveProgressBadge, objectiveProgressState } from './progress-badge';
 
 type Related = { id: string; title: string; status: Objective['status']; ownerName: string };
@@ -65,6 +65,7 @@ export function ObjectiveDetailView({
           ) : (
             <div className="flex flex-wrap items-center gap-s15">
               <ObjectiveProgressBadge objective={objective} />
+              <FinalResult objective={objective} />
               {hasScore(objectiveProgressState(objective)) ? (
                 <ScoreBar
                   score={objective.score}

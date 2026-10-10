@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
   turbopack: {
     rules: {
       '*.css': {
+        // Sin esto el loader también procesa el CSS interno de next/font/google y, con .next vacío, el dev
+        // server no compila (500: Can't resolve '@vercel/turbopack-next/internal/font/google/font').
+        condition: { not: 'foreign' },
         loaders: ['@tailwindcss/turbopack'],
         as: '*.css',
       },

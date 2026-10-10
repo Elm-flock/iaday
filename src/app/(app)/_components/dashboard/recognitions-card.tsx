@@ -59,7 +59,7 @@ export function RecognitionsCard({
       actions={
         <NextLink
           href="/reconocimientos"
-          className="text-body-sm text-primary-text underline underline-offset-2"
+          className="shrink-0 text-body-sm whitespace-nowrap text-primary-text underline underline-offset-2"
         >
           Ver el muro
         </NextLink>

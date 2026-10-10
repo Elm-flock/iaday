@@ -32,3 +32,8 @@ Objetivos y resultados clave (`/objetivos`, `/objetivos/nuevo`, `/objetivos/[id]
 ## Tests
 
 `objetivos-logic.test.ts` (copy de todos los códigos, parseo, políticas), `actions.test.ts` (fetch mockeado: errores, redirect, `updateTag`), `_components/objetivos-views.test.tsx` (límite, lista, KRs, campos bloqueados), DAL en `src/lib/dal/objectives.test.ts`; e2e contra el back real en `e2e/objetivos.spec.ts`.
+
+## Cierre y responsive (F5)
+
+- Objetivo CLOSED: `FinalResult` (objective-meta) muestra "Puntaje final 0,80" + Logrado / No logrado (ícono + palabra) en lista y detalle.
+- Tabla de KRs: tabla completa desde `xl`; debajo, cada fila se apila (`data-label` por celda, roles ARIA explícitos) sin scroll horizontal. Los IconButton de la tabla usan `tooltipAlign="end"`.

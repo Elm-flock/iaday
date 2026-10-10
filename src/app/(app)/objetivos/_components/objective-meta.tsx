@@ -3,6 +3,7 @@ import { Tag } from '@/components/ui/tag';
 import type { Objective } from '@/lib/dal/objectives';
 import { OBJECTIVE_ORIGIN_LABEL, OBJECTIVE_STATUS_LABEL, OBJECTIVE_TYPE_LABEL } from '../messages';
 import { limitStatus } from '../policy';
+import { formatScore } from '@/lib/format';
 
 /** Estado del objetivo: ícono + palabra (nunca solo color). */
 export function ObjectiveStatusBadge({ status }: { status: Objective['status'] }) {
@@ -45,6 +46,28 @@ export function LimitIndicator({ count, exact }: { count: number; exact: boolean
       ) : count < 3 ? (
         <span className="text-body-sm text-ink-muted">Faltan {3 - count} para publicar</span>
       ) : null}
+    </span>
+  );
+}
+
+/**
+ * Resultado al cierre del ciclo: puntaje final y si alcanzó el umbral (ícono + palabra, nunca solo color).
+ * Solo para objetivos CERRADOS; no se muestra ranking ni comparación, solo el resultado propio.
+ */
+export function FinalResult({
+  objective,
+}: {
+  objective: Pick<Objective, 'status' | 'finalScore' | 'achieved'>;
+}) {
+  if (objective.status !== 'CLOSED' || objective.finalScore == null) return null;
+  return (
+    <span className="inline-flex flex-wrap items-center gap-s10" data-testid="final-result">
+      <span className="text-body-sm text-ink">
+        Puntaje final {formatScore(objective.finalScore)}
+      </span>
+      <StatusBadge tone={objective.achieved ? 'success' : 'warning'}>
+        {objective.achieved ? 'Logrado' : 'No logrado'}
+      </StatusBadge>
     </span>
   );
 }
