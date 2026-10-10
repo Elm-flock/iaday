@@ -86,7 +86,7 @@ Los roles vienen del back (`ADMIN`, `LEADER`, `MEMBER`). Además del rol, la con
 | `/objetivos/[id]`                 | Detalle: resumen, alineación padre/hijos, tabla de KRs con historial y "Registrar check-in".                                                         | Todos (borrador ajeno: 404). Edición según políticas del back.                                        |
 | `/check-ins`                      | "Pendientes": mis KRs vencidos agrupados por objetivo; registro en un `Drawer` con preview de score y banda.                                         | Todos (incluye los KRs de equipo si soy líder).                                                       |
 | `/equipos`                        | Árbol de equipos.                                                                                                                                    | Todos. Crear/editar: solo ADMIN.                                                                      |
-| `/equipos/[id]`                   | Integrantes, líder, selector de ciclo, indicador 50/50 y botón "Descargar reporte PDF".                                                              | Todos (el back permite el reporte a cualquier autenticado). Gestión de integrantes: solo ADMIN.       |
+| `/equipos/[id]`                   | Integrantes, líder, selector de ciclo, indicador 50/50 y botón "Descargar reporte PDF".                                                              | Todos. Botón de reporte: solo ADMIN o líder del equipo. Gestión de integrantes: solo ADMIN.           |
 | `/ciclos`, `/ciclos/[id]`         | Árbol anual → trimestres y detalle con cadencia y umbrales.                                                                                          | Todos. Alta, edición, activación y cierre: solo ADMIN.                                                |
 | `/feedback`                       | Bandeja privada con pestañas Recibido / Enviado (`?box=`) y contador de sin leer.                                                                    | Cada persona ve solo su feedback.                                                                     |
 | `/feedback/nuevo`                 | Formulario: destinatario, mensaje y enlace opcional a un objetivo/KR.                                                                                | Todos.                                                                                                |
@@ -95,7 +95,7 @@ Los roles vienen del back (`ADMIN`, `LEADER`, `MEMBER`). Además del rol, la con
 | `/reconocimientos/nuevo`          | Flujo en dos pasos sin estado en el cliente: persona → logro (hito) + mensaje.                                                                       | Todos.                                                                                                |
 | `/admin/usuarios`                 | Alta de usuarios, cambio de nombre/rol/estado y reseteo de contraseña.                                                                               | Solo ADMIN. El resto recibe `notFound()` y ve "Usuarios" deshabilitado en el menú con la explicación. |
 | `/ui`                             | Catálogo visual de Flock UI.                                                                                                                         | Solo en desarrollo (público para el proxy en dev; 404 en producción).                                 |
-| `/api/reports/teams/[teamId]/pdf` | Route Handler que devuelve el PDF del equipo para `?cycleId=`.                                                                                       | Cualquier sesión válida; sin sesión responde 401 JSON.                                                |
+| `/api/reports/teams/[teamId]/pdf` | Route Handler que devuelve el PDF del equipo para `?cycleId=`.                                                                                       | ADMIN o líder del equipo; sin sesión 401 y sin permiso 403 (JSON).                                    |
 
 Cada ruta del grupo `(app)` sigue el mismo patrón de carpeta: `page.tsx` (contenedor server), `actions.ts` (Server Actions), `messages.ts` (copy es-AR por código de error del back), `*-form-data.ts` (parseo puro del `FormData`), `policy.ts` cuando hace falta (espejo de las reglas del back) y `_components/` (vistas presentacionales y hojas cliente).
 
@@ -169,7 +169,7 @@ sequenceDiagram
 
 ## 4. Generación del PDF
 
-El botón "Descargar reporte PDF" del detalle de equipo (`equipos/_components/download-report-button.tsx`) es un `<a download>` común (no `next/link`, para no prefetchear un archivo) hacia el Route Handler. Sin ciclo elegido se muestra deshabilitado con la razón ("Elegí un ciclo para descargar el reporte.").
+El botón "Descargar reporte PDF" del detalle de equipo (`equipos/_components/download-report-button.tsx`) es un `<a download>` común (no `next/link`, para no prefetchear un archivo) hacia el Route Handler. Solo se renderiza para ADMIN o líder (`isLead`) de ese equipo (`canDownloadTeamReport` en `equipos/policy.ts`); integrantes y líderes de otros equipos no lo ven. Sin ciclo elegido se muestra deshabilitado con la razón ("Elegí un ciclo para descargar el reporte.").
 
 ```mermaid
 sequenceDiagram
@@ -212,7 +212,7 @@ sequenceDiagram
 Detalles verificados en el código:
 
 - **Ruta**: `src/app/api/reports/teams/[teamId]/pdf/route.ts`. No usa `authedApi()` (que redirige) sino `createApiClient({ token })`, para poder responder JSON con status. No exporta `runtime`: con `cacheComponents` es un error, y Node ya es el default.
-- **Respuestas**: 400 sin `cycleId`, 401 sin cookie o si el back responde 401, 404/400 del back con copy propio, 403 si el back lo devuelve, 502 si el back está caído o falla, 500 si falla el render. Todas con `Cache-Control: no-store`.
+- **Respuestas**: 400 sin `cycleId`, 401 sin cookie o si el back responde 401, 404/400 del back con copy propio, 403 si el back lo devuelve (solo ADMIN o líder de ese equipo pueden pedir el reporte; copy propio), 502 si el back está caído o falla, 500 si falla el render. Todas con `Cache-Control: no-store`.
 - **Nombre de archivo**: `reporte-<equipo>-<ciclo>.pdf` con slug ASCII (`src/lib/pdf/slug.ts`).
 - **Spec puro** (`team-report-spec.ts`): convierte el DTO en un `Spec` de `@json-render/core` con todo el texto ya formateado (es-AR). Personas en orden alfabético, nunca por score; sin check-ins hay badge neutro "Sin check-ins"; aviso suave si la mezcla de origen sale de 40–60 %. Se testea sin renderizar.
 - **Registro** (`registry.tsx`): componentes propios (`Page` con pie "Página X de Y", `BrandHeader` con degradé "Noche", `OriginMix`, `ObjectiveBlock`, `SectionTitle`). Estado = ícono SVG + palabra.

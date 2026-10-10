@@ -151,7 +151,7 @@ Hacé clic en **Cerrar sesión**, arriba a la derecha. Volvés a la pantalla de 
 | Registrar check-ins                                | En KRs propios, de sus objetivos o de su equipo |   Igual, más los de sus equipos    | Igual que el resto (no tiene acceso especial) |
 | Dar y recibir feedback privado                     |                       Sí                        |                 Sí                 |                      Sí                       |
 | Reconocer logros en el muro                        |                       Sí                        |                 Sí                 |                      Sí                       |
-| Descargar el reporte PDF de un equipo              |                       Sí                        |                 Sí                 |                      Sí                       |
+| Descargar el reporte PDF de un equipo              |                       No                        |       Sí (solo sus equipos)        |                      Sí                       |
 | Ver la mezcla 50/50 de su equipo en Inicio         |                       No                        |                 Sí                 |           No (la ve en cada equipo)           |
 | Crear y editar ciclos, activarlos y cerrarlos      |                       No                        |                 No                 |                      Sí                       |
 | Crear y editar equipos e integrantes               |                       No                        |                 No                 |                      Sí                       |
@@ -313,7 +313,7 @@ No podés reconocerte a vos mismo. Si la persona todavía no tiene logros que cu
 
 ### 4.10 Consultar equipos y ciclos
 
-- **Equipos** muestra cómo se organiza Flock IT (un árbol de equipos). En cada equipo ves los integrantes, quién lidera, la mezcla 50/50 del ciclo elegido y el botón **Descargar reporte PDF** (ver [5.3](#53-descargar-el-reporte-pdf-del-equipo)).
+- **Equipos** muestra cómo se organiza Flock IT (un árbol de equipos). En cada equipo ves los integrantes, quién lidera, la mezcla 50/50 del ciclo elegido y, si administrás o liderás ese equipo, el botón **Descargar reporte PDF** (ver [5.3](#53-descargar-el-reporte-pdf-del-equipo)).
 - **Ciclos** muestra los ciclos anuales con sus trimestres, sus fechas y su estado. En cada ciclo ves la cadencia de check-in y los umbrales de logro.
 
 ---
@@ -353,7 +353,7 @@ El PDF incluye la mezcla de origen y cada objetivo del equipo con sus resultados
 
 ![Primera página del reporte PDF](manual/img/15-reporte-pdf-equipo.png)
 
-> El reporte lo puede descargar cualquier persona con acceso a la plataforma, desde el detalle de cualquier equipo.
+> El reporte lo pueden descargar **administración y los líderes de ese equipo**. Quienes integran el equipo, o lideran otro, no ven el botón.
 
 ### 5.4 Lo que un líder no puede hacer
 
@@ -457,6 +457,9 @@ Cada responsable necesita al menos 3 objetivos en el ciclo y cada objetivo al me
 
 **¿Puedo borrar un objetivo publicado o quitarle un KR?**
 No. Solo se pueden eliminar objetivos y KRs en borrador.
+
+**¿Quién puede descargar el reporte PDF de un equipo?**
+Solo administración y quienes lideran ese equipo. Si sos integrante, o líder de otro equipo, el botón **Descargar reporte PDF** no aparece en el detalle; pedile el reporte a tu líder.
 
 **¿Por qué no puedo cambiar la meta de un KR?**
 Después de publicar, el inicio y la meta solo los pueden cambiar el líder o administración. Así se evita mover la vara a mitad de camino.
