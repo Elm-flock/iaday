@@ -132,6 +132,15 @@ describe('Modal', () => {
     expect(onClose).toHaveBeenCalled();
   });
 
+  it('el foco inicial va al primer campo y no al botón Cerrar (evita su tooltip flotando)', () => {
+    render(
+      <Modal open onClose={() => {}} title="Nuevo resultado clave">
+        <input aria-label="Título" />
+      </Modal>,
+    );
+    expect(screen.getByRole('textbox', { name: 'Título' })).toHaveFocus();
+  });
+
   it('no está abierto cuando open=false', () => {
     render(<Modal open={false} onClose={() => {}} title="Oculto" />);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -158,5 +167,19 @@ describe('ConfirmDialog', () => {
     expect(onConfirm).toHaveBeenCalledTimes(1);
     await userEvent.click(within(dialog).getByRole('button', { name: 'Cancelar' }));
     expect(onCancel).toHaveBeenCalledTimes(1);
+  });
+
+  it('el foco inicial cae en Cancelar (la opción segura), no en Cerrar', () => {
+    render(
+      <ConfirmDialog
+        open
+        title="Eliminar partner"
+        description="Esta acción no se puede deshacer."
+        confirmLabel="Eliminar partner"
+        onConfirm={() => {}}
+        onCancel={() => {}}
+      />,
+    );
+    expect(screen.getByRole('button', { name: 'Cancelar' })).toHaveFocus();
   });
 });

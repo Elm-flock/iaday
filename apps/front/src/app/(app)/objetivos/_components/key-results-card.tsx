@@ -19,6 +19,10 @@ import { useToast } from '@/components/ui/toast';
 import type { KeyResult, Objective } from '@/lib/dal/objectives';
 import { formatNumber } from '@/lib/format';
 
+/** Celda de datos: en pantallas angostas la fila se apila y cada dato lleva su etiqueta (data-label). */
+const cell =
+  'py-s10 pr-s10 max-xl:flex max-xl:items-center max-xl:justify-between max-xl:gap-s10 max-xl:py-s5 max-xl:pr-0 max-xl:before:text-caption max-xl:before:text-ink-muted max-xl:before:content-[attr(data-label)]';
+
 const num = (value: string | null) =>
   value === null ? '—' : formatNumber(Number(value), Number.isInteger(Number(value)) ? 0 : 2);
 
@@ -119,57 +123,86 @@ export function KeyResultsCard({
         />
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[56rem] border-collapse text-left text-body-sm">
+          <table
+            role="table"
+            className="w-full border-collapse text-left text-body-sm max-xl:block"
+          >
             <caption className="sr-only">Resultados clave del objetivo</caption>
-            <thead>
-              <tr className="border-b border-border text-ink-muted">
-                <th scope="col" className="py-s10 pr-s10 font-normal">
+            <thead role="rowgroup" className="max-xl:sr-only">
+              <tr role="row" className="border-b border-border text-ink-muted">
+                <th role="columnheader" scope="col" className="py-s10 pr-s10 font-normal">
                   Resultado clave
                 </th>
-                <th scope="col" className="py-s10 pr-s10 font-normal">
+                <th role="columnheader" scope="col" className="py-s10 pr-s10 font-normal">
                   Tipo
                 </th>
-                <th scope="col" className="py-s10 pr-s10 text-right font-normal">
+                <th
+                  role="columnheader"
+                  scope="col"
+                  className="py-s10 pr-s10 text-right font-normal"
+                >
                   Inicio
                 </th>
-                <th scope="col" className="py-s10 pr-s10 text-right font-normal">
+                <th
+                  role="columnheader"
+                  scope="col"
+                  className="py-s10 pr-s10 text-right font-normal"
+                >
                   Meta
                 </th>
-                <th scope="col" className="py-s10 pr-s10 text-right font-normal">
+                <th
+                  role="columnheader"
+                  scope="col"
+                  className="py-s10 pr-s10 text-right font-normal"
+                >
                   Actual
                 </th>
-                <th scope="col" className="py-s10 pr-s10 font-normal">
+                <th role="columnheader" scope="col" className="py-s10 pr-s10 font-normal">
                   Unidad
                 </th>
-                <th scope="col" className="py-s10 pr-s10 font-normal">
+                <th role="columnheader" scope="col" className="py-s10 pr-s10 font-normal">
                   Score
                 </th>
-                <th scope="col" className="py-s10 pr-s10 font-normal">
+                <th role="columnheader" scope="col" className="py-s10 pr-s10 font-normal">
                   Banda
                 </th>
                 {showActions ? (
-                  <th scope="col" className="py-s10 font-normal">
+                  <th role="columnheader" scope="col" className="py-s10 font-normal">
                     <span className="sr-only">Acciones</span>
                   </th>
                 ) : null}
               </tr>
             </thead>
-            <tbody>
+            <tbody role="rowgroup" className="max-xl:block">
               {keyResults.map((kr) => (
-                <tr key={kr.id} className="border-b border-border align-middle last:border-0">
-                  <td className="py-s10 pr-s10 text-ink">
+                <tr
+                  key={kr.id}
+                  role="row"
+                  className="border-b border-border align-middle last:border-0 max-xl:mb-s10 max-xl:block max-xl:rounded-md max-xl:border max-xl:p-s15 max-xl:last:border"
+                >
+                  <td role="cell" className="py-s10 pr-s10 max-xl:block max-xl:pr-0">
                     <span className="block font-bold">{kr.title}</span>
                     <span className="text-caption text-ink-muted">
                       Responsable: {names.get(kr.ownerId) ?? 'sin nombre'}
                       {kr.ownerId === viewerId ? ' (vos)' : ''}
                     </span>
                   </td>
-                  <td className="py-s10 pr-s10 text-ink">{KR_SCORING_LABEL[kr.scoring]}</td>
-                  <td className="py-s10 pr-s10 text-right tabular-nums">{num(kr.startValue)}</td>
-                  <td className="py-s10 pr-s10 text-right tabular-nums">{num(kr.targetValue)}</td>
-                  <td className="py-s10 pr-s10 text-right tabular-nums">{num(kr.currentValue)}</td>
-                  <td className="py-s10 pr-s10 text-ink">{kr.unit ?? '—'}</td>
-                  <td className="py-s10 pr-s10">
+                  <td role="cell" data-label="Tipo" className={cell + ' text-ink'}>
+                    {KR_SCORING_LABEL[kr.scoring]}
+                  </td>
+                  <td role="cell" data-label="Inicio" className={cell + ' text-right tabular-nums'}>
+                    {num(kr.startValue)}
+                  </td>
+                  <td role="cell" data-label="Meta" className={cell + ' text-right tabular-nums'}>
+                    {num(kr.targetValue)}
+                  </td>
+                  <td role="cell" data-label="Actual" className={cell + ' text-right tabular-nums'}>
+                    {num(kr.currentValue)}
+                  </td>
+                  <td role="cell" data-label="Unidad" className={cell + ' text-ink'}>
+                    {kr.unit ?? '—'}
+                  </td>
+                  <td role="cell" data-label="Score" className={cell}>
                     {kr.hasCheckIns ? (
                       <ScoreBar
                         score={kr.score}
@@ -182,11 +215,11 @@ export function KeyResultsCard({
                       </span>
                     )}
                   </td>
-                  <td className="py-s10 pr-s10">
+                  <td role="cell" data-label="Banda" className={cell}>
                     <KrProgressBadge kr={kr} />
                   </td>
                   {showActions ? (
-                    <td className="py-s10">
+                    <td role="cell" className="py-s10 max-xl:block max-xl:pt-s10">
                       <div className="flex items-center justify-end gap-s5">
                         {showCheckIn ? (
                           <RegisterCheckInButton
@@ -198,12 +231,14 @@ export function KeyResultsCard({
                         {canEdit && open ? (
                           <>
                             <IconButton
+                              tooltipAlign="end"
                               aria-label={`Editar ${kr.title}`}
                               onClick={() => setModal({ kr })}
                             >
                               <Pencil size={18} strokeWidth={1.75} aria-hidden="true" />
                             </IconButton>
                             <IconButton
+                              tooltipAlign="end"
                               aria-label={
                                 isDraft
                                   ? `Quitar ${kr.title}`

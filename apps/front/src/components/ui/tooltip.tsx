@@ -6,11 +6,14 @@ type TooltipProps = {
   label: string;
   children: ReactNode;
   className?: string;
-  /** `start` alinea el tooltip al borde izquierdo del elemento (evita el recorte en el borde de pantalla). */
-  align?: 'center' | 'start';
+  /** `start`/`end` alinean el tooltip al borde izquierdo/derecho del elemento (evitan el recorte en el borde de pantalla o del panel). */
+  align?: 'center' | 'start' | 'end';
 };
 
-/** Tooltip CSS (hover y foco de teclado). No requiere JS. */
+/**
+ * Tooltip CSS (hover y foco de TECLADO). No requiere JS. Se muestra con `:focus-visible` y no con `:focus`:
+ * si no, el foco inicial que `showModal()` le da al botón "Cerrar" dejaba el tooltip flotando al abrir un diálogo.
+ */
 export function Tooltip({ label, children, className, align = 'center' }: TooltipProps) {
   return (
     <span className={cn('group/tooltip relative inline-flex', className)}>
@@ -18,8 +21,10 @@ export function Tooltip({ label, children, className, align = 'center' }: Toolti
       <span
         aria-hidden="true"
         className={cn(
-          'pointer-events-none absolute top-full z-50 mt-s5 rounded-sm bg-ink px-s10 py-s5 text-caption whitespace-nowrap text-bg opacity-0 shadow-overlay transition-opacity duration-150 ease-out group-focus-within/tooltip:opacity-100 group-hover/tooltip:opacity-100',
-          align === 'start' ? 'left-0' : 'left-1/2 -translate-x-1/2',
+          'pointer-events-none absolute top-full z-50 mt-s5 rounded-sm bg-ink px-s10 py-s5 text-caption whitespace-nowrap text-bg opacity-0 shadow-overlay transition-opacity duration-150 ease-out group-has-focus-visible/tooltip:opacity-100 group-hover/tooltip:opacity-100',
+          align === 'start' && 'left-0',
+          align === 'end' && 'right-0',
+          align === 'center' && 'left-1/2 -translate-x-1/2',
         )}
       >
         {label}

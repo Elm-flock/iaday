@@ -9,6 +9,9 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: 'list',
+  globalSetup: './e2e/global-setup.ts',
+  // next dev compila bajo demanda y el back es uno solo: más workers no acelera, solo satura.
+  workers: process.env.CI ? 2 : 4,
   // next dev compila rutas bajo demanda: el primer acceso puede tardar varios segundos.
   expect: { timeout: 15_000 },
   use: {

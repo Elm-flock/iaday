@@ -1,10 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
+import { ADMIN, SHOTS } from './helpers';
 
-// Requiere el back real con un admin sembrado (ver CLAUDE.md > Testing).
-const EMAIL = process.env.E2E_ADMIN_EMAIL ?? 'admin@e2e.test';
-const PASSWORD = process.env.E2E_ADMIN_PASSWORD ?? 'E2e-Password-123!';
-const NAME = process.env.E2E_ADMIN_NAME ?? 'Ana Admin';
-const SHOTS = 'e2e/__screenshots__';
+// Requiere el back real (npm run e2e:stack -- up; ver CLAUDE.md > Testing).
+const EMAIL = ADMIN.email;
+const PASSWORD = ADMIN.password;
+const NAME = ADMIN.name; // mismo valor que siembra scripts/e2e-stack.mjs (e2e/helpers/admin.json)
 
 async function login(page: Page, next?: string) {
   await page.goto(next ? `/login?next=${encodeURIComponent(next)}` : '/login');
@@ -28,7 +28,7 @@ test.describe('autenticación', () => {
     await expect(page).toHaveURL('/');
     await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
     await expect(page.getByText(NAME).first()).toBeVisible();
-    await expect(page.getByText('Administración')).toBeVisible();
+    await expect(page.getByText('Administración', { exact: true })).toBeVisible();
     await page.screenshot({ path: `${SHOTS}/auth-dashboard.png`, fullPage: true });
 
     // Las cookies son httpOnly: el JS de la página no las ve.

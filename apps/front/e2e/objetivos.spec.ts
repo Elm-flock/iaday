@@ -1,15 +1,23 @@
-import { expect, test, type APIRequestContext, type Page } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+import {
+  ADMIN,
+  PASSWORD,
+  SHOTS,
+  addKeyResultUi,
+  createObjectiveUi as createObjectiveUiShared,
+  dialog,
+  loginApi,
+  loginUi as login,
+  uniqueSuffix,
+  uniqueYear,
+  api,
+} from './helpers';
 
 // Requiere el back real con un admin sembrado (ver CLAUDE.md > Testing). Los datos se preparan por API
 // (admin: ciclo activo y usuarios) y los flujos de OKRs se recorren por la UI con los usuarios reales.
-const API = process.env.API_URL ?? 'http://localhost:3000';
-const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL ?? 'admin@e2e.test';
-const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD ?? 'E2e-Password-123!';
-const SHOTS = 'e2e/__screenshots__';
 
-const suffix = Date.now().toString(36);
-const YEAR = 2100 + (Date.now() % 800);
-const PASSWORD = 'Miembro-Pass-123!';
+const suffix = uniqueSuffix();
+const YEAR = uniqueYear();
 const ana = { name: `Ana ${suffix}`, email: `ana.${suffix}@e2e.test` };
 const beto = { name: `Beto ${suffix}`, email: `beto.${suffix}@e2e.test` };
 
@@ -23,69 +31,19 @@ const ctx: { cycleId: string; ana: Session; beto: Session; draftId: string } = {
 
 const titles = [1, 2, 3].map((n) => `Objetivo ${n} ${suffix}`);
 
-async function api<T>(
-  request: APIRequestContext,
-  method: 'post' | 'get',
-  path: string,
-  token: string,
-  data?: unknown,
-): Promise<T> {
-  const response = await request[method](`${API}${path}`, {
-    headers: { Authorization: `Bearer ${token}` },
-    data,
-  });
-  expect(response.ok(), `${method} ${path} -> ${response.status()}`).toBeTruthy();
-  return (await response.json()) as T;
-}
+const createObjectiveUi = (page: Page, title: string) =>
+  createObjectiveUiShared(page, ctx.cycleId, title);
 
-async function loginApi(request: APIRequestContext, email: string, password: string) {
-  const response = await request.post(`${API}/auth/login`, { data: { email, password } });
-  expect(response.ok()).toBeTruthy();
-  const body = (await response.json()) as { accessToken: string; user: { id: string } };
-  return { token: body.accessToken, id: body.user.id };
-}
-
-async function login(page: Page, email: string, password: string) {
-  await page.goto('/login');
-  await page.getByLabel(/Email/).fill(email);
-  await page.getByLabel(/Contraseña/).fill(password);
-  await page.getByRole('button', { name: 'Ingresar' }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
-}
-
-const dialog = (page: Page) => page.getByRole('dialog');
-
-async function createObjectiveUi(page: Page, title: string) {
-  await page.goto(`/objetivos/nuevo?cycleId=${ctx.cycleId}`);
-  await page.getByLabel(/^Título/).fill(title);
-  await page.getByLabel(/^Tipo/).selectOption('COMMITTED');
-  await page.getByLabel(/^Origen/).selectOption('BOTTOM_UP');
-  await page.getByRole('button', { name: 'Crear objetivo' }).click();
-  await expect(page.getByRole('heading', { level: 1, name: title })).toBeVisible();
-}
-
-async function addKrUi(page: Page, title: string, start: string, target: string) {
-  await page.getByRole('button', { name: 'Agregar resultado clave' }).click();
-  await dialog(page)
-    .getByLabel(/^Resultado clave/)
-    .fill(title);
-  await dialog(page)
-    .getByLabel(/^Valor inicial/)
-    .fill(start);
-  await dialog(page).getByLabel(/^Meta/).fill(target);
-  await dialog(page)
-    .getByLabel(/^Unidad/)
-    .fill('clientes');
-  await dialog(page).getByRole('button', { name: 'Agregar resultado clave' }).click();
-  await expect(page.getByRole('row', { name: new RegExp(title) })).toBeVisible();
-}
+// Ver la nota sobre la carrera botón de la vista / submit del modal en helpers (addKeyResultUi).
+const addKrUi = (page: Page, title: string, start: string, target: string) =>
+  addKeyResultUi(page, { title, start, target });
 
 test.describe.configure({ mode: 'serial', timeout: 120_000 });
 
 test.describe('objetivos (miembros reales contra el back)', () => {
   test.beforeAll(async ({ playwright }) => {
     const request = await playwright.request.newContext();
-    const admin = await loginApi(request, ADMIN_EMAIL, ADMIN_PASSWORD);
+    const admin = await loginApi(request, ADMIN.email, ADMIN.password);
     const annual = await api<{ id: string }>(request, 'post', '/cycles', admin.token, {
       name: `OKR ${YEAR} ${suffix}`,
       kind: 'ANNUAL',

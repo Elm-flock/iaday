@@ -13,7 +13,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "api:types": "openapi-typescript ../okr-platform-back/okr-platform/openapi.json -o src/lib/api/schema.d.ts"
+    "api:types": "openapi-typescript ../okr-platform-back/okr-platform/openapi.json -o src/lib/api/schema.d.ts",
+    "e2e:stack": "node scripts/e2e-stack.mjs",
+    "test:e2e:stack": "node scripts/e2e-stack.mjs run"
   },
   "dependencies": {
     "@json-render/core": "0.21.0",
@@ -30,6 +32,7 @@
     "zod": "4.6.5"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
     "@playwright/test": "^1.64.0",
     "@tailwindcss/turbopack": "^4",
     "@testing-library/dom": "^10.4.2",

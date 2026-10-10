@@ -1,34 +1,27 @@
 import { expect, test, type Page } from '@playwright/test';
+import {
+  ADMIN,
+  PASSWORD,
+  SHOTS,
+  dialog,
+  loginUi as login,
+  navLink,
+  uniqueSuffix,
+  uniqueYear,
+} from './helpers';
 
 // Requiere el back real con un admin sembrado (ver CLAUDE.md > Testing). Los datos se crean con un
 // sufijo único para poder repetir la corrida sobre la misma base.
-const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL ?? 'admin@e2e.test';
-const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD ?? 'E2e-Password-123!';
-const SHOTS = 'e2e/__screenshots__';
 
-const suffix = Date.now().toString(36);
-const YEAR = 2100 + (Date.now() % 800); // año lejano: evita choques con datos de otras corridas
+const suffix = uniqueSuffix();
+const YEAR = uniqueYear(); // año lejano: evita choques con datos de otras corridas
 const annualName = `OKR ${YEAR} ${suffix}`;
 const quarterName = `Q1 ${YEAR} ${suffix}`;
 const overlapName = `Q-solapado ${suffix}`;
 const teamName = `Equipo ${suffix}`;
 const memberName = `Beto ${suffix}`;
 const memberEmail = `beto.${suffix}@e2e.test`;
-const memberPassword = 'Miembro-Pass-123!';
-
-async function login(page: Page, email: string, password: string) {
-  await page.goto('/login');
-  await page.getByLabel(/Email/).fill(email);
-  await page.getByLabel(/Contraseña/).fill(password);
-  await page.getByRole('button', { name: 'Ingresar' }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
-}
-
-const dialog = (page: Page) => page.getByRole('dialog');
-
-/** Enlace del menú lateral: el dashboard de ADMIN también tiene enlaces con esos nombres. */
-const navLink = (page: Page, name: string) =>
-  page.getByRole('navigation', { name: 'Navegación principal' }).getByRole('link', { name });
+const memberPassword = PASSWORD;
 
 /** Elige el ciclo anual creado en este test por su texto (selectOption no acepta regex). */
 async function pickAnnual(page: Page) {
@@ -46,11 +39,12 @@ test.describe('ciclos, equipos y usuarios (admin)', () => {
   test('admin crea un ciclo anual y un trimestre, los activa y ve los umbrales', async ({
     page,
   }) => {
-    await login(page, ADMIN_EMAIL, ADMIN_PASSWORD);
+    await login(page, ADMIN.email, ADMIN.password);
     await navLink(page, 'Ciclos').click();
     await expect(page.getByRole('heading', { level: 1, name: 'Ciclos' })).toBeVisible();
 
     // Anual
+    await expect(dialog(page)).toHaveCount(0); // el submit del modal se llama igual que el botón de la vista
     await page.getByRole('button', { name: 'Crear ciclo' }).click();
     await dialog(page)
       .getByLabel(/Nombre/)
@@ -70,6 +64,7 @@ test.describe('ciclos, equipos y usuarios (admin)', () => {
     );
 
     // Trimestre
+    await expect(dialog(page)).toHaveCount(0); // el submit del modal se llama igual que el botón de la vista
     await page.getByRole('button', { name: 'Crear ciclo' }).click();
     await dialog(page)
       .getByLabel(/Nombre/)
@@ -108,8 +103,9 @@ test.describe('ciclos, equipos y usuarios (admin)', () => {
   });
 
   test('un trimestre solapado se rechaza con un mensaje claro en español', async ({ page }) => {
-    await login(page, ADMIN_EMAIL, ADMIN_PASSWORD);
+    await login(page, ADMIN.email, ADMIN.password);
     await page.goto('/ciclos');
+    await expect(dialog(page)).toHaveCount(0); // el submit del modal se llama igual que el botón de la vista
     await page.getByRole('button', { name: 'Crear ciclo' }).click();
     await dialog(page)
       .getByLabel(/Nombre/)
@@ -142,11 +138,12 @@ test.describe('ciclos, equipos y usuarios (admin)', () => {
   });
 
   test('admin crea un usuario, un equipo y agrega al usuario como líder', async ({ page }) => {
-    await login(page, ADMIN_EMAIL, ADMIN_PASSWORD);
+    await login(page, ADMIN.email, ADMIN.password);
 
     // Usuario
     await navLink(page, 'Usuarios').click();
     await expect(page.getByRole('heading', { level: 1, name: 'Usuarios' })).toBeVisible();
+    await expect(dialog(page)).toHaveCount(0); // el submit del modal se llama igual que el botón de la vista
     await page.getByRole('button', { name: 'Crear usuario' }).click();
     await dialog(page)
       .getByLabel(/Nombre/)
@@ -161,6 +158,7 @@ test.describe('ciclos, equipos y usuarios (admin)', () => {
     await expect(row).toContainText('Activo');
 
     // Email repetido: error claro.
+    await expect(dialog(page)).toHaveCount(0); // el submit del modal se llama igual que el botón de la vista
     await page.getByRole('button', { name: 'Crear usuario' }).click();
     await dialog(page)
       .getByLabel(/Nombre/)
@@ -178,6 +176,7 @@ test.describe('ciclos, equipos y usuarios (admin)', () => {
 
     // Equipo
     await navLink(page, 'Equipos').click();
+    await expect(dialog(page)).toHaveCount(0); // el submit del modal se llama igual que el botón de la vista
     await page.getByRole('button', { name: 'Crear equipo' }).click();
     await dialog(page)
       .getByLabel(/Nombre/)
@@ -192,6 +191,7 @@ test.describe('ciclos, equipos y usuarios (admin)', () => {
     await page.getByRole('link', { name: teamName }).click();
     await expect(page.getByRole('heading', { level: 1, name: teamName })).toBeVisible();
     await expect(page.getByText('Este equipo todavía no tiene integrantes')).toBeVisible();
+    await expect(dialog(page)).toHaveCount(0); // el submit del modal se llama igual que el botón de la vista
     await page.getByRole('button', { name: 'Agregar integrante' }).click();
     await dialog(page)
       .getByLabel(/Persona/)
@@ -223,7 +223,7 @@ test.describe('ciclos, equipos y usuarios (admin)', () => {
     page,
   }) => {
     const freshName = `Fresco ${suffix}`;
-    await login(page, ADMIN_EMAIL, ADMIN_PASSWORD);
+    await login(page, ADMIN.email, ADMIN.password);
 
     // 1) Se visita el detalle del equipo por navegación cliente: queda en la cache del router
     //    (`'use cache: private'` + stale 60 s) con la lista de ciclos de ese momento.
@@ -235,6 +235,7 @@ test.describe('ciclos, equipos y usuarios (admin)', () => {
 
     // 2) Se crea un ciclo con una Server Action que llama a updateTag('cycles').
     await navLink(page, 'Ciclos').click();
+    await expect(dialog(page)).toHaveCount(0); // el submit del modal se llama igual que el botón de la vista
     await page.getByRole('button', { name: 'Crear ciclo' }).click();
     await dialog(page)
       .getByLabel(/Nombre/)

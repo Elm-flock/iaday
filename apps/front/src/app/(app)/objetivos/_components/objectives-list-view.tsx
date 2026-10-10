@@ -6,7 +6,7 @@ import { ScoreBar } from '@/components/ui/score-bar';
 import type { Objective } from '@/lib/dal/objectives';
 import { OBJECTIVE_MAX, OBJECTIVE_MIN } from '../messages';
 import { ownerKey } from '../policy';
-import { LimitIndicator, ObjectiveStatusBadge, ObjectiveTags } from './objective-meta';
+import { FinalResult, LimitIndicator, ObjectiveStatusBadge, ObjectiveTags } from './objective-meta';
 import { hasScore, ObjectiveProgressBadge, objectiveProgressState } from './progress-badge';
 
 export type OwnerGroup = {
@@ -80,6 +80,7 @@ function ObjectiveCard({ objective }: { objective: Objective }) {
         ) : (
           <span className="flex flex-wrap items-center gap-s15">
             <ObjectiveProgressBadge objective={objective} />
+            <FinalResult objective={objective} />
             {hasScore(objectiveProgressState(objective)) ? (
               <ScoreBar
                 score={objective.score}

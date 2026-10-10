@@ -34,4 +34,4 @@ Login, logout y sesión por cookies. El browser NUNCA llama a Nest: Next es el B
 ## Tests
 
 - Unit: `lib/auth/*.test.ts`, `lib/api/*.test.ts`, `actions.test.ts`, `src/proxy.test.ts`.
-- E2E (`e2e/auth.spec.ts`) contra el back REAL con un admin sembrado: `E2E_ADMIN_EMAIL` / `E2E_ADMIN_PASSWORD` / `E2E_ADMIN_NAME` (defaults `admin@e2e.test`, `E2e-Password-123!`, `Ana Admin`) y `API_URL`.
+- E2E (`e2e/auth.spec.ts`) contra el back REAL con un admin sembrado por `npm run e2e:stack -- up`. Credenciales y nombre salen de `e2e/helpers/admin.json` (fuente única, la usa también el seed); `E2E_ADMIN_*` y `API_URL` son solo overrides opcionales.
