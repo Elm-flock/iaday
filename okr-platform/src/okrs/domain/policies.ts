@@ -12,7 +12,7 @@ export interface PolicyObjective {
   status: 'DRAFT' | 'PUBLISHED' | 'CLOSED';
 }
 
-const leadsTeam = (actor: Actor, teamId: string | null): boolean =>
+export const leadsTeam = (actor: Actor, teamId: string | null): boolean =>
   teamId !== null && actor.teams.some((t) => t.teamId === teamId && t.isLead);
 
 const isMemberOf = (actor: Actor, teamId: string | null): boolean =>

@@ -158,7 +158,7 @@ describe('Reporte de equipo (e2e) REQ-PDF-1', () => {
     await objective(cycle.id, { userId: outsider.user.id }, { title: 'Ajeno' });
     await objective(otherCycle.id, { userId: ana.user.id }, { title: 'Otro ciclo' });
 
-    const res = await report(outsider.auth, team.id, cycle.id).expect(200);
+    const res = await report(ana.auth, team.id, cycle.id).expect(200);
     expect(res.body.teamObjectives).toEqual([]);
     expect(res.body.members).toHaveLength(2);
     const byName = Object.fromEntries(
@@ -220,12 +220,49 @@ describe('Reporte de equipo (e2e) REQ-PDF-1', () => {
     });
   });
 
-  it('cualquier autenticado (MEMBER ajeno, ADMIN) lo ve', async () => {
-    const { team, cycle } = await setup();
-    const outsider = await as('MEMBER');
-    const admin = await as('ADMIN');
-    await report(outsider.auth, team.id, cycle.id).expect(200);
-    await report(admin.auth, team.id, cycle.id).expect(200);
+  describe('autorización: solo ADMIN o líder de ESE equipo', () => {
+    it('ADMIN y líder del equipo -> 200', async () => {
+      const { team, cycle, ana } = await setup();
+      const admin = await as('ADMIN');
+      await report(admin.auth, team.id, cycle.id).expect(200);
+      await report(ana.auth, team.id, cycle.id).expect(200);
+    });
+
+    it('miembro del equipo (no líder) -> 403 con code REPORT_FORBIDDEN', async () => {
+      const { team, cycle, zeta } = await setup();
+      const res = await report(zeta.auth, team.id, cycle.id).expect(403);
+      expect(res.body).toEqual({
+        statusCode: 403,
+        message: 'Solo un ADMIN o el líder del equipo puede ver su reporte',
+        code: 'REPORT_FORBIDDEN',
+      });
+    });
+
+    it('líder de OTRO equipo y usuario sin equipo -> 403', async () => {
+      const { team, cycle } = await setup();
+      const otherTeam = await createTeam(prisma, { parentId: team.id });
+      const otherLead = await as('LEADER');
+      await prisma.teamMember.create({
+        data: { teamId: otherTeam.id, userId: otherLead.user.id, isLead: true },
+      });
+      const outsider = await as('MEMBER');
+      await report(otherLead.auth, team.id, cycle.id).expect(403);
+      await report(outsider.auth, team.id, cycle.id).expect(403);
+    });
+
+    it('rol LEADER sin isLead en el equipo -> 403 (el liderazgo lo da la membresía)', async () => {
+      const { team, cycle } = await setup();
+      const roleOnly = await as('LEADER');
+      await prisma.teamMember.create({ data: { teamId: team.id, userId: roleOnly.user.id } });
+      await report(roleOnly.auth, team.id, cycle.id).expect(403);
+    });
+
+    it('orden de errores: equipo inexistente 404 antes que 403; ciclo inexistente: 403 para no autorizado, 404 para autorizado', async () => {
+      const { team, zeta, ana } = await setup();
+      await report(zeta.auth, MISSING_ID, MISSING_ID).expect(404);
+      await report(zeta.auth, team.id, MISSING_ID).expect(403);
+      await report(ana.auth, team.id, MISSING_ID).expect(404);
+    });
   });
 
   it('NO incluye feedback, ni reconocimientos, ni campos tipo ranking/compensación', async () => {
@@ -239,7 +276,7 @@ describe('Reporte de equipo (e2e) REQ-PDF-1', () => {
       .send({ toUserId: zeta.user.id, content: secret, objectiveId: o.id, keyResultId: kr.id })
       .expect(201);
 
-    for (const viewer of [ana, zeta, await as('ADMIN')]) {
+    for (const viewer of [ana, await as('ADMIN')]) {
       const res = await report(viewer.auth, team.id, cycle.id).expect(200);
       const text = JSON.stringify(res.body);
       expect(text).not.toContain(secret);
