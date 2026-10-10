@@ -5,7 +5,7 @@ export const MIN_OBJECTIVES_TO_PUBLISH = 3;
 export const MAX_KRS_PER_OBJECTIVE = 5;
 export const MIN_KRS_TO_PUBLISH = 3;
 
-/** `ownerActiveCount` = objetivos DRAFT + ACTIVE del owner en el ciclo (CLOSED/ARCHIVED no cuentan). */
+/** `ownerActiveCount` = objetivos DRAFT + PUBLISHED del owner en el ciclo (CLOSED no cuenta). */
 export function canCreateObjective(ownerActiveCount: number): Result<void> {
   return ownerActiveCount >= MAX_OBJECTIVES_PER_OWNER
     ? err(
