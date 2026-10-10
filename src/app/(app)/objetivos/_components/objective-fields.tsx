@@ -66,7 +66,7 @@ export function ObjectiveFields({
           help={
             kindLocked
               ? OBJECTIVE_KIND_LOCKED_REASON
-              : 'Comprometido: se espera 1,00. Aspiracional: se considera logrado con 0,60–0,70.'
+              : 'Se considera logrado si su puntaje llega al umbral que define el ciclo para su tipo (por defecto, 1,00 en comprometidos y 0,70 en aspiracionales).'
           }
         >
           <Select
