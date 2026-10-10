@@ -8,8 +8,8 @@ type IconButtonProps = Omit<ComponentProps<'button'>, 'children' | 'aria-label'>
   /** El ícono (Lucide, 16–20px). */
   children: ReactNode;
   variant?: 'ghost' | 'secondary';
-  /** Alineación del tooltip; `start` para botones pegados al borde izquierdo. */
-  tooltipAlign?: 'center' | 'start';
+  /** Alineación del tooltip; `start`/`end` para botones pegados al borde izquierdo/derecho. */
+  tooltipAlign?: 'center' | 'start' | 'end';
 };
 
 export function IconButton({
