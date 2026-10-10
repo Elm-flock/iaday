@@ -95,7 +95,9 @@ npm run typecheck  # tsc --noEmit
 npm run format     # prettier --write .
 npm test           # vitest run (unit/componentes)
 npm run test:watch # vitest en watch
-npm run test:e2e   # playwright test (levanta next dev en :3001; auth requiere el back real)
+npm run test:e2e   # playwright test (levanta next dev en :3001; requiere el back e2e ya levantado)
+npm run test:e2e:stack # levanta db+API e2e, corre playwright y lo baja todo
+npm run e2e:stack -- up   # (o down) solo el stack e2e del back
 npm run api:types  # regenera src/lib/api/schema.d.ts desde ../okr-platform-back/okr-platform/openapi.json
 ```
 
@@ -104,8 +106,10 @@ npm run api:types  # regenera src/lib/api/schema.d.ts desde ../okr-platform-back
 Dos capas con responsabilidades separadas:
 
 - **Vitest + React Testing Library** (`npm test`): unit/componentes/hooks y `src/lib` (DAL, helpers, spec del PDF). Tests junto al código: `*.test.ts(x)` en `src/`. Entorno jsdom, setup en `test/setup.ts`, config en `vitest.config.mts`. No soporta Server Components `async`: esos se cubren con E2E.
-- **Playwright** (`npm run test:e2e`): flujos E2E en `e2e/*.spec.ts`. `playwright.config.ts` levanta `next dev` en el puerto **3001** (el back usa 3000 y su `FRONT_ORIGIN` es `http://localhost:3001`). Requiere `npx playwright install chromium` la primera vez.
-- Los e2e de auth necesitan el back corriendo (`API_URL`, default `:3000`) con un admin sembrado (`E2E_ADMIN_EMAIL`/`E2E_ADMIN_PASSWORD`). Ver `src/app/(auth)/CLAUDE.md`.
+- **Playwright** (`npm run test:e2e`): E2E contra el back REAL en `e2e/*.spec.ts` (módulos), `e2e/journeys/*.spec.ts` (recorridos de punta a punta por rol), `e2e/a11y.spec.ts` y `e2e/teclado-a11y.spec.ts` (axe en claro/oscuro, teclado, diálogos). `playwright.config.ts` levanta `next dev` en **3001** (el back usa 3000 y su `FRONT_ORIGIN` es `http://localhost:3001`), usa 4 workers y un `globalSetup` que calienta las rutas (dev compila bajo demanda). Primera vez: `npx playwright install chromium`.
+- **Cómo correr los e2e (un solo comando)**: `npm run test:e2e:stack` (= `scripts/e2e-stack.mjs run`) levanta `db-test` (compose project `okr-e2e-front`, puerto 55434), `prisma migrate deploy` + seed del admin, la API con `ts-node` en :3000 (NUNCA `nest start`/`build`), corre Playwright y lo baja todo (`compose down -v`) aunque falle. Por pasos: `npm run e2e:stack -- up`, `npx playwright test [archivo]`, `npm run e2e:stack -- down`. Requiere Docker y el back en `../okr-platform-back` (`E2E_BACK_DIR`, `DB_TEST_PORT`, `API_PORT` para cambiarlo). El script solo EJECUTA el back, no lo modifica.
+- El admin sembrado sale de `e2e/helpers/admin.json` (única fuente: la usan el seed del script y los specs; no hacen falta variables extra). Helpers compartidos en `e2e/helpers/index.ts` (login por API/UI, sesiones aisladas por usuario, ciclos/equipos/objetivos por API, `createObjectiveUi`, `addKeyResultUi`, `checkInUi`). Cada spec crea datos propios con sufijo único y años aleatorios.
+- Gotchas e2e: con Cache Components las páginas previas siguen ocultas en el DOM (React Activity): usar `filter({ visible: true })` o acotar al `nav` (`navLink`). El botón de la vista y el submit del modal pueden llamarse igual: esperar a que el diálogo se cierre antes de seguir. Con más de 6 workers `next dev` y la API (argon2) se saturan y las Server Actions superan el timeout: no subir los workers. `next.config.ts` excluye el CSS `foreign` del loader de Tailwind; sin eso, con `.next` vacío el dev server no compila `next/font/google`.
 - Vitest solo incluye `src/**` y `test/**`; Playwright solo `e2e/**`. No mezclar.
 - Mocks de Vitest en `test/mocks/`: `server-only` (no-op) y `next/headers` (stub con `__setCookies`/`__setHeaders`), aliasados en `vitest.config.mts`.
 

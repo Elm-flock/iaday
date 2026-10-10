@@ -1,17 +1,13 @@
 import { expect, test, type APIRequestContext, type Browser, type Page } from '@playwright/test';
+import { ADMIN, PASSWORD, SHOTS, api, loginApi, loginUi, uniqueSuffix } from './helpers';
 import fs from 'node:fs';
 
 // Requiere el back real con un admin sembrado (ver CLAUDE.md > Testing). Los datos se preparan por API;
 // la descarga del PDF y el reconocimiento de un KR de un objetivo de equipo se recorren por la UI.
-const API = process.env.API_URL ?? 'http://localhost:3000';
-const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL ?? 'admin@e2e.test';
-const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD ?? 'E2e-Password-123!';
-const SHOTS = 'e2e/__screenshots__';
 const PDF_OUT = 'test-results/reporte-equipo.pdf';
 
-const suffix = Date.now().toString(36);
+const suffix = uniqueSuffix();
 const YEAR = 2100 + ((Date.now() + 313) % 800);
-const PASSWORD = 'Miembro-Pass-123!';
 const people = {
   zoe: { name: `Zoe Álvarez ${suffix}`, email: `zoe.rep.${suffix}@e2e.test` },
   ana: { name: `Ana Pérez ${suffix}`, email: `ana.rep.${suffix}@e2e.test` },
@@ -33,41 +29,10 @@ const ctx = {
   tokens: {} as Record<Who, string>,
 };
 
-async function api<T>(
-  request: APIRequestContext,
-  method: 'post' | 'get' | 'put',
-  path: string,
-  token: string,
-  data?: unknown,
-): Promise<T> {
-  const response = await request[method](`${API}${path}`, {
-    headers: { Authorization: `Bearer ${token}` },
-    data,
-  });
-  expect(response.ok(), `${method} ${path} -> ${response.status()}`).toBeTruthy();
-  const text = await response.text();
-  return (text ? JSON.parse(text) : undefined) as T;
-}
-
-async function loginApi(request: APIRequestContext, email: string, password: string) {
-  const response = await request.post(`${API}/auth/login`, { data: { email, password } });
-  expect(response.ok()).toBeTruthy();
-  const body = (await response.json()) as { accessToken: string; user: { id: string } };
-  return { token: body.accessToken, id: body.user.id };
-}
-
-async function loginUi(page: Page, email: string, password: string) {
-  await page.goto('/login');
-  await page.getByLabel(/Email/).fill(email);
-  await page.getByLabel(/Contraseña/).fill(password);
-  await page.getByRole('button', { name: 'Ingresar' }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
-}
-
 async function sessionFor(browser: Browser, who: Who | 'admin'): Promise<Page> {
   const context = await browser.newContext();
   const page = await context.newPage();
-  if (who === 'admin') await loginUi(page, ADMIN_EMAIL, ADMIN_PASSWORD);
+  if (who === 'admin') await loginUi(page, ADMIN.email, ADMIN.password);
   else await loginUi(page, people[who].email, PASSWORD);
   return page;
 }
@@ -119,7 +84,7 @@ test.describe.configure({ mode: 'serial', timeout: 120_000 });
 test.describe('Reporte PDF del equipo y reconocimiento de KRs de equipo (contra el back real)', () => {
   test.beforeAll(async ({ playwright }) => {
     const request = await playwright.request.newContext();
-    const admin = await loginApi(request, ADMIN_EMAIL, ADMIN_PASSWORD);
+    const admin = await loginApi(request, ADMIN.email, ADMIN.password);
     ctx.adminToken = admin.token;
 
     const cycleBody = {

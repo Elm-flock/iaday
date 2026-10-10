@@ -48,3 +48,6 @@ next-env.d.ts
 
 # e2e screenshots
 /e2e/__screenshots__/
+
+# e2e stack
+.e2e-api.pid

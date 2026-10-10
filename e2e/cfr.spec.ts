@@ -1,15 +1,21 @@
-import { expect, test, type APIRequestContext, type Browser, type Page } from '@playwright/test';
+import { expect, test, type Browser, type Page } from '@playwright/test';
+import {
+  ADMIN,
+  PASSWORD,
+  SHOTS,
+  loginApi,
+  loginUi,
+  uniqueSuffix,
+  uniqueYear,
+  api,
+  waitUntilHydrated,
+} from './helpers';
 
 // Requiere el back real con un admin sembrado (ver CLAUDE.md > Testing). Los datos se preparan por API y
 // los flujos de feedback y reconocimientos se recorren por la UI.
-const API = process.env.API_URL ?? 'http://localhost:3000';
-const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL ?? 'admin@e2e.test';
-const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD ?? 'E2e-Password-123!';
-const SHOTS = 'e2e/__screenshots__';
 
-const suffix = Date.now().toString(36);
-const YEAR = 2100 + (Date.now() % 800);
-const PASSWORD = 'Miembro-Pass-123!';
+const suffix = uniqueSuffix();
+const YEAR = uniqueYear();
 const people = {
   a: { name: `Ana ${suffix}`, email: `ana.cfr.${suffix}@e2e.test` },
   b: { name: `Beto ${suffix}`, email: `beto.cfr.${suffix}@e2e.test` },
@@ -32,41 +38,11 @@ const ctx = {
   feedbackId: '',
 };
 
-async function api<T>(
-  request: APIRequestContext,
-  method: 'post' | 'get',
-  path: string,
-  token: string,
-  data?: unknown,
-): Promise<T> {
-  const response = await request[method](`${API}${path}`, {
-    headers: { Authorization: `Bearer ${token}` },
-    data,
-  });
-  expect(response.ok(), `${method} ${path} -> ${response.status()}`).toBeTruthy();
-  return (await response.json()) as T;
-}
-
-async function loginApi(request: APIRequestContext, email: string, password: string) {
-  const response = await request.post(`${API}/auth/login`, { data: { email, password } });
-  expect(response.ok()).toBeTruthy();
-  const body = (await response.json()) as { accessToken: string; user: { id: string } };
-  return { token: body.accessToken, id: body.user.id };
-}
-
-async function loginUi(page: Page, email: string, password: string) {
-  await page.goto('/login');
-  await page.getByLabel(/Email/).fill(email);
-  await page.getByLabel(/Contraseña/).fill(password);
-  await page.getByRole('button', { name: 'Ingresar' }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
-}
-
 /** Una sesión de navegador aislada por persona (cookies propias). */
 async function sessionFor(browser: Browser, who: Who | 'admin'): Promise<Page> {
   const context = await browser.newContext();
   const page = await context.newPage();
-  if (who === 'admin') await loginUi(page, ADMIN_EMAIL, ADMIN_PASSWORD);
+  if (who === 'admin') await loginUi(page, ADMIN.email, ADMIN.password);
   else await loginUi(page, people[who].email, PASSWORD);
   return page;
 }
@@ -83,7 +59,7 @@ test.describe.configure({ mode: 'serial', timeout: 120_000 });
 test.describe('CFR: feedback privado y reconocimientos (contra el back real)', () => {
   test.beforeAll(async ({ playwright }) => {
     const request = await playwright.request.newContext();
-    const admin = await loginApi(request, ADMIN_EMAIL, ADMIN_PASSWORD);
+    const admin = await loginApi(request, ADMIN.email, ADMIN.password);
     const cycleBody = {
       checkInCadence: 'WEEKLY',
       committedThreshold: 1,
@@ -341,6 +317,8 @@ test.describe('CFR: feedback privado y reconocimientos (contra el back real)', (
     await page.getByRole('button', { name: 'Continuar' }).click();
     const milestone = page.getByLabel(/^Logro/);
     await expect(milestone).toBeVisible();
+    // El <select> es de React: inyectarle una opción antes de hidratar (o de un re-render) la pierde.
+    await waitUntilHydrated(milestone);
 
     // Inyecta una opción con el KR de 0,69 (id real por API) para simular una vista desactualizada.
     const objectives = await api<{ id: string; keyResults: { id: string; title: string }[] }[]>(

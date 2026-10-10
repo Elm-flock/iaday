@@ -1,17 +1,23 @@
 import { execFileSync } from 'node:child_process';
-import { expect, test, type APIRequestContext, type Page } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+import {
+  ADMIN,
+  PASSWORD,
+  SHOTS,
+  loginApi,
+  loginUi as login,
+  navLink,
+  uniqueSuffix,
+  uniqueYear,
+  api,
+} from './helpers';
 
 // Requiere el back real con un admin sembrado (ver CLAUDE.md > Testing). Los datos se preparan por API y los
 // flujos de check-ins se recorren por la UI. El "vencido" se siembra retrasando `publishedAt` en la base e2e.
-const API = process.env.API_URL ?? 'http://localhost:3000';
-const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL ?? 'admin@e2e.test';
-const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD ?? 'E2e-Password-123!';
 const E2E_DB_CONTAINER = process.env.E2E_DB_CONTAINER ?? 'okr-e2e-front-db-test-1';
-const SHOTS = 'e2e/__screenshots__';
 
-const suffix = Date.now().toString(36);
-const YEAR = 2100 + (Date.now() % 800);
-const PASSWORD = 'Miembro-Pass-123!';
+const suffix = uniqueSuffix();
+const YEAR = uniqueYear();
 const ana = { name: `Ana ${suffix}`, email: `ana.${suffix}@e2e.test` };
 
 type Kr = { id: string; title: string };
@@ -21,36 +27,6 @@ const ctx: { cycleId: string; ana: { token: string; id: string }; objectives: Ob
   ana: { token: '', id: '' },
   objectives: [],
 };
-
-async function api<T>(
-  request: APIRequestContext,
-  method: 'post' | 'get',
-  path: string,
-  token: string,
-  data?: unknown,
-): Promise<T> {
-  const response = await request[method](`${API}${path}`, {
-    headers: { Authorization: `Bearer ${token}` },
-    data,
-  });
-  expect(response.ok(), `${method} ${path} -> ${response.status()}`).toBeTruthy();
-  return (await response.json()) as T;
-}
-
-async function loginApi(request: APIRequestContext, email: string, password: string) {
-  const response = await request.post(`${API}/auth/login`, { data: { email, password } });
-  expect(response.ok()).toBeTruthy();
-  const body = (await response.json()) as { accessToken: string; user: { id: string } };
-  return { token: body.accessToken, id: body.user.id };
-}
-
-async function login(page: Page, email: string, password: string) {
-  await page.goto('/login');
-  await page.getByLabel(/Email/).fill(email);
-  await page.getByLabel(/Contraseña/).fill(password);
-  await page.getByRole('button', { name: 'Ingresar' }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Inicio' })).toBeVisible();
-}
 
 /** Solo contra la base efímera del e2e (contenedor `okr-e2e-front`), nunca otra. */
 function backdatePublication(objectiveId: string, days: number) {
@@ -76,7 +52,7 @@ test.describe.configure({ mode: 'serial', timeout: 120_000 });
 test.describe('check-ins (contra el back real)', () => {
   test.beforeAll(async ({ playwright }) => {
     const request = await playwright.request.newContext();
-    const admin = await loginApi(request, ADMIN_EMAIL, ADMIN_PASSWORD);
+    const admin = await loginApi(request, ADMIN.email, ADMIN.password);
     const cycleBody = {
       checkInCadence: 'WEEKLY',
       committedThreshold: 1,
@@ -270,7 +246,7 @@ test.describe('check-ins (contra el back real)', () => {
   });
 
   test('administración ve la acción deshabilitada y se explica por qué', async ({ page }) => {
-    await login(page, ADMIN_EMAIL, ADMIN_PASSWORD);
+    await login(page, ADMIN.email, ADMIN.password);
     const first = ctx.objectives[0];
     await page.goto(`/objetivos/${first.id}`);
     const button = checkInButton(page, first.krs[0].title);
@@ -287,7 +263,7 @@ test.describe('check-ins (contra el back real)', () => {
     backdatePublication(second.id, 20);
 
     await login(page, ana.email, PASSWORD);
-    await page.getByRole('link', { name: 'Check-ins' }).click();
+    await navLink(page, 'Check-ins').click();
     await expect(page.getByRole('heading', { level: 1, name: 'Pendientes' })).toBeVisible();
     await expect(page.getByRole('heading', { name: second.title })).toBeVisible();
     await expect(page.getByText('Check-in vencido').filter({ visible: true })).toHaveCount(3);
