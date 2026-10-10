@@ -379,7 +379,7 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    /** Reporte del equipo en un ciclo (cualquier autenticado): objetivos del equipo y objetivos individuales de sus miembros agrupados por persona, con KRs, scores, bandas, mezcla de origen y logro al cierre. Sin feedback, ranking ni datos de compensación. */
+    /** Reporte del equipo en un ciclo (solo ADMIN o líder del equipo): objetivos del equipo y objetivos individuales de sus miembros agrupados por persona, con KRs, scores, bandas, mezcla de origen y logro al cierre. Sin feedback, ranking ni datos de compensación. */
     get: operations['ReportsController_teamReport'];
     put?: never;
     post?: never;
@@ -2383,6 +2383,13 @@ export interface operations {
       };
       /** @description cycleId faltante o inválido */
       400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description No es ADMIN ni líder de ese equipo (code REPORT_FORBIDDEN) */
+      403: {
         headers: {
           [name: string]: unknown;
         };
