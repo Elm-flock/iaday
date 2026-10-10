@@ -58,7 +58,7 @@ flowchart TD
   CheckIns -.->|"dominio: score, bands, policies"| Okrs
   Cycles -.->|"dominio: closure"| Okrs
   Teams -.->|"dominio: origin-mix"| Okrs
-  Reports -.->|"dominio: bands, origin-mix"| Okrs
+  Reports -.->|"dominio: bands, origin-mix, policies; OkrsAccess"| Okrs
 ```
 
 Las flechas continuas son dependencias de módulo Nest (imports/exports). Las punteadas son imports directos de funciones puras de `src/okrs/domain/`, sin inyección. Todos los módulos usan `PrismaService` (global).
@@ -74,7 +74,7 @@ Las flechas continuas son dependencias de módulo Nest (imports/exports). Las pu
 | CheckIns           | `src/check-ins`        | Check-ins inmutables con snapshot de score y banda, historial y pendientes vencidos | `POST/GET /key-results/:id/check-ins`, `GET /check-ins/pending`                                                                                                 |
 | Feedback (CFR)     | `src/cfr/feedback`     | Feedback privado entre emisor y receptor                                            | `POST/GET /feedback`, `GET/PATCH/DELETE /feedback/:id`, `PATCH /feedback/:id/read`                                                                              |
 | Recognitions (CFR) | `src/cfr/recognitions` | Muro público de reconocimientos, con hito validado opcional                         | `POST /recognitions`, `GET /recognitions`                                                                                                                       |
-| Reports            | `src/reports`          | Datos agregados del equipo en un ciclo para el PDF                                  | `GET /reports/teams/:id?cycleId=`                                                                                                                               |
+| Reports            | `src/reports`          | Datos agregados del equipo en un ciclo para el PDF                                  | ADMIN o líder del equipo: `GET /reports/teams/:id?cycleId=`                                                                                                     |
 | Audit              | `src/audit`            | Consulta paginada y filtrada del log de auditoría                                   | ADMIN: `GET /audit`                                                                                                                                             |
 
 Piezas transversales en `src/common/`: decoradores (`@Public`, `@Roles`, `@CurrentUser`), guards, `PrismaExceptionFilter` (P2002 y P2003 → 409, P2025 → 404, violación de CHECK → 422), validadores y el tipo `Result` del dominio (`src/common/domain/result.ts`).
@@ -154,6 +154,7 @@ sequenceDiagram
     - **Ver**: un DRAFT solo lo ven quienes pueden editarlo.
     - **Cambiar start/target de un KR publicado**: ADMIN o líder.
     - **Check-in**: el responsable del KR, el dueño del objetivo o los miembros del equipo dueño. **Sin bypass para ADMIN.**
+  - `src/reports/domain/policies.ts`: el reporte de un equipo (`canViewTeamReport`) lo ven solo un ADMIN o quien tiene `isLead` en ese equipo exacto. Ser LEADER por rol, miembro del equipo o líder de otro equipo no alcanza (403).
   - `src/cfr/feedback/domain/privacy.ts`: el feedback lo ven solo el emisor y el receptor. **Sin bypass por rol.**
 
   `OkrsAccess` (`src/okrs/okrs-access.service.ts`) carga el actor con sus membresías y devuelve 404 (no 403) ante un objetivo que el actor no puede ver, para no revelar que existe.
@@ -375,11 +376,11 @@ La inmutabilidad se impone en la BD: el trigger `audit_log_append_only` (migraci
 - solo objetivos PUBLISHED y CLOSED, con KRs, scores, bandas, `finalScore` y `achieved`;
 - el indicador 50/50.
 
-Lo puede pedir cualquier usuario autenticado. Por diseño no incluye feedback, reconocimientos, rankings ni subequipos.
+Lo puede pedir solo un ADMIN o un líder de ese equipo (`TeamMember.isLead` en ese `teamId`, regla `canViewTeamReport` en `src/reports/domain/policies.ts`). Cualquier otro usuario autenticado recibe 403 `{ statusCode: 403, message, code: "REPORT_FORBIDDEN" }` (`src/reports/reports.errors.ts`, misma forma que los errores de dominio de OKRs y CFR). El orden de las comprobaciones es: equipo inexistente (404), permiso (403) y ciclo inexistente (404); así a un no autorizado nunca se le confirma si el ciclo existe. Por diseño no incluye feedback, reconocimientos, rankings ni subequipos.
 
 ## 6. Cómo correrlo y tests
 
-Los comandos se ejecutan desde `okr-platform/` (scripts en `okr-platform/package.json`). Este repo no tiene README propio. La demo local completa (API en el puerto 3100 y front en el 3101) está documentada en `tools/demo/README.md` y en el README del monorepo `okr-platform-monorepo`.
+Los comandos se ejecutan desde `okr-platform/` (scripts en `okr-platform/package.json`). El `README.md` de la raíz resume el setup. La demo local completa (API en el puerto 3100 y front en el 3101) está documentada en `tools/demo/README.md` y en el README del monorepo `okr-platform-monorepo`.
 
 - **Base de datos**: `docker compose up -d db` desde la raíz del repo (Postgres 15 en el puerto 5432). Copiar `.env.example` a `.env` (`DATABASE_URL`, `PORT`, `FRONT_ORIGIN`, `JWT_ACCESS_SECRET`).
 - **Setup**: `npm install`, `npx prisma generate`, `npx prisma migrate deploy` y `npx prisma db seed`. El seed requiere `SEED_ADMIN_EMAIL` y `SEED_ADMIN_PASSWORD`, y crea el admin y el equipo raíz.
