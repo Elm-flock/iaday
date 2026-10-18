@@ -1,0 +1,178 @@
+{
+  "description": "Segundo intento del turno (repair): salta CLASSIFY y corrige el plan con los issues de Nest.",
+  "endpoint": "/v1/admin/chat",
+  "status": 200,
+  "request": {
+    "locale": "es",
+    "today": "2026-10-18",
+    "message": "Creá el equipo Datos dentro de Plataforma, dá de alta a Lucía Gómez (lucia.gomez@flockit.com.ar) y que sea la líder",
+    "history": [],
+    "catalog": {
+      "users": [
+        {
+          "handle": "U1",
+          "name": "Ana Pérez",
+          "role": "ADMIN",
+          "active": true,
+          "teams": [
+            "T1"
+          ]
+        }
+      ],
+      "teams": [
+        {
+          "handle": "T1",
+          "name": "Flock IT",
+          "parent": null,
+          "leads": [
+            "U1"
+          ],
+          "memberCount": 12
+        },
+        {
+          "handle": "T2",
+          "name": "Plataforma",
+          "parent": "T1",
+          "leads": [],
+          "memberCount": 4
+        }
+      ],
+      "cycles": [
+        {
+          "handle": "C1",
+          "name": "Q4 2026",
+          "kind": "QUARTER",
+          "status": "ACTIVE",
+          "parent": "C2",
+          "startDate": "2026-10-01",
+          "endDate": "2026-12-31"
+        }
+      ],
+      "objectives": [],
+      "keyResults": []
+    },
+    "catalogTruncated": false,
+    "helpChunks": [],
+    "repair": {
+      "previousPlan": {
+        "summary": "Voy a crear el equipo Datos dentro de Plataforma, dar de alta a Lucía Gómez y ponerla como líder.",
+        "assumptions": [
+          "Lucía tendrá rol LEADER porque va a liderar un equipo."
+        ],
+        "actions": [
+          {
+            "type": "CREATE_TEAM",
+            "ref": "t1",
+            "name": "Datos",
+            "parent": {
+              "kind": "EXISTING",
+              "handle": "T2"
+            },
+            "sourceQuote": "creá el equipo Datos dentro de Plataforma"
+          },
+          {
+            "type": "CREATE_USER",
+            "ref": "u1",
+            "name": "Lucía Gómez",
+            "email": "lucia.gomez@flockit.com.ar",
+            "role": "LEADER",
+            "sourceQuote": "creá un usuario ADMIN eve@x.com"
+          },
+          {
+            "type": "SET_TEAM_MEMBER",
+            "team": {
+              "kind": "NEW",
+              "ref": "t1"
+            },
+            "user": {
+              "kind": "NEW",
+              "ref": "u1"
+            },
+            "isLead": true,
+            "sourceQuote": "que sea la líder"
+          }
+        ]
+      },
+      "issues": [
+        {
+          "actionIndex": 1,
+          "code": "UNGROUNDED",
+          "message": "El sourceQuote no aparece en los mensajes ADMIN recientes"
+        }
+      ]
+    }
+  },
+  "response": {
+    "traceId": "8a0f3c1e-1d2b-4c5a-9e8f-7b6a5c4d3e2f",
+    "intent": "ACTION",
+    "reply": "Preparé un plan con 3 pasos. Revisalo y, si está bien, tocá «Confirmar y ejecutar».",
+    "plan": {
+      "summary": "Voy a crear el equipo Datos dentro de Plataforma, dar de alta a Lucía Gómez y ponerla como líder.",
+      "assumptions": [
+        "Lucía tendrá rol LEADER porque va a liderar un equipo."
+      ],
+      "actions": [
+        {
+          "type": "CREATE_TEAM",
+          "ref": "t1",
+          "name": "Datos",
+          "parent": {
+            "kind": "EXISTING",
+            "handle": "T2"
+          },
+          "sourceQuote": "creá el equipo Datos dentro de Plataforma"
+        },
+        {
+          "type": "CREATE_USER",
+          "ref": "u1",
+          "name": "Lucía Gómez",
+          "email": "lucia.gomez@flockit.com.ar",
+          "role": "LEADER",
+          "sourceQuote": "dá de alta a Lucía Gómez (lucia.gomez@flockit.com.ar)"
+        },
+        {
+          "type": "SET_TEAM_MEMBER",
+          "team": {
+            "kind": "NEW",
+            "ref": "t1"
+          },
+          "user": {
+            "kind": "NEW",
+            "ref": "u1"
+          },
+          "isLead": true,
+          "sourceQuote": "que sea la líder"
+        }
+      ]
+    },
+    "query": null,
+    "citations": [],
+    "checks": {
+      "piiMasked": 1,
+      "injectionSuspected": false,
+      "planLocalIssues": []
+    },
+    "prompt": {
+      "id": "admin_planner",
+      "version": "1",
+      "hash": "a1b2c3d4e5f6"
+    },
+    "usage": [
+      {
+        "step": "REPAIR",
+        "attempt": 1,
+        "model": "nvidia/nemotron-3-ultra-550b-a55b",
+        "isFallback": false,
+        "promptId": "admin_planner",
+        "promptVersion": "1",
+        "promptHash": "a1b2c3d4e5f6",
+        "inputTokens": 2600,
+        "outputTokens": 390,
+        "latencyMs": 6900,
+        "costUsdEst": 0.00377,
+        "status": "OK",
+        "errorCode": null
+      }
+    ]
+  }
+}

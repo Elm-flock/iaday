@@ -1,0 +1,13 @@
+# Config SOLO para tests: IDs ficticios y distintos por rol, para que el FakeLlm (guionado por ID)
+# distinga clasificador, generador y juez, y sus fallbacks. No depende de config/models.yaml real.
+api_base: https://integrate.api.nvidia.com/v1
+litellm_prefix: nvidia_nim
+defaults: { timeout_s: 20, max_retries: 1, backoff_s: 1.5, temperature: 0.2 }
+tiers:
+  classify: { model: fam-c/classify-primary, fallback: fam-c/classify-fallback, max_tokens: 256, temperature: 0.0 }
+  generate: { model: fam-g/generate-primary, fallback: fam-g/generate-fallback, max_tokens: 2048, temperature: 0.3 }
+  judge: { model: fam-j/judge-primary, fallback: fam-j/judge-fallback, max_tokens: 1536, temperature: 0.0 }
+readability_min: { EASY_READ: 65, PLAIN: 55 }
+pricing_usd_per_1m:
+  fam-g/generate-primary: { input: 0.30, output: 1.00 }
+  default: { input: 0.50, output: 1.50 }

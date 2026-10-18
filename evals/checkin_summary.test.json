@@ -1,0 +1,99 @@
+{
+  "endpoint": "/v1/checkin-summary",
+  "cases": [
+    {
+      "name": "kr-incidencias",
+      "endpoint": "/v1/checkin-summary",
+      "request": {
+        "level": "PLAIN",
+        "keyResult": {
+          "title": "Reducir el tiempo medio de resolución de incidencias P1 de 8 h a 4 h",
+          "scoring": "DERIVED",
+          "unit": "h",
+          "startValue": "8",
+          "targetValue": "4",
+          "currentValue": "5.5"
+        },
+        "checkIns": [
+          {
+            "date": "2026-10-01",
+            "value": "7.5",
+            "score": 0.125,
+            "band": "RED",
+            "action": "START",
+            "note": "Arrancamos el relevamiento de incidencias."
+          },
+          {
+            "date": "2026-10-08",
+            "value": "6.5",
+            "score": 0.375,
+            "band": "RED",
+            "action": "CONTINUE",
+            "note": "Primer runbook publicado."
+          },
+          {
+            "date": "2026-10-15",
+            "value": "5.5",
+            "score": 0.625,
+            "band": "YELLOW",
+            "action": "CONTINUE",
+            "note": "El SLA del proveedor es el cuello de botella; se escala al comité el 15/11."
+          }
+        ]
+      },
+      "expect": {
+        "status": 200,
+        "trend": "IMPROVING",
+        "numbersPreserved": true,
+        "minSzigriszt": 55,
+        "noRawEnumTokens": true
+      }
+    },
+    {
+      "name": "kr-estancado",
+      "endpoint": "/v1/checkin-summary",
+      "request": {
+        "level": "STANDARD",
+        "keyResult": {
+          "title": "Subir el NPS interno de 40 a 70",
+          "scoring": "MANUAL",
+          "unit": null,
+          "startValue": "40",
+          "targetValue": "70",
+          "currentValue": "48"
+        },
+        "checkIns": [
+          {
+            "date": "2026-09-01",
+            "value": "47",
+            "score": 0.23,
+            "band": "RED",
+            "action": "CONTINUE",
+            "note": "Encuesta enviada."
+          },
+          {
+            "date": "2026-09-15",
+            "value": "48",
+            "score": 0.27,
+            "band": "RED",
+            "action": "CONTINUE",
+            "note": "Sin cambios relevantes."
+          },
+          {
+            "date": "2026-10-01",
+            "value": "48",
+            "score": 0.27,
+            "band": "RED",
+            "action": "UPDATE",
+            "note": "Se ajusta el plan de acciones."
+          }
+        ]
+      },
+      "expect": {
+        "status": 200,
+        "trend": "STABLE",
+        "noRawEnumTokens": true
+      }
+    }
+  ]
+}

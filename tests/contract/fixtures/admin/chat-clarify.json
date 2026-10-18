@@ -1,0 +1,108 @@
+{
+  "description": "Pedido incompleto: pregunta aclaratoria, sin plan.",
+  "endpoint": "/v1/admin/chat",
+  "status": 200,
+  "request": {
+    "locale": "es",
+    "today": "2026-10-18",
+    "message": "Creá un equipo",
+    "history": [],
+    "catalog": {
+      "users": [
+        {
+          "handle": "U1",
+          "name": "Ana Pérez",
+          "role": "ADMIN",
+          "active": true,
+          "teams": [
+            "T1"
+          ]
+        }
+      ],
+      "teams": [
+        {
+          "handle": "T1",
+          "name": "Flock IT",
+          "parent": null,
+          "leads": [
+            "U1"
+          ],
+          "memberCount": 12
+        },
+        {
+          "handle": "T2",
+          "name": "Plataforma",
+          "parent": "T1",
+          "leads": [],
+          "memberCount": 4
+        }
+      ],
+      "cycles": [
+        {
+          "handle": "C1",
+          "name": "Q4 2026",
+          "kind": "QUARTER",
+          "status": "ACTIVE",
+          "parent": "C2",
+          "startDate": "2026-10-01",
+          "endDate": "2026-12-31"
+        }
+      ],
+      "objectives": [],
+      "keyResults": []
+    },
+    "catalogTruncated": false,
+    "helpChunks": [],
+    "repair": null
+  },
+  "response": {
+    "traceId": "8a0f3c1e-1d2b-4c5a-9e8f-7b6a5c4d3e2f",
+    "intent": "CLARIFY",
+    "reply": "¿Cómo se llama el equipo y dentro de cuál va?",
+    "plan": null,
+    "query": null,
+    "citations": [],
+    "checks": {
+      "piiMasked": 0,
+      "injectionSuspected": false,
+      "planLocalIssues": []
+    },
+    "prompt": {
+      "id": "admin_reply",
+      "version": "1",
+      "hash": "2b1a09f8e7d6"
+    },
+    "usage": [
+      {
+        "step": "CLASSIFY",
+        "attempt": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "isFallback": false,
+        "promptId": "admin_classify",
+        "promptVersion": "1",
+        "promptHash": "0f1e2d3c4b5a",
+        "inputTokens": 420,
+        "outputTokens": 30,
+        "latencyMs": 1200,
+        "costUsdEst": 0.000156,
+        "status": "OK",
+        "errorCode": null
+      },
+      {
+        "step": "ANSWER",
+        "attempt": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "isFallback": false,
+        "promptId": "admin_reply",
+        "promptVersion": "1",
+        "promptHash": "2b1a09f8e7d6",
+        "inputTokens": 380,
+        "outputTokens": 40,
+        "latencyMs": 1500,
+        "costUsdEst": 0.000154,
+        "status": "OK",
+        "errorCode": null
+      }
+    ]
+  }
+}

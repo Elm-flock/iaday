@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "okr-platform-agent"
+version = "0.1.0"
+description = "Agente de accesibilidad cognitiva para OKR Platform (ADK + LiteLLM -> NVIDIA NIM)"
+requires-python = ">=3.12"
+dependencies = [
+  "google-adk==2.12.0",
+  "litellm==1.106.0",
+  "fastapi==0.141.1",
+  "uvicorn[standard]==0.54.0",
+  "pydantic==2.14.1",
+  "pydantic-settings==2.16.0",
+  "pyyaml==6.0.3",
+  "httpx==0.28.1",
+  # litellm 1.106 importa `mcp` al enviar `tools` (dependencia no declarada): sin esto el planner modo tools falla
+  "mcp==2.3.0",
+  "langfuse==4.15.6",
+  "openinference-instrumentation-google-adk==1.0.4",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest==9.1.1",
+  "pytest-asyncio==1.4.0",
+  "ruff==0.17.1",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+markers = ["eval: evals contra NVIDIA NIM real (exigen NVIDIA_NIM_API_KEY; no corren por defecto)"]
+addopts = "-m 'not eval' -p no:cacheprovider"
+filterwarnings = ["ignore::DeprecationWarning", "ignore::FutureWarning", "ignore::UserWarning"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["UP047"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["E501", "B011"]
+# prosa en español dentro de docstrings, prompts y mensajes (el codigo lo envuelve ruff format)
+"src/okr_agent/agent/admin/*.py" = ["E501"]
+"src/okr_agent/api/admin_*.py" = ["E501"]
+"src/okr_agent/guards/bm25.py" = ["E501"]

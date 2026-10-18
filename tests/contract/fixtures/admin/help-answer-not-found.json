@@ -1,0 +1,31 @@
+{
+  "description": "Los fragmentos no cubren la pregunta: found=false, sin citas, sin llamar al LLM.",
+  "endpoint": "/v1/help/answer",
+  "status": 200,
+  "request": {
+    "locale": "es",
+    "audience": "ADMIN",
+    "question": "¿Cuál es la capital de Francia?",
+    "chunks": [
+      {
+        "id": "admin#como-cierro-un-ciclo",
+        "manual": "ADMIN",
+        "title": "Ciclos > Cerrar un ciclo",
+        "text": "1. Entrá a Ciclos.\n2. Elegí el ciclo activo.\n3. Tocá Cerrar ciclo y confirmá.",
+        "url": "/ayuda/administracion#como-cierro-un-ciclo"
+      }
+    ]
+  },
+  "response": {
+    "traceId": "8a0f3c1e-1d2b-4c5a-9e8f-7b6a5c4d3e2f",
+    "answer": "No lo encuentro en el manual. Probá buscarlo en la sección Ayuda (/ayuda).",
+    "citations": [],
+    "found": false,
+    "prompt": {
+      "id": "help_answer",
+      "version": "1",
+      "hash": "7d6c5b4a3921"
+    },
+    "usage": []
+  }
+}

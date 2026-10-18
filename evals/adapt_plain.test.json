@@ -1,0 +1,129 @@
+{
+  "endpoint": "/v1/adapt",
+  "cases": [
+    {
+      "name": "checkin-ventas",
+      "endpoint": "/v1/adapt",
+      "request": {
+        "level": "PLAIN",
+        "entityType": "CHECK_IN",
+        "locale": "es",
+        "segments": [
+          {
+            "key": "checkin.kr_title",
+            "text": "Incrementar la tasa de conversión del embudo B2B del 3,2 % al 5 %"
+          },
+          {
+            "key": "checkin.note",
+            "text": "Se optimizó el onboarding comercial; la conversión subió a 4,1 % pero persiste fricción en la etapa de demo, que revisaremos el 20/11."
+          }
+        ],
+        "mustPreserve": [
+          "3,2 %",
+          "5 %",
+          "4,1 %",
+          "20/11"
+        ]
+      },
+      "expect": {
+        "status": 200,
+        "numbersPreserved": true,
+        "minSzigriszt": 55,
+        "noRawEnumTokens": true
+      }
+    },
+    {
+      "name": "objetivo-calidad",
+      "endpoint": "/v1/adapt",
+      "request": {
+        "level": "PLAIN",
+        "entityType": "OBJECTIVE",
+        "locale": "es",
+        "segments": [
+          {
+            "key": "objective.title",
+            "text": "Garantizar una experiencia de producto estable y predecible"
+          },
+          {
+            "key": "objective.description",
+            "text": "Disminuir los defectos escapados a producción de 12 a 4 por trimestre mediante automatización de pruebas de regresión."
+          }
+        ],
+        "mustPreserve": [
+          "12",
+          "4"
+        ]
+      },
+      "expect": {
+        "status": 200,
+        "numbersPreserved": true,
+        "minSzigriszt": 55,
+        "noRawEnumTokens": true
+      }
+    },
+    {
+      "name": "jerga-pipeline-alto-valor",
+      "endpoint": "/v1/adapt",
+      "request": {
+        "level": "PLAIN",
+        "entityType": "OBJECTIVE",
+        "locale": "es",
+        "segments": [
+          {
+            "key": "objective.title",
+            "text": "Captar clientes de alto valor"
+          },
+          {
+            "key": "objective.description",
+            "text": "Construir un pipeline calificado de 400000 USD con foco en clientes de alto valor y acortar el ciclo de venta a 45 días."
+          }
+        ],
+        "mustPreserve": [
+          "400000 USD",
+          "45 días"
+        ]
+      },
+      "expect": {
+        "status": 200,
+        "numbersPreserved": true,
+        "minSzigriszt": 55,
+        "noUnexplainedJargon": true,
+        "outputContains": [
+          "400.000"
+        ]
+      }
+    },
+    {
+      "name": "jerga-churn-tasa-de-cierre",
+      "endpoint": "/v1/adapt",
+      "request": {
+        "level": "PLAIN",
+        "entityType": "CHECK_IN",
+        "locale": "es",
+        "segments": [
+          {
+            "key": "checkin.kr_title",
+            "text": "Reducir el churn mensual del 6 % al 3 %"
+          },
+          {
+            "key": "checkin.note",
+            "text": "La tasa de cierre subió al 28 % y el onboarding de 12 leads nuevos terminó el 05/12."
+          }
+        ],
+        "mustPreserve": [
+          "6 %",
+          "3 %",
+          "28 %",
+          "12",
+          "05/12"
+        ]
+      },
+      "expect": {
+        "status": 200,
+        "numbersPreserved": true,
+        "minSzigriszt": 55,
+        "noUnexplainedJargon": true
+      }
+    }
+  ]
+}
