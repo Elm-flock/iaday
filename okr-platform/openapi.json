@@ -1,6 +1,337 @@
 {
   "components": {
     "schemas": {
+      "AdaptationRequestDto": {
+        "properties": {
+          "assigneeId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "assigneeName": {
+            "nullable": true,
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "description": {
+            "nullable": true,
+            "type": "string"
+          },
+          "dueDate": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "entityId": {
+            "description": "Para un feedback vinculado, solo lo ve quien hizo el pedido (administración no recibe el id).",
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "entityType": {
+            "enum": ["OBJECTIVE", "CHECK_IN", "FEEDBACK"],
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "overdue": {
+            "description": "Abierto y pasado de la fecha límite",
+            "type": "boolean"
+          },
+          "preferredFormat": {
+            "enum": [
+              "LECTURA_FACIL",
+              "LENGUAJE_CLARO",
+              "AUDIO",
+              "APOYO_VISUAL",
+              "REUNION_ADAPTADA",
+              "OTRO"
+            ],
+            "type": "string"
+          },
+          "rejectionJustification": {
+            "description": "Obligatoria cuando el estado es RECHAZADA; la ve quien hizo el pedido",
+            "nullable": true,
+            "type": "string"
+          },
+          "requesterId": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "requesterName": {
+            "nullable": true,
+            "type": "string"
+          },
+          "resolutionLink": {
+            "nullable": true,
+            "type": "string"
+          },
+          "resolutionNote": {
+            "nullable": true,
+            "type": "string"
+          },
+          "resolvedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "status": {
+            "enum": ["PENDIENTE", "EN_CURSO", "ENTREGADA", "RECHAZADA"],
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "requesterId",
+          "requesterName",
+          "subject",
+          "description",
+          "entityType",
+          "entityId",
+          "preferredFormat",
+          "status",
+          "assigneeId",
+          "assigneeName",
+          "dueDate",
+          "overdue",
+          "resolutionNote",
+          "resolutionLink",
+          "rejectionJustification",
+          "resolvedAt",
+          "createdAt",
+          "updatedAt"
+        ],
+        "type": "object"
+      },
+      "AdaptationRequestPageDto": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AdaptationRequestDto"
+            },
+            "type": "array"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "page": {
+            "type": "number"
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": ["items", "total", "page", "limit"],
+        "type": "object"
+      },
+      "AdaptedContentBodyDto": {
+        "properties": {
+          "glossary": {
+            "items": {
+              "$ref": "#/components/schemas/GlossaryEntryDto"
+            },
+            "type": "array"
+          },
+          "segments": {
+            "items": {
+              "$ref": "#/components/schemas/SegmentDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": ["segments", "glossary"],
+        "type": "object"
+      },
+      "AdaptedContentDto": {
+        "properties": {
+          "acceptedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "cached": {
+            "description": "true si vino de la caché (mismo texto de origen y nivel)",
+            "type": "boolean"
+          },
+          "content": {
+            "$ref": "#/components/schemas/AdaptedContentBodyDto"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "entityId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "entityType": {
+            "enum": ["OBJECTIVE", "KEY_RESULT", "CHECK_IN", "FEEDBACK"],
+            "type": "string"
+          },
+          "generationMs": {
+            "description": "Latencia total del pedido en ms (RD 707/2026 art. 14.5)",
+            "type": "number"
+          },
+          "humanEdited": {
+            "type": "boolean"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "level": {
+            "enum": ["EASY_READ", "PLAIN"],
+            "type": "string"
+          },
+          "readability": {
+            "additionalProperties": true,
+            "description": "Métricas de legibilidad { source, output } (Fernández-Huerta, Szigriszt-Pazos, INFLESZ)",
+            "type": "object"
+          },
+          "requestedById": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "reviewReason": {
+            "nullable": true,
+            "type": "string"
+          },
+          "status": {
+            "description": "DRAFT/ACCEPTED: generado por IA, pendiente de validación; VALIDATED: validado por una persona; NEEDS_REVIEW: requiere revisión humana (el contenido es el texto original sin adaptar)",
+            "enum": ["DRAFT", "ACCEPTED", "VALIDATED", "NEEDS_REVIEW"],
+            "type": "string"
+          },
+          "traceId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "validatedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "validatedById": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "validationNote": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "entityType",
+          "entityId",
+          "level",
+          "status",
+          "reviewReason",
+          "content",
+          "readability",
+          "cached",
+          "traceId",
+          "generationMs",
+          "requestedById",
+          "acceptedAt",
+          "validatedById",
+          "validatedAt",
+          "validationNote",
+          "humanEdited",
+          "createdAt"
+        ],
+        "type": "object"
+      },
+      "AiStatusDto": {
+        "properties": {
+          "enabled": {
+            "description": "false: la ayuda de IA está desactivada y la UI no debe ofrecerla",
+            "type": "boolean"
+          }
+        },
+        "required": ["enabled"],
+        "type": "object"
+      },
+      "AiSuggestionDto": {
+        "properties": {
+          "acceptedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "discardedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "feature": {
+            "enum": ["ADAPT", "OKR_SUGGEST", "CHECKIN_SUMMARY"],
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "needsHumanReview": {
+            "description": "true: requiere revisión humana antes de usarla",
+            "type": "boolean"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "description": "Resultado del agente tal cual: OKR_SUGGEST { objective, keyResults, warnings }; CHECKIN_SUMMARY { summary, trend, highlights, risks }",
+            "type": "object"
+          },
+          "reviewReason": {
+            "nullable": true,
+            "type": "string"
+          },
+          "traceId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "feature",
+          "traceId",
+          "payload",
+          "needsHumanReview",
+          "reviewReason",
+          "acceptedAt",
+          "discardedAt",
+          "createdAt"
+        ],
+        "type": "object"
+      },
+      "AssignAdaptationRequestDto": {
+        "properties": {
+          "assigneeId": {
+            "description": "Persona de administración que se hace cargo",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": ["assigneeId"],
+        "type": "object"
+      },
       "AuditEntryDto": {
         "properties": {
           "action": {
@@ -15,7 +346,19 @@
               "USER_ROLE_CHANGED",
               "USER_DEACTIVATED",
               "REFRESH_REUSE_DETECTED",
-              "REFRESH_REVOKED_USED"
+              "REFRESH_REVOKED_USED",
+              "AI_CONTENT_ADAPTED",
+              "AI_CONTENT_VALIDATED",
+              "AI_SUGGESTION_ACCEPTED",
+              "ADAPTATION_REQUEST_CREATED",
+              "ADAPTATION_REQUEST_ASSIGNED",
+              "ADAPTATION_REQUEST_DELIVERED",
+              "ADAPTATION_REQUEST_REJECTED",
+              "USER_PASSWORD_CHANGED",
+              "ASSISTANT_PLAN_CONFIRMED",
+              "ASSISTANT_PLAN_DISCARDED",
+              "ASSISTANT_ACTION_EXECUTED",
+              "ASSISTANT_ACTION_FAILED"
             ],
             "type": "string"
           },
@@ -117,6 +460,10 @@
             "format": "uuid",
             "type": "string"
           },
+          "mustChangePassword": {
+            "description": "true si la clave la definió administración y todavía no se cambió: hasta entonces solo funciona POST /auth/change-password (el resto responde 403 PASSWORD_CHANGE_REQUIRED)",
+            "type": "boolean"
+          },
           "name": {
             "type": "string"
           },
@@ -125,7 +472,23 @@
             "type": "string"
           }
         },
-        "required": ["id", "name", "email", "role"],
+        "required": ["id", "name", "email", "role", "mustChangePassword"],
+        "type": "object"
+      },
+      "ChangePasswordDto": {
+        "properties": {
+          "currentPassword": {
+            "description": "Contraseña actual (la inicial, si todavía no la cambiaste)",
+            "type": "string"
+          },
+          "newPassword": {
+            "description": "Contraseña nueva: al menos 12 caracteres y distinta de la actual",
+            "maxLength": 200,
+            "minLength": 12,
+            "type": "string"
+          }
+        },
+        "required": ["currentPassword", "newPassword"],
         "type": "object"
       },
       "CheckInDto": {
@@ -180,6 +543,72 @@
           "note",
           "createdAt"
         ],
+        "type": "object"
+      },
+      "CitationDto": {
+        "properties": {
+          "id": {
+            "example": "admin#cómo-creo-un-usuario",
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "example": "/ayuda/admin#cómo-creo-un-usuario",
+            "type": "string"
+          }
+        },
+        "required": ["id", "title", "url"],
+        "type": "object"
+      },
+      "ConfirmPlanDto": {
+        "properties": {
+          "planHash": {
+            "description": "planHash del plan que la persona vio (sha256 hex)",
+            "maxLength": 64,
+            "minLength": 64,
+            "type": "string"
+          }
+        },
+        "required": ["planHash"],
+        "type": "object"
+      },
+      "CreateAdaptationRequestDto": {
+        "properties": {
+          "description": {
+            "description": "Detalle de lo que necesitás (opcional)",
+            "maxLength": 2000,
+            "type": "string"
+          },
+          "entityId": {
+            "description": "Id del objetivo, check-in o feedback. Un feedback solo se puede vincular si sos quien lo envió o lo recibió.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "entityType": {
+            "description": "Elemento al que se refiere el pedido. Va junto con entityId.",
+            "enum": ["OBJECTIVE", "CHECK_IN", "FEEDBACK"],
+            "type": "string"
+          },
+          "preferredFormat": {
+            "enum": [
+              "LECTURA_FACIL",
+              "LENGUAJE_CLARO",
+              "AUDIO",
+              "APOYO_VISUAL",
+              "REUNION_ADAPTADA",
+              "OTRO"
+            ],
+            "type": "string"
+          },
+          "subject": {
+            "description": "Qué documento necesitás, en pocas palabras",
+            "maxLength": 150,
+            "type": "string"
+          }
+        },
+        "required": ["subject", "preferredFormat"],
         "type": "object"
       },
       "CreateCheckInDto": {
@@ -405,7 +834,7 @@
             "type": "string"
           },
           "password": {
-            "description": "Clave inicial (se guarda con argon2id)",
+            "description": "Clave inicial (se guarda con argon2id). Opcional: si se omite, el back genera una aleatoria y la devuelve una sola vez en `initialPassword`. En ambos casos la persona debe cambiarla al entrar.",
             "maxLength": 200,
             "minLength": 8,
             "type": "string"
@@ -416,7 +845,38 @@
             "type": "string"
           }
         },
-        "required": ["email", "name", "password"],
+        "required": ["email", "name"],
+        "type": "object"
+      },
+      "CreatedUserDto": {
+        "properties": {
+          "active": {
+            "type": "boolean"
+          },
+          "email": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "initialPassword": {
+            "description": "Clave inicial generada. Se muestra UNA sola vez, solo si el pedido no trajo `password`; nunca se guarda en claro ni se audita.",
+            "type": "string"
+          },
+          "mustChangePassword": {
+            "description": "Siempre true en un alta: la persona debe cambiar la clave inicial al entrar (el login y /auth/me lo informan)",
+            "type": "boolean"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "enum": ["ADMIN", "LEADER", "MEMBER"],
+            "type": "string"
+          }
+        },
+        "required": ["id", "name", "email", "role", "active", "mustChangePassword"],
         "type": "object"
       },
       "CycleCloseDto": {
@@ -559,6 +1019,221 @@
         ],
         "type": "object"
       },
+      "DeliverAdaptationRequestDto": {
+        "properties": {
+          "resolutionLink": {
+            "description": "Enlace al documento adaptado (http/https)",
+            "maxLength": 500,
+            "type": "string"
+          },
+          "resolutionNote": {
+            "description": "Qué se entrega y cómo acceder (mínimo 10 caracteres; lo valida el dominio)",
+            "maxLength": 2000,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "DigestDto": {
+        "properties": {
+          "chatAvailable": {
+            "description": "false si el asistente de chat no está disponible (input deshabilitado)",
+            "type": "boolean"
+          },
+          "generatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "headline": {
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DigestItemDto"
+            },
+            "type": "array"
+          },
+          "source": {
+            "description": "TEMPLATE = resumen automático (sin IA)",
+            "enum": ["AI", "TEMPLATE"],
+            "type": "string"
+          }
+        },
+        "required": ["headline", "items", "source", "generatedAt", "chatAvailable"],
+        "type": "object"
+      },
+      "DigestItemDto": {
+        "properties": {
+          "count": {
+            "type": "number"
+          },
+          "factKey": {
+            "type": "string"
+          },
+          "href": {
+            "description": "Pantalla donde se resuelve",
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": ["factKey", "text", "count", "href"],
+        "type": "object"
+      },
+      "DraftKeyResultDto": {
+        "properties": {
+          "startValue": {
+            "description": "Decimal como string",
+            "example": "0",
+            "type": "string"
+          },
+          "targetValue": {
+            "description": "Decimal como string",
+            "example": "100",
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 300,
+            "type": "string"
+          },
+          "unit": {
+            "maxLength": 40,
+            "type": "string"
+          }
+        },
+        "required": ["title"],
+        "type": "object"
+      },
+      "DraftObjectiveDto": {
+        "properties": {
+          "description": {
+            "maxLength": 2000,
+            "type": "string"
+          },
+          "keyResults": {
+            "description": "Hasta 5 KRs",
+            "items": {
+              "$ref": "#/components/schemas/DraftKeyResultDto"
+            },
+            "type": "array"
+          },
+          "title": {
+            "description": "Puede ser un borrador pobre",
+            "maxLength": 300,
+            "type": "string"
+          },
+          "type": {
+            "enum": ["COMMITTED", "ASPIRATIONAL"],
+            "type": "string"
+          }
+        },
+        "required": ["title", "type"],
+        "type": "object"
+      },
+      "EditedContentDto": {
+        "properties": {
+          "glossary": {
+            "items": {
+              "$ref": "#/components/schemas/EditedGlossaryEntryDto"
+            },
+            "type": "array"
+          },
+          "segments": {
+            "items": {
+              "$ref": "#/components/schemas/EditedSegmentDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": ["segments"],
+        "type": "object"
+      },
+      "EditedGlossaryEntryDto": {
+        "properties": {
+          "explanation": {
+            "type": "string"
+          },
+          "term": {
+            "type": "string"
+          }
+        },
+        "required": ["term", "explanation"],
+        "type": "object"
+      },
+      "EditedSegmentDto": {
+        "properties": {
+          "key": {
+            "example": "checkin.note",
+            "type": "string"
+          },
+          "text": {
+            "maxLength": 4000,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": ["key", "text"],
+        "type": "object"
+      },
+      "EntityLinkDto": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "type": {
+            "example": "Team",
+            "type": "string"
+          },
+          "url": {
+            "description": "Ruta de la app, si hay pantalla",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": ["type", "id", "url"],
+        "type": "object"
+      },
+      "ExecutionResultDto": {
+        "properties": {
+          "plan": {
+            "$ref": "#/components/schemas/PlanDto"
+          },
+          "planId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "status": {
+            "enum": ["EXECUTED", "PARTIAL", "FAILED"],
+            "type": "string"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/StepResultDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": ["planId", "status", "steps", "plan"],
+        "type": "object"
+      },
+      "FailureRowDto": {
+        "properties": {
+          "count": {
+            "type": "number"
+          },
+          "errorCode": {
+            "nullable": true,
+            "type": "string"
+          },
+          "step": {
+            "type": "string"
+          }
+        },
+        "required": ["step", "errorCode", "count"],
+        "type": "object"
+      },
       "FeedbackDto": {
         "properties": {
           "content": {
@@ -613,6 +1288,146 @@
           "createdAt",
           "editedAt"
         ],
+        "type": "object"
+      },
+      "GlossaryEntryDto": {
+        "properties": {
+          "explanation": {
+            "type": "string"
+          },
+          "term": {
+            "type": "string"
+          }
+        },
+        "required": ["term", "explanation"],
+        "type": "object"
+      },
+      "ImpactAdoptionDto": {
+        "properties": {
+          "adaptationAcceptanceRate": {
+            "nullable": true,
+            "type": "number"
+          },
+          "adaptationsAccepted": {
+            "description": "ACCEPTED o VALIDATED",
+            "type": "number"
+          },
+          "adaptationsTotal": {
+            "type": "number"
+          },
+          "suggestionAcceptanceRate": {
+            "nullable": true,
+            "type": "number"
+          },
+          "suggestionsAccepted": {
+            "type": "number"
+          },
+          "suggestionsTotal": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "adaptationsTotal",
+          "adaptationsAccepted",
+          "adaptationAcceptanceRate",
+          "suggestionsTotal",
+          "suggestionsAccepted",
+          "suggestionAcceptanceRate"
+        ],
+        "type": "object"
+      },
+      "ImpactCostByFeatureDto": {
+        "properties": {
+          "costUsdEst": {
+            "type": "number"
+          },
+          "feature": {
+            "type": "string"
+          }
+        },
+        "required": ["feature", "costUsdEst"],
+        "type": "object"
+      },
+      "ImpactCostDto": {
+        "properties": {
+          "activeUsers": {
+            "description": "Personas distintas que usaron la IA (solo conteo)",
+            "type": "number"
+          },
+          "byFeature": {
+            "items": {
+              "$ref": "#/components/schemas/ImpactCostByFeatureDto"
+            },
+            "type": "array"
+          },
+          "costPerActiveUserUsdEst": {
+            "nullable": true,
+            "type": "number"
+          },
+          "totalCostUsdEst": {
+            "description": "ESTIMACIÓN en USD",
+            "type": "number"
+          }
+        },
+        "required": ["totalCostUsdEst", "activeUsers", "costPerActiveUserUsdEst", "byFeature"],
+        "type": "object"
+      },
+      "ImpactDto": {
+        "properties": {
+          "adoption": {
+            "$ref": "#/components/schemas/ImpactAdoptionDto"
+          },
+          "cost": {
+            "$ref": "#/components/schemas/ImpactCostDto"
+          },
+          "from": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "quality": {
+            "$ref": "#/components/schemas/ImpactQualityDto"
+          },
+          "time": {
+            "$ref": "#/components/schemas/ImpactTimeDto"
+          },
+          "to": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": ["from", "to", "adoption", "time", "quality", "cost"],
+        "type": "object"
+      },
+      "ImpactQualityDto": {
+        "properties": {
+          "meanReadabilityDelta": {
+            "description": "Delta medio de Szigriszt-Pazos origen -> salida (sin NEEDS_REVIEW)",
+            "nullable": true,
+            "type": "number"
+          },
+          "needsReviewRate": {
+            "description": "Fracción de adaptaciones en NEEDS_REVIEW",
+            "nullable": true,
+            "type": "number"
+          }
+        },
+        "required": ["meanReadabilityDelta", "needsReviewRate"],
+        "type": "object"
+      },
+      "ImpactTimeDto": {
+        "properties": {
+          "adaptationLatencyP50Ms": {
+            "description": "p50 de la latencia pedido->entrega de una adaptación (ms)",
+            "nullable": true,
+            "type": "number"
+          },
+          "decisionTimeP50Ms": {
+            "description": "p50 del tiempo hasta aceptar/descartar una sugerencia (ms)",
+            "nullable": true,
+            "type": "number"
+          }
+        },
+        "required": ["adaptationLatencyP50Ms", "decisionTimeP50Ms"],
         "type": "object"
       },
       "KeyResultDto": {
@@ -718,6 +1533,10 @@
             "format": "uuid",
             "type": "string"
           },
+          "mustChangePassword": {
+            "description": "true si la clave la definió administración y todavía no se cambió: hasta entonces solo funciona POST /auth/change-password (el resto responde 403 PASSWORD_CHANGE_REQUIRED)",
+            "type": "boolean"
+          },
           "name": {
             "type": "string"
           },
@@ -732,7 +1551,7 @@
             "type": "array"
           }
         },
-        "required": ["id", "name", "email", "role", "teams"],
+        "required": ["id", "name", "email", "role", "mustChangePassword", "teams"],
         "type": "object"
       },
       "MeTeamDto": {
@@ -749,6 +1568,55 @@
           }
         },
         "required": ["teamId", "name", "isLead"],
+        "type": "object"
+      },
+      "MessageDto": {
+        "properties": {
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/CitationDto"
+            },
+            "type": "array"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "kind": {
+            "enum": ["TEXT", "PLAN", "QUERY_RESULT", "EXECUTION_RESULT", "HELP"],
+            "type": "string"
+          },
+          "plan": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PlanDto"
+              }
+            ],
+            "description": "Kind PLAN: estado vigente del plan"
+          },
+          "query": {
+            "$ref": "#/components/schemas/QueryResultDto"
+          },
+          "role": {
+            "enum": ["ADMIN", "ASSISTANT"],
+            "type": "string"
+          },
+          "steps": {
+            "description": "Kind EXECUTION_RESULT: pasos (sin claves)",
+            "items": {
+              "$ref": "#/components/schemas/StepResultDto"
+            },
+            "type": "array"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": ["id", "role", "kind", "text", "createdAt"],
         "type": "object"
       },
       "ObjectiveDto": {
@@ -861,6 +1729,35 @@
         ],
         "type": "object"
       },
+      "OkrSuggestDto": {
+        "properties": {
+          "cycleId": {
+            "description": "Ciclo del objetivo (define el horizonte)",
+            "format": "uuid",
+            "type": "string"
+          },
+          "draft": {
+            "$ref": "#/components/schemas/DraftObjectiveDto"
+          },
+          "objectiveId": {
+            "description": "Objetivo existente a mejorar (exige poder editarlo). Sin esto, informar el owner.",
+            "format": "uuid",
+            "type": "string"
+          },
+          "ownerTeamId": {
+            "description": "Owner equipo del objetivo nuevo",
+            "format": "uuid",
+            "type": "string"
+          },
+          "ownerUserId": {
+            "description": "Owner usuario del objetivo nuevo",
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": ["cycleId", "draft"],
+        "type": "object"
+      },
       "OriginMixDto": {
         "properties": {
           "bottomUp": {
@@ -925,6 +1822,195 @@
           "lastCheckInAt",
           "referenceAt"
         ],
+        "type": "object"
+      },
+      "PlanActionDto": {
+        "properties": {
+          "description": {
+            "description": "Descripción legible en español, sin UUIDs",
+            "type": "string"
+          },
+          "index": {
+            "type": "number"
+          },
+          "type": {
+            "description": "Tipo de la whitelist (CREATE_USER, ...)",
+            "type": "string"
+          }
+        },
+        "required": ["index", "type", "description"],
+        "type": "object"
+      },
+      "PlanDto": {
+        "properties": {
+          "actions": {
+            "items": {
+              "$ref": "#/components/schemas/PlanActionDto"
+            },
+            "type": "array"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "confirmedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "expiresAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "finishedAt": {
+            "format": "date-time",
+            "nullable": true,
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "issues": {
+            "description": "Bloqueantes: con issues no hay botón de confirmar",
+            "items": {
+              "$ref": "#/components/schemas/PlanIssueDto"
+            },
+            "type": "array"
+          },
+          "planHash": {
+            "description": "Se reenvía tal cual al confirmar",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "PROPOSED",
+              "INVALID",
+              "EXECUTING",
+              "EXECUTED",
+              "PARTIAL",
+              "FAILED",
+              "INTERRUPTED",
+              "DISCARDED",
+              "EXPIRED"
+            ],
+            "type": "string"
+          },
+          "steps": {
+            "description": "Resultado por paso, si ya se ejecutó",
+            "items": {
+              "$ref": "#/components/schemas/StepResultDto"
+            },
+            "type": "array"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "warnings": {
+            "description": "Avisos no bloqueantes (CREATES_ADMIN, ...)",
+            "items": {
+              "$ref": "#/components/schemas/PlanIssueDto"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "summary",
+          "assumptions",
+          "actions",
+          "issues",
+          "warnings",
+          "planHash",
+          "expiresAt",
+          "confirmedAt",
+          "finishedAt"
+        ],
+        "type": "object"
+      },
+      "PlanIssueDto": {
+        "properties": {
+          "actionIndex": {
+            "nullable": true,
+            "type": "number"
+          },
+          "code": {
+            "description": "UNKNOWN_ACTION, UNGROUNDED, EMAIL_TAKEN, OBJECTIVE_LIMIT, ...",
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": ["actionIndex", "code", "message"],
+        "type": "object"
+      },
+      "QueryResultDto": {
+        "properties": {
+          "auditRows": {
+            "description": "Solo AUDIT_SEARCH",
+            "items": {
+              "$ref": "#/components/schemas/QueryRowDto"
+            },
+            "type": "array"
+          },
+          "link": {
+            "description": "Pantalla con los mismos filtros (/admin/auditoria?... o /admin/pedidos-adaptacion?...)",
+            "type": "string"
+          },
+          "requestRows": {
+            "description": "Solo ADAPTATION_REQUESTS_LIST",
+            "items": {
+              "$ref": "#/components/schemas/RequestRowDto"
+            },
+            "type": "array"
+          },
+          "summary": {
+            "description": "Texto determinista de resumen o de \"sin resultados\"",
+            "type": "string"
+          },
+          "total": {
+            "type": "number"
+          },
+          "type": {
+            "enum": ["AUDIT_SEARCH", "ADAPTATION_REQUESTS_LIST"],
+            "type": "string"
+          }
+        },
+        "required": ["type", "total", "auditRows", "requestRows", "link", "summary"],
+        "type": "object"
+      },
+      "QueryRowDto": {
+        "properties": {
+          "action": {
+            "description": "Valor de AuditAction",
+            "type": "string"
+          },
+          "actorName": {
+            "nullable": true,
+            "type": "string"
+          },
+          "at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "change": {
+            "description": "Ej.: \"Integrante → Líder\"",
+            "nullable": true,
+            "type": "string"
+          },
+          "entityLabel": {
+            "nullable": true,
+            "type": "string"
+          },
+          "entityType": {
+            "type": "string"
+          }
+        },
+        "required": ["at", "actorName", "action", "entityType", "entityLabel", "change"],
         "type": "object"
       },
       "RecognitionDto": {
@@ -1004,6 +2090,16 @@
           }
         },
         "required": ["refreshToken"],
+        "type": "object"
+      },
+      "RejectAdaptationRequestDto": {
+        "properties": {
+          "justification": {
+            "description": "Justificación por escrito, en lenguaje claro (art. 14.5: solo por carga desproporcionada). Mínimo 20 caracteres; sin ella responde 422.",
+            "maxLength": 2000,
+            "type": "string"
+          }
+        },
         "type": "object"
       },
       "ReportCycleDto": {
@@ -1210,6 +2306,44 @@
         "required": ["id", "name"],
         "type": "object"
       },
+      "RequestRowDto": {
+        "properties": {
+          "assigneeName": {
+            "nullable": true,
+            "type": "string"
+          },
+          "dueDate": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "overdue": {
+            "type": "boolean"
+          },
+          "preferredFormat": {
+            "type": "string"
+          },
+          "requesterName": {
+            "nullable": true,
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "subject",
+          "preferredFormat",
+          "status",
+          "dueDate",
+          "overdue",
+          "assigneeName",
+          "requesterName"
+        ],
+        "type": "object"
+      },
       "ResetPasswordDto": {
         "properties": {
           "password": {
@@ -1221,6 +2355,31 @@
         "required": ["password"],
         "type": "object"
       },
+      "SegmentDto": {
+        "properties": {
+          "key": {
+            "example": "checkin.note",
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": ["key", "text"],
+        "type": "object"
+      },
+      "SendMessageDto": {
+        "properties": {
+          "text": {
+            "example": "Creá el equipo Datos dentro de Plataforma",
+            "maxLength": 2000,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": ["text"],
+        "type": "object"
+      },
       "SetMemberDto": {
         "properties": {
           "isLead": {
@@ -1228,6 +2387,44 @@
             "type": "boolean"
           }
         },
+        "type": "object"
+      },
+      "StepErrorDto": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": ["code", "message"],
+        "type": "object"
+      },
+      "StepResultDto": {
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "entity": {
+            "$ref": "#/components/schemas/EntityLinkDto"
+          },
+          "error": {
+            "$ref": "#/components/schemas/StepErrorDto"
+          },
+          "index": {
+            "type": "number"
+          },
+          "oneTimeSecret": {
+            "description": "Clave inicial de un usuario recién creado. Solo viaja en la respuesta de confirmar: se muestra una sola vez y no se guarda.",
+            "type": "string"
+          },
+          "status": {
+            "enum": ["OK", "FAILED", "SKIPPED"],
+            "type": "string"
+          }
+        },
+        "required": ["index", "status", "description"],
         "type": "object"
       },
       "TeamDetailDto": {
@@ -1360,6 +2557,31 @@
         "required": ["team", "cycle", "generatedAt", "originMix", "teamObjectives", "members"],
         "type": "object"
       },
+      "TurnResultDto": {
+        "properties": {
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/CitationDto"
+            },
+            "type": "array"
+          },
+          "messages": {
+            "description": "Los mensajes nuevos: el de la persona y la respuesta",
+            "items": {
+              "$ref": "#/components/schemas/MessageDto"
+            },
+            "type": "array"
+          },
+          "plan": {
+            "$ref": "#/components/schemas/PlanDto"
+          },
+          "query": {
+            "$ref": "#/components/schemas/QueryResultDto"
+          }
+        },
+        "required": ["messages"],
+        "type": "object"
+      },
       "UpdateCycleDto": {
         "properties": {
           "aspirationalThreshold": {
@@ -1483,6 +2705,87 @@
         },
         "type": "object"
       },
+      "UsageDto": {
+        "properties": {
+          "byFeature": {
+            "items": {
+              "$ref": "#/components/schemas/UsageRowDto"
+            },
+            "type": "array"
+          },
+          "byModel": {
+            "items": {
+              "$ref": "#/components/schemas/UsageRowDto"
+            },
+            "type": "array"
+          },
+          "failures": {
+            "items": {
+              "$ref": "#/components/schemas/FailureRowDto"
+            },
+            "type": "array"
+          },
+          "from": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "to": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": ["from", "to", "byFeature", "byModel", "failures"],
+        "type": "object"
+      },
+      "UsageRowDto": {
+        "properties": {
+          "calls": {
+            "type": "number"
+          },
+          "costUsdEst": {
+            "description": "ESTIMACIÓN en USD según la tabla de precios del agente (el free tier no factura)",
+            "type": "number"
+          },
+          "failedCalls": {
+            "type": "number"
+          },
+          "fallbackRate": {
+            "description": "Fracción de llamadas hechas con el modelo de fallback",
+            "nullable": true,
+            "type": "number"
+          },
+          "inputTokens": {
+            "type": "number"
+          },
+          "key": {
+            "description": "Feature o modelo según la tabla",
+            "type": "string"
+          },
+          "latencyP50Ms": {
+            "nullable": true,
+            "type": "number"
+          },
+          "latencyP95Ms": {
+            "nullable": true,
+            "type": "number"
+          },
+          "outputTokens": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "key",
+          "calls",
+          "failedCalls",
+          "inputTokens",
+          "outputTokens",
+          "costUsdEst",
+          "latencyP50Ms",
+          "latencyP95Ms",
+          "fallbackRate"
+        ],
+        "type": "object"
+      },
       "UserDto": {
         "properties": {
           "active": {
@@ -1505,6 +2808,23 @@
         },
         "required": ["id", "name", "email", "role", "active"],
         "type": "object"
+      },
+      "ValidateAdaptationDto": {
+        "properties": {
+          "content": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EditedContentDto"
+              }
+            ],
+            "description": "Corrección humana: reemplaza la salida de la IA (mismas claves y orden de segmentos)"
+          },
+          "note": {
+            "maxLength": 1000,
+            "type": "string"
+          }
+        },
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -1526,6 +2846,1106 @@
   },
   "openapi": "3.0.0",
   "paths": {
+    "/adaptation-requests": {
+      "get": {
+        "operationId": "AdaptationRequestsController_list",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "enum": ["PENDIENTE", "EN_CURSO", "ENTREGADA", "RECHAZADA"],
+              "type": "string"
+            }
+          },
+          {
+            "description": "true: solo los vencidos (abiertos y pasados de fecha). false: el resto.",
+            "in": "query",
+            "name": "overdue",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdaptationRequestPageDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "Solo ADMIN"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Todos los pedidos (solo ADMIN), filtrables por estado y por vencidos; paginado.",
+        "tags": ["adaptation-requests"]
+      },
+      "post": {
+        "operationId": "AdaptationRequestsController_create",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAdaptationRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdaptationRequestDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Datos inválidos"
+          },
+          "404": {
+            "description": "El elemento vinculado no existe o no podés verlo"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Pide un documento adaptado a una persona (plazo configurable, 10 días por defecto). Un feedback solo se vincula si lo enviaste o recibiste.",
+        "tags": ["adaptation-requests"]
+      }
+    },
+    "/adaptation-requests/mine": {
+      "get": {
+        "operationId": "AdaptationRequestsController_mine",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdaptationRequestPageDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Mis pedidos, del más nuevo al más viejo",
+        "tags": ["adaptation-requests"]
+      }
+    },
+    "/adaptation-requests/{id}": {
+      "get": {
+        "operationId": "AdaptationRequestsController_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdaptationRequestDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "No existe o no es tuyo"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Detalle de un pedido (quien lo hizo o ADMIN; el resto, 404)",
+        "tags": ["adaptation-requests"]
+      }
+    },
+    "/adaptation-requests/{id}/assign": {
+      "patch": {
+        "operationId": "AdaptationRequestsController_assign",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignAdaptationRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdaptationRequestDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "409": {
+            "description": "El pedido ya está resuelto"
+          },
+          "422": {
+            "description": "ADAPTATION_ASSIGNEE_INVALID"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Asigna el pedido a una persona de administración y lo pasa a EN_CURSO (solo ADMIN)",
+        "tags": ["adaptation-requests"]
+      }
+    },
+    "/adaptation-requests/{id}/deliver": {
+      "post": {
+        "operationId": "AdaptationRequestsController_deliver",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeliverAdaptationRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdaptationRequestDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "409": {
+            "description": "El pedido ya está resuelto"
+          },
+          "422": {
+            "description": "ADAPTATION_DELIVERY_NOTE_REQUIRED"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Entrega el documento adaptado, con nota y enlace opcional (solo ADMIN)",
+        "tags": ["adaptation-requests"]
+      }
+    },
+    "/adaptation-requests/{id}/reject": {
+      "post": {
+        "operationId": "AdaptationRequestsController_reject",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectAdaptationRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdaptationRequestDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "409": {
+            "description": "El pedido ya está resuelto"
+          },
+          "422": {
+            "description": "ADAPTATION_REJECTION_JUSTIFICATION_REQUIRED"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Rechaza el pedido con justificación obligatoria por escrito (art. 14.5: solo por carga desproporcionada) (solo ADMIN)",
+        "tags": ["adaptation-requests"]
+      }
+    },
+    "/ai/adapt/{entityType}/{id}": {
+      "get": {
+        "operationId": "AiController_getAdaptation",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entityType",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "EASY_READ = lectura fácil (UNE 153101); PLAIN = lenguaje claro (UNE-ISO 24495-1)",
+            "in": "query",
+            "name": "level",
+            "required": true,
+            "schema": {
+              "enum": ["EASY_READ", "PLAIN"],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdaptedContentDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "Elemento no visible o AI_ADAPTATION_NOT_FOUND"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "[:entityType = objective | check-in | feedback] Versión accesible vigente (mismo texto de origen) si ya existe",
+        "tags": ["ai"]
+      },
+      "post": {
+        "operationId": "AiController_adapt",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "entityType",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "EASY_READ = lectura fácil (UNE 153101); PLAIN = lenguaje claro (UNE-ISO 24495-1)",
+            "in": "query",
+            "name": "level",
+            "required": true,
+            "schema": {
+              "enum": ["EASY_READ", "PLAIN"],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdaptedContentDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "Elemento inexistente o no visible para el actor"
+          },
+          "422": {
+            "description": "AI_NOTHING_TO_ADAPT o AI_INPUT_REJECTED"
+          },
+          "429": {
+            "description": "AI_RATE_LIMITED (agente o límite por usuario)"
+          },
+          "502": {
+            "description": "AI_OUTPUT_INVALID"
+          },
+          "503": {
+            "description": "AI_DISABLED / AI_UNAVAILABLE: la ayuda de IA no está disponible (el resto de la API sigue funcionando)"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "[:entityType = objective | check-in | feedback] Genera (o devuelve de la caché) la versión en lectura fácil o lenguaje claro de un objetivo, check-in o feedback. Solo puede pedirla quien puede ver el elemento; el feedback ajeno responde 404 también para ADMIN.",
+        "tags": ["ai"]
+      }
+    },
+    "/ai/adapted/{id}/accept": {
+      "post": {
+        "operationId": "AiController_accept",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdaptedContentDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "No sos quien pidió la versión"
+          },
+          "404": {
+            "description": "Versión inexistente o elemento de origen no visible"
+          },
+          "409": {
+            "description": "AI_ADAPTATION_STATE_CONFLICT"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Marca que la versión me sirve (solo quien la pidió; DRAFT -> ACCEPTED)",
+        "tags": ["ai"]
+      }
+    },
+    "/ai/adapted/{id}/validate": {
+      "patch": {
+        "operationId": "AiController_validate",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidateAdaptationDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdaptedContentDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "Sin permiso de validación"
+          },
+          "404": {
+            "description": "Versión inexistente o elemento de origen no visible"
+          },
+          "409": {
+            "description": "AI_ADAPTATION_STATE_CONFLICT (ya validada)"
+          },
+          "422": {
+            "description": "AI_VALIDATION_NOT_ALLOWED (feedback) o AI_EDITED_CONTENT_INVALID"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Validación humana de la versión (ADMIN o líder del equipo dueño del objetivo; el feedback no es validable). Puede corregir el contenido.",
+        "tags": ["ai"]
+      }
+    },
+    "/ai/check-ins/{krId}/summary": {
+      "post": {
+        "operationId": "AiController_summarize",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "krId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "level",
+            "required": false,
+            "schema": {
+              "default": "STANDARD",
+              "enum": ["STANDARD", "PLAIN"],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiSuggestionDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "KR inexistente u objetivo no visible"
+          },
+          "422": {
+            "description": "AI_NOTHING_TO_SUMMARIZE"
+          },
+          "503": {
+            "description": "AI_DISABLED / AI_UNAVAILABLE: la ayuda de IA no está disponible (el resto de la API sigue funcionando)"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Resume el historial de check-ins de un KR (sin autores; habla del avance, no de personas)",
+        "tags": ["ai"]
+      }
+    },
+    "/ai/impact": {
+      "get": {
+        "operationId": "AiAdminController_impact",
+        "parameters": [
+          {
+            "description": "Desde (default: hace 30 días)",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Hasta (default: ahora)",
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImpactDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "Solo ADMIN"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Impacto: adopción, tiempos, calidad de legibilidad y costo estimado por usuario activo. Agregado, sin datos por persona (solo ADMIN)",
+        "tags": ["ai"]
+      }
+    },
+    "/ai/okr-suggest": {
+      "post": {
+        "operationId": "AiController_suggestOkr",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OkrSuggestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiSuggestionDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "No podés editar el objetivo ni crearlo para ese owner"
+          },
+          "404": {
+            "description": "Ciclo u objetivo inexistente o no visible"
+          },
+          "503": {
+            "description": "AI_DISABLED / AI_UNAVAILABLE: la ayuda de IA no está disponible (el resto de la API sigue funcionando)"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Sugiere una redacción mejor de un objetivo y sus KRs. No modifica nada: la persona decide si la usa.",
+        "tags": ["ai"]
+      }
+    },
+    "/ai/status": {
+      "get": {
+        "operationId": "AiController_status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiStatusDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Indica si la ayuda de IA está activada (la UI oculta los botones si no)",
+        "tags": ["ai"]
+      }
+    },
+    "/ai/suggestions/{id}/accept": {
+      "post": {
+        "operationId": "AiController_acceptSuggestion",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiSuggestionDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "Sugerencia inexistente o ajena"
+          },
+          "409": {
+            "description": "AI_SUGGESTION_ALREADY_DECIDED"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Acepta una sugerencia (solo quien la pidió). No aplica cambios.",
+        "tags": ["ai"]
+      }
+    },
+    "/ai/suggestions/{id}/discard": {
+      "post": {
+        "operationId": "AiController_discardSuggestion",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiSuggestionDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "Sugerencia inexistente o ajena"
+          },
+          "409": {
+            "description": "AI_SUGGESTION_ALREADY_DECIDED"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Descarta una sugerencia (solo quien la pidió)",
+        "tags": ["ai"]
+      }
+    },
+    "/ai/usage": {
+      "get": {
+        "operationId": "AiAdminController_usage",
+        "parameters": [
+          {
+            "description": "Desde (default: hace 30 días)",
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Hasta (default: ahora)",
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsageDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "403": {
+            "description": "Solo ADMIN"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Uso de IA por feature y por modelo: llamadas, fallos por paso, tokens, costo ESTIMADO y latencia p50/p95 (solo ADMIN)",
+        "tags": ["ai"]
+      }
+    },
+    "/assistant/conversation": {
+      "delete": {
+        "operationId": "AssistantController_deleteConversation",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "404": {
+            "description": "No sos ADMIN"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Borra la conversación propia: todos los mensajes y los planes que no se ejecutaron. Los planes ejecutados se conservan 90 días por trazabilidad.",
+        "tags": ["assistant"]
+      }
+    },
+    "/assistant/digest": {
+      "get": {
+        "operationId": "AssistantController_digest",
+        "parameters": [
+          {
+            "description": "true ignora la caché de 10 minutos (\"Actualizar\")",
+            "in": "query",
+            "name": "refresh",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DigestDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "No sos ADMIN"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Novedades para administración: hechos calculados de forma determinista + resumen en lenguaje claro (IA o plantilla). Caché de 10 minutos; `refresh=true` la ignora.",
+        "tags": ["assistant"]
+      }
+    },
+    "/assistant/messages": {
+      "get": {
+        "operationId": "AssistantController_messages",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "maximum": 100,
+              "minimum": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MessageDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "No sos ADMIN"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Conversación propia (los últimos mensajes, del más viejo al más nuevo)",
+        "tags": ["assistant"]
+      },
+      "post": {
+        "operationId": "AssistantController_send",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMessageDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TurnResultDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "No sos ADMIN"
+          },
+          "422": {
+            "description": "AI_INPUT_REJECTED: el mensaje se rechazó"
+          },
+          "503": {
+            "description": "AI_UNAVAILABLE / AI_DISABLED: el resto de la API sigue igual"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Un turno de chat. La respuesta puede traer un plan (a confirmar), el resultado de una consulta de auditoría, ayuda citando el manual o un texto.",
+        "tags": ["assistant"]
+      }
+    },
+    "/assistant/plans/{id}/confirm": {
+      "post": {
+        "operationId": "AssistantController_confirm",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmPlanDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExecutionResultDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "ASSISTANT_PLAN_NOT_FOUND (inexistente o de otra persona) o no sos ADMIN"
+          },
+          "409": {
+            "description": "ASSISTANT_PLAN_HASH_MISMATCH o ASSISTANT_PLAN_ALREADY_DECIDED (trae `result`)"
+          },
+          "410": {
+            "description": "ASSISTANT_PLAN_EXPIRED: pasaron los 15 minutos"
+          },
+          "422": {
+            "description": "ASSISTANT_PLAN_INVALID: el plan tiene problemas"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Confirma y ejecuta un plan con su planHash. Se frena en el primer paso que falla (sin rollback). Devuelve el resultado por paso; la clave inicial de un alta viaja solo acá, una vez.",
+        "tags": ["assistant"]
+      }
+    },
+    "/assistant/plans/{id}/discard": {
+      "post": {
+        "operationId": "AssistantController_discard",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "404": {
+            "description": "ASSISTANT_PLAN_NOT_FOUND o no sos ADMIN"
+          },
+          "409": {
+            "description": "ASSISTANT_PLAN_ALREADY_DECIDED"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Descarta un plan que todavía no se ejecutó",
+        "tags": ["assistant"]
+      }
+    },
     "/audit": {
       "get": {
         "operationId": "AuditController_list",
@@ -1574,7 +3994,19 @@
                 "USER_ROLE_CHANGED",
                 "USER_DEACTIVATED",
                 "REFRESH_REUSE_DETECTED",
-                "REFRESH_REVOKED_USED"
+                "REFRESH_REVOKED_USED",
+                "AI_CONTENT_ADAPTED",
+                "AI_CONTENT_VALIDATED",
+                "AI_SUGGESTION_ACCEPTED",
+                "ADAPTATION_REQUEST_CREATED",
+                "ADAPTATION_REQUEST_ASSIGNED",
+                "ADAPTATION_REQUEST_DELIVERED",
+                "ADAPTATION_REQUEST_REJECTED",
+                "USER_PASSWORD_CHANGED",
+                "ASSISTANT_PLAN_CONFIRMED",
+                "ASSISTANT_PLAN_DISCARDED",
+                "ASSISTANT_ACTION_EXECUTED",
+                "ASSISTANT_ACTION_FAILED"
               ],
               "type": "string"
             }
@@ -1646,6 +4078,47 @@
         ],
         "summary": "Consulta del registro de auditoría (solo ADMIN) con filtros por entidad, actor, acción y rango de fechas; paginado, del más nuevo al más viejo.",
         "tags": ["audit"]
+      }
+    },
+    "/auth/change-password": {
+      "post": {
+        "operationId": "AuthController_changePassword",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSessionDto"
+                }
+              }
+            },
+            "description": ""
+          },
+          "422": {
+            "description": "INVALID_CURRENT_PASSWORD, PASSWORD_TOO_SHORT o PASSWORD_UNCHANGED (la nueva igual a la actual)"
+          },
+          "429": {
+            "description": "Demasiados intentos"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Cambia la contraseña propia. Apaga mustChangePassword, revoca las demás sesiones y devuelve una sesión nueva.",
+        "tags": ["auth"]
       }
     },
     "/auth/login": {
@@ -3285,7 +5758,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserDto"
+                  "$ref": "#/components/schemas/CreatedUserDto"
                 }
               }
             },
@@ -3303,7 +5776,7 @@
             "JWT-auth": []
           }
         ],
-        "summary": "Crea un usuario (solo ADMIN; no hay auto-registro)",
+        "summary": "Crea un usuario (solo ADMIN; no hay auto-registro). Nace con mustChangePassword; sin `password` devuelve una clave inicial generada, una sola vez.",
         "tags": ["users"]
       }
     },

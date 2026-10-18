@@ -1,0 +1,1675 @@
+{
+  "schemaVersion": 1,
+  "slugAlgorithm": "github-slugger@2.0.0",
+  "sourceHash": "258d70d65ebb0621c794164c3b6d63c8524220562734043badee80a83e2642ec",
+  "manuals": [
+    {
+      "id": "usuario",
+      "title": "Manual de usuario de OKR Platform",
+      "audience": "Integrantes (rol Integrante) y líderes de equipo (rol Líder)",
+      "version": "2.2",
+      "updated": "2026-10-18",
+      "roles": ["ADMIN", "LEADER", "MEMBER"]
+    },
+    {
+      "id": "admin",
+      "title": "Manual de administración de OKR Platform",
+      "audience": "Administración (rol Administración)",
+      "version": "1.2",
+      "updated": "2026-10-18",
+      "roles": ["ADMIN"]
+    }
+  ],
+  "sections": [
+    {
+      "id": "usuario#manual-de-usuario-de-okr-platform",
+      "manual": "usuario",
+      "anchor": "manual-de-usuario-de-okr-platform",
+      "title": "Manual de usuario de OKR Platform",
+      "level": 1,
+      "parent": null,
+      "url": "/ayuda/usuario#manual-de-usuario-de-okr-platform",
+      "plainText": "Este manual es para integrantes y líderes de equipo de Flock IT. Explica, paso a paso, cómo usar OKR Platform. No hace falta saber nada técnico.\nSi administrás la plataforma, leé el manual de administración.\nLas capturas de pantalla usan datos de ejemplo. Lo que veas en tu cuenta puede ser distinto."
+    },
+    {
+      "id": "usuario#primeros-pasos",
+      "manual": "usuario",
+      "anchor": "primeros-pasos",
+      "title": "Primeros pasos",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/usuario#primeros-pasos",
+      "plainText": ""
+    },
+    {
+      "id": "usuario#cómo-ingreso-a-la-plataforma",
+      "manual": "usuario",
+      "anchor": "cómo-ingreso-a-la-plataforma",
+      "title": "Cómo ingreso a la plataforma",
+      "level": 3,
+      "parent": "primeros-pasos",
+      "url": "/ayuda/usuario#cómo-ingreso-a-la-plataforma",
+      "plainText": "Abrí la dirección de OKR Platform en tu navegador.\nEscribí tu email de trabajo y tu contraseña.\nHacé clic en Ingresar.\nSi algo falla, verás un mensaje. Puede ser uno de estos:\n\"No pudimos iniciar sesión. Revisá el email y la contraseña.\" Los datos no coinciden o tu usuario está desactivado.\n\"Hiciste demasiados intentos. Esperá un minuto y probá de nuevo.\" Se bloqueó el ingreso por un rato.\nNo existe la opción \"Olvidé mi contraseña\". Si la perdiste, pedile a administración que te dé una nueva."
+    },
+    {
+      "id": "usuario#qué-hago-la-primera-vez-que-ingreso",
+      "manual": "usuario",
+      "anchor": "qué-hago-la-primera-vez-que-ingreso",
+      "title": "Qué hago la primera vez que ingreso",
+      "level": 3,
+      "parent": "primeros-pasos",
+      "url": "/ayuda/usuario#qué-hago-la-primera-vez-que-ingreso",
+      "plainText": "La primera vez, administración te da una contraseña inicial. Esa contraseña es solo para entrar la primera vez.\nIngresá con tu email y la contraseña inicial.\nVas a ver la pantalla Elegí tu contraseña. Hasta que la completes, no podés usar el resto de la plataforma.\nEscribí la contraseña inicial en Contraseña inicial.\nEscribí una contraseña nueva en Contraseña nueva. Tiene que tener al menos 12 caracteres y ser distinta de la inicial.\nRepetila en Repetí la contraseña nueva.\nHacé clic en Cambiar contraseña.\nDespués de cambiarla, entrás a la plataforma. Una frase larga es más segura y más fácil de recordar que una palabra con símbolos.\nSi no querés cambiarla ahora, hacé clic en Cerrar sesión. La pantalla va a aparecer de nuevo la próxima vez que ingreses."
+    },
+    {
+      "id": "usuario#cómo-cambio-mi-contraseña-cuando-quiero",
+      "manual": "usuario",
+      "anchor": "cómo-cambio-mi-contraseña-cuando-quiero",
+      "title": "Cómo cambio mi contraseña cuando quiero",
+      "level": 3,
+      "parent": "primeros-pasos",
+      "url": "/ayuda/usuario#cómo-cambio-mi-contraseña-cuando-quiero",
+      "plainText": "En la parte de arriba, hacé clic en Cambiar contraseña.\nEscribí tu Contraseña actual.\nEscribí la Contraseña nueva y repetila. Tiene que tener al menos 12 caracteres.\nHacé clic en Cambiar contraseña.\nAl cambiarla, se cierran tus otras sesiones abiertas. Si la olvidaste, pedile a administración que te dé una nueva."
+    },
+    {
+      "id": "usuario#cómo-me-muevo-por-la-pantalla",
+      "manual": "usuario",
+      "anchor": "cómo-me-muevo-por-la-pantalla",
+      "title": "Cómo me muevo por la pantalla",
+      "level": 3,
+      "parent": "primeros-pasos",
+      "url": "/ayuda/usuario#cómo-me-muevo-por-la-pantalla",
+      "plainText": "Después de ingresar llegás a Inicio. La pantalla tiene tres zonas:\nBarra superior. Muestra tu nombre, tu rol y el botón Cerrar sesión.\nMenú lateral. Tiene estas secciones: Inicio, Objetivos, Check-ins, Equipos, Ciclos, Feedback, Reconocimientos y Documentos adaptados. Junto a Check-ins aparece un número. Es la cantidad de check-ins que tenés vencidos.\nContenido. Es la sección que elegiste.\nSi una acción no está disponible para vos, no desaparece. Se ve apagada y al lado dice por qué."
+    },
+    {
+      "id": "usuario#qué-puedo-hacer-según-mi-rol",
+      "manual": "usuario",
+      "anchor": "qué-puedo-hacer-según-mi-rol",
+      "title": "Qué puedo hacer según mi rol",
+      "level": 3,
+      "parent": "primeros-pasos",
+      "url": "/ayuda/usuario#qué-puedo-hacer-según-mi-rol",
+      "plainText": "Hay tres roles: Integrante, Líder y Administración. Esta tabla resume lo que puede hacer cada uno.\nTarea | Integrante | Líder | Administración\nVer Inicio, objetivos publicados, equipos y ciclos | Sí | Sí | Sí\nCrear objetivos propios | Sí | Sí | Sí\nCrear objetivos de un equipo | No | De los equipos que lidera | De cualquier equipo\nEditar un objetivo y sus resultados clave | Los propios | Propios y de sus equipos | Todos\nCambiar el valor inicial y la meta de un resultado clave publicado | No | Sí, en sus equipos | Sí\nRegistrar check-ins | En lo propio y en lo de su equipo | Igual, más lo de sus equipos | Igual que el resto\nDar y recibir feedback privado | Sí | Sí | Sí\nReconocer logros en el muro | Sí | Sí | Sí\nDescargar el reporte PDF de un equipo | No | Solo de sus equipos | Sí\nValidar una versión adaptada por IA | No | En sus equipos y en lo individual de sus integrantes (nunca lo propio) | Sí\nPedir un documento adaptado a una persona | Sí | Sí | Sí\nLíder es el rol de la persona en toda la plataforma. Líder del equipo es la persona marcada como líder en un equipo en particular. Las opciones de líder valen solo para los equipos donde figurás como Líder del equipo. Tener el rol Líder sin figurar como líder de un equipo no alcanza."
+    },
+    {
+      "id": "usuario#conceptos-básicos",
+      "manual": "usuario",
+      "anchor": "conceptos-básicos",
+      "title": "Conceptos básicos",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/usuario#conceptos-básicos",
+      "plainText": ""
+    },
+    {
+      "id": "usuario#qué-es-un-objetivo",
+      "manual": "usuario",
+      "anchor": "qué-es-un-objetivo",
+      "title": "Qué es un objetivo",
+      "level": 3,
+      "parent": "conceptos-básicos",
+      "url": "/ayuda/usuario#qué-es-un-objetivo",
+      "plainText": "Un objetivo es lo que querés lograr. Se escribe con palabras, sin números. Ejemplo: \"Simplificar el onboarding de los clientes nuevos\".\nCada objetivo pertenece a una persona o a un equipo. También pertenece a un ciclo."
+    },
+    {
+      "id": "usuario#qué-es-un-resultado-clave-kr",
+      "manual": "usuario",
+      "anchor": "qué-es-un-resultado-clave-kr",
+      "title": "Qué es un resultado clave (KR)",
+      "level": 3,
+      "parent": "conceptos-básicos",
+      "url": "/ayuda/usuario#qué-es-un-resultado-clave-kr",
+      "plainText": "OKR quiere decir \"Objectives and Key Results\", es decir, objetivos y resultados clave. Un resultado clave, o KR, mide si el objetivo avanza.\nHay dos tipos de KR:\nTipo | Cómo se mide | Ejemplo\nNumérico | Va de un valor inicial a una meta. Tiene una unidad, como días o clientes. | Bajar el tiempo de onboarding de 14 a 5 días\nManual (se cumple o no) | Quien registra elige un puntaje de 0,0 a 1,0, de a 0,1. | Validar el prototipo con 5 usuarios\nCada KR tiene una persona responsable."
+    },
+    {
+      "id": "usuario#cuántos-objetivos-y-kr-tengo-que-definir",
+      "manual": "usuario",
+      "anchor": "cuántos-objetivos-y-kr-tengo-que-definir",
+      "title": "Cuántos objetivos y KR tengo que definir",
+      "level": 3,
+      "parent": "conceptos-básicos",
+      "url": "/ayuda/usuario#cuántos-objetivos-y-kr-tengo-que-definir",
+      "plainText": "Cada responsable define entre 3 y 5 objetivos por ciclo.\nCada objetivo tiene entre 3 y 5 resultados clave.\nEstos límites no son una sugerencia. Para publicar necesitás cumplirlos."
+    },
+    {
+      "id": "usuario#qué-es-el-puntaje",
+      "manual": "usuario",
+      "anchor": "qué-es-el-puntaje",
+      "title": "Qué es el puntaje",
+      "level": 3,
+      "parent": "conceptos-básicos",
+      "url": "/ayuda/usuario#qué-es-el-puntaje",
+      "plainText": "El puntaje es un número entre 0,00 y 1,00. Indica qué tan cerca está algo de su meta.\nEn un KR numérico, el puntaje sale de esta cuenta: (valor actual − valor inicial) ÷ (meta − valor inicial). El resultado nunca baja de 0 ni pasa de 1. También sirve para metas que bajan, como pasar de 14 a 5 días.\nEn un KR manual, el puntaje es el que elegiste en el check-in.\nEl puntaje de un objetivo es el promedio de todos sus KR.\nUn KR sin check-ins cuenta como 0 en ese promedio. Por eso un objetivo puede verse en rojo aunque uno de sus KR esté bien."
+    },
+    {
+      "id": "usuario#qué-significan-los-colores-de-estado",
+      "manual": "usuario",
+      "anchor": "qué-significan-los-colores-de-estado",
+      "title": "Qué significan los colores de estado",
+      "level": 3,
+      "parent": "conceptos-básicos",
+      "url": "/ayuda/usuario#qué-significan-los-colores-de-estado",
+      "plainText": "El estado se muestra siempre con un ícono, una palabra y un color. Nunca solo con color.\nEstado | Puntaje | Qué significa\nVerde, En ruta | 0,70 a 1,00 | Avanza como se esperaba.\nAmarillo, Requiere atención | 0,40 a 0,69 | Hay avance, pero conviene revisar.\nRojo, En riesgo | 0,00 a 0,39 | Está lejos de la meta.\nHay otros dos estados, sin color de avance:\nSin check-ins. Todavía no hay ningún avance registrado. No se le asigna estado.\nCheck-in vencido. Pasó más tiempo que la cadencia del ciclo sin registrar un avance."
+    },
+    {
+      "id": "usuario#qué-diferencia-hay-entre-comprometido-y-aspiracional",
+      "manual": "usuario",
+      "anchor": "qué-diferencia-hay-entre-comprometido-y-aspiracional",
+      "title": "Qué diferencia hay entre comprometido y aspiracional",
+      "level": 3,
+      "parent": "conceptos-básicos",
+      "url": "/ayuda/usuario#qué-diferencia-hay-entre-comprometido-y-aspiracional",
+      "plainText": "Al crear un objetivo elegís su tipo.\nComprometido. Se espera cumplirlo por completo. Su meta es 1,00.\nAspiracional. Es una apuesta ambiciosa. Llegar a 0,70 ya es un buen resultado.\nCada ciclo define desde qué puntaje un objetivo cuenta como logrado. En los ciclos de ejemplo es 1,00 para los comprometidos y 0,70 para los aspiracionales.\nCuando el ciclo se cierra, cada objetivo muestra su puntaje final. También dice si quedó Logrado o No logrado."
+    },
+    {
+      "id": "usuario#qué-es-top-down-y-bottom-up",
+      "manual": "usuario",
+      "anchor": "qué-es-top-down-y-bottom-up",
+      "title": "Qué es top-down y bottom-up",
+      "level": 3,
+      "parent": "conceptos-básicos",
+      "url": "/ayuda/usuario#qué-es-top-down-y-bottom-up",
+      "plainText": "Cada objetivo indica de dónde nace.\nTop-down. Baja desde la dirección.\nBottom-up. Nace en las personas.\nLo ideal es que en cada equipo cada origen esté entre 40 % y 60 %. Es la \"mezcla 50/50\". Si el equipo se sale de ese rango, verás un aviso suave. El aviso nunca bloquea nada."
+    },
+    {
+      "id": "usuario#qué-es-un-ciclo-y-qué-es-la-cadencia",
+      "manual": "usuario",
+      "anchor": "qué-es-un-ciclo-y-qué-es-la-cadencia",
+      "title": "Qué es un ciclo y qué es la cadencia",
+      "level": 3,
+      "parent": "conceptos-básicos",
+      "url": "/ayuda/usuario#qué-es-un-ciclo-y-qué-es-la-cadencia",
+      "plainText": "Un ciclo es un período con fecha de inicio y de fin. Los objetivos se organizan por ciclo.\nAnual. Es el ciclo estratégico. Ejemplo: \"2026\".\nTrimestral. Es el ciclo táctico, dentro de un anual. Ejemplo: \"Q4 2026\".\nLa cadencia es cada cuánto se espera un check-in. Puede ser semanal (7 días), quincenal (14 días) o mensual (30 días).\nUn KR queda vencido si pasa más tiempo que la cadencia sin check-in. El tiempo se cuenta desde el último check-in. Si no hubo ninguno, se cuenta desde que se publicó el objetivo.\nUn ciclo puede estar en Borrador, Activo o Cerrado."
+    },
+    {
+      "id": "usuario#en-qué-estados-puede-estar-un-objetivo",
+      "manual": "usuario",
+      "anchor": "en-qué-estados-puede-estar-un-objetivo",
+      "title": "En qué estados puede estar un objetivo",
+      "level": 3,
+      "parent": "conceptos-básicos",
+      "url": "/ayuda/usuario#en-qué-estados-puede-estar-un-objetivo",
+      "plainText": "Estado | Qué implica\nBorrador | Solo lo ven quienes pueden editarlo. Se puede cambiar todo y eliminar. Todavía no admite check-ins.\nPublicado | Lo ve toda la organización. Admite check-ins. Ya no se puede eliminar ni cambiar su tipo u origen.\nCerrado | El ciclo terminó. Muestra el puntaje final y si se logró. Ya no admite check-ins."
+    },
+    {
+      "id": "usuario#inicio",
+      "manual": "usuario",
+      "anchor": "inicio",
+      "title": "Inicio",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/usuario#inicio",
+      "plainText": ""
+    },
+    {
+      "id": "usuario#cómo-veo-cómo-vengo",
+      "manual": "usuario",
+      "anchor": "cómo-veo-cómo-vengo",
+      "title": "Cómo veo cómo vengo",
+      "level": 3,
+      "parent": "inicio",
+      "url": "/ayuda/usuario#cómo-veo-cómo-vengo",
+      "plainText": "Inicio responde en segundos la pregunta \"¿cómo vengo?\". Muestra el ciclo vigente. Para ver otro, usá el selector Ciclo.\nInicio tiene estas partes:\nMis objetivos. Tus objetivos individuales y, aparte, los de tus equipos. Cada uno muestra su estado, su puntaje y cuántos KR tienen check-in. Ejemplo: \"2 de 3 KRs con check-in\".\nCheck-ins pendientes. Los KR vencidos, hasta 5, y el botón Registrar check-in. Si no hay ninguno, dice \"Estás al día con tus check-ins.\"\nReconocimientos recientes. Los que recibiste (\"Para vos\") y los últimos del muro.\nAviso de feedback. Si tenés feedback sin leer, dice \"Tenés N feedback sin leer.\" con un enlace. Nunca muestra el contenido ni quién lo mandó."
+    },
+    {
+      "id": "usuario#qué-ve-un-líder-en-inicio",
+      "manual": "usuario",
+      "anchor": "qué-ve-un-líder-en-inicio",
+      "title": "Qué ve un líder en Inicio",
+      "level": 3,
+      "parent": "inicio",
+      "url": "/ayuda/usuario#qué-ve-un-líder-en-inicio",
+      "plainText": "Si sos líder, Inicio suma tres cosas:\nEn Mis objetivos, aparecen también los objetivos de tus equipos.\nLa tarjeta Mis equipos muestra la mezcla top-down y bottom-up de cada equipo. Ejemplo: \"Top-down 44 % · Bottom-up 56 % · Equilibrado\".\nEn Check-ins pendientes, aparecen también los KR vencidos de tus equipos."
+    },
+    {
+      "id": "usuario#objetivos-y-resultados-clave",
+      "manual": "usuario",
+      "anchor": "objetivos-y-resultados-clave",
+      "title": "Objetivos y resultados clave",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/usuario#objetivos-y-resultados-clave",
+      "plainText": ""
+    },
+    {
+      "id": "usuario#cómo-busco-y-consulto-un-objetivo",
+      "manual": "usuario",
+      "anchor": "cómo-busco-y-consulto-un-objetivo",
+      "title": "Cómo busco y consulto un objetivo",
+      "level": 3,
+      "parent": "objetivos-y-resultados-clave",
+      "url": "/ayuda/usuario#cómo-busco-y-consulto-un-objetivo",
+      "plainText": "Entrá a Objetivos.\nFiltrá con Ciclo, Equipo responsable, Persona responsable y Estado.\nHacé clic en el objetivo para abrir su detalle.\nEl detalle tiene estas partes:\nResumen: estado, tipo, origen, responsable, ciclo, descripción y puntaje.\nAlineación: a qué objetivo se alinea y qué objetivos se alinean a este.\nResultados clave: una tabla con el tipo, el inicio, la meta, el valor actual, la unidad, el puntaje y el estado de cada KR.\nHistorial de check-ins: cada avance con fecha, autor, acción, valor, puntaje y nota."
+    },
+    {
+      "id": "usuario#cómo-creo-un-objetivo",
+      "manual": "usuario",
+      "anchor": "cómo-creo-un-objetivo",
+      "title": "Cómo creo un objetivo",
+      "level": 3,
+      "parent": "objetivos-y-resultados-clave",
+      "url": "/ayuda/usuario#cómo-creo-un-objetivo",
+      "plainText": "En Objetivos, hacé clic en Crear objetivo.\nCompletá el formulario: Ciclo. Solo aparecen ciclos que no están cerrados.\nResponsable. Si sos integrante, solo podés elegirte a vos. Los objetivos de equipo los crea su líder.\nTítulo y, si querés, Descripción.\nTipo: Comprometido o Aspiracional.\nOrigen: Top-down o Bottom-up.\nAlineado a (opcional): un objetivo ya publicado. Puede ser de otro ciclo.\nHacé clic en Crear objetivo.\nEl objetivo queda en Borrador. El paso siguiente es agregarle resultados clave.\nSi la IA está activa, podés pedir ayuda para escribirlo. Mirá Cómo pido una sugerencia de redacción."
+    },
+    {
+      "id": "usuario#cómo-agrego-o-edito-un-resultado-clave",
+      "manual": "usuario",
+      "anchor": "cómo-agrego-o-edito-un-resultado-clave",
+      "title": "Cómo agrego o edito un resultado clave",
+      "level": 3,
+      "parent": "objetivos-y-resultados-clave",
+      "url": "/ayuda/usuario#cómo-agrego-o-edito-un-resultado-clave",
+      "plainText": "En el detalle del objetivo, hacé clic en Agregar resultado clave.\nCompletá el formulario: Resultado clave: qué vas a medir.\nCómo se mide: Numérico o Manual (se cumple o no).\nSi es numérico: Valor inicial, Meta y Unidad. Ejemplos de unidad: clientes, %, días.\nResponsable: quién lo va a ejecutar.\nHacé clic en Agregar resultado clave.\nPara cambiar un KR, usá el ícono de lápiz de su fila. Para quitarlo, usá el ícono de papelera. Solo podés quitarlo mientras el objetivo es borrador."
+    },
+    {
+      "id": "usuario#cómo-publico-un-objetivo",
+      "manual": "usuario",
+      "anchor": "cómo-publico-un-objetivo",
+      "title": "Cómo publico un objetivo",
+      "level": 3,
+      "parent": "objetivos-y-resultados-clave",
+      "url": "/ayuda/usuario#cómo-publico-un-objetivo",
+      "plainText": "En el detalle del objetivo en borrador, hacé clic en Publicar.\nLeé el mensaje y hacé clic en Publicar objetivo.\nPara publicar necesitás dos cosas:\nAl menos 3 objetivos del mismo responsable en el ciclo. El máximo es 5.\nAl menos 3 resultados clave en el objetivo que publicás.\nSi falta algo, la plataforma te dice qué completar.\nDespués de publicar pasa esto:\nTodos en la organización pueden ver el objetivo.\nYa no podés eliminarlo.\nNo podés cambiar el tipo ni el origen. Sí podés editar el título, la descripción y la alineación.\nSolo un líder o administración puede cambiar el valor inicial y la meta de un KR.\nPodés agregar KR nuevos, pero no quitarlos.\nUn borrador se elimina con Eliminar, desde su detalle."
+    },
+    {
+      "id": "usuario#cómo-cambio-la-meta-de-un-kr-ya-publicado-líderes",
+      "manual": "usuario",
+      "anchor": "cómo-cambio-la-meta-de-un-kr-ya-publicado-líderes",
+      "title": "Cómo cambio la meta de un KR ya publicado (líderes)",
+      "level": 3,
+      "parent": "objetivos-y-resultados-clave",
+      "url": "/ayuda/usuario#cómo-cambio-la-meta-de-un-kr-ya-publicado-líderes",
+      "plainText": "Si sos líder, podés cambiar el valor inicial y la meta de los KR de tus equipos. También podés hacerlo en los objetivos individuales de tus integrantes.\nAbrí el detalle del objetivo.\nUsá el ícono de lápiz en la fila del KR.\nCambiá el valor y guardá.\nSi no corresponde, la plataforma te lo explica al guardar. Cada cambio queda registrado en la auditoría."
+    },
+    {
+      "id": "usuario#cómo-creo-y-publico-objetivos-de-equipo-líderes",
+      "manual": "usuario",
+      "anchor": "cómo-creo-y-publico-objetivos-de-equipo-líderes",
+      "title": "Cómo creo y publico objetivos de equipo (líderes)",
+      "level": 3,
+      "parent": "objetivos-y-resultados-clave",
+      "url": "/ayuda/usuario#cómo-creo-y-publico-objetivos-de-equipo-líderes",
+      "plainText": "Al crear un objetivo, en Responsable podés elegirte a vos o a un equipo que lideres.\nPodés editar los objetivos de tus equipos y sus KR.\nPodés publicarlos con las mismas reglas: de 3 a 5 objetivos y al menos 3 KR en cada uno.\nLos objetivos individuales de tus integrantes los crea cada persona.\nAgregar o quitar integrantes, y crear equipos, ciclos o usuarios, es tarea de administración. En esas pantallas verás los botones apagados con el motivo."
+    },
+    {
+      "id": "usuario#check-ins",
+      "manual": "usuario",
+      "anchor": "check-ins",
+      "title": "Check-ins",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/usuario#check-ins",
+      "plainText": ""
+    },
+    {
+      "id": "usuario#cuándo-tengo-que-hacer-un-check-in",
+      "manual": "usuario",
+      "anchor": "cuándo-tengo-que-hacer-un-check-in",
+      "title": "Cuándo tengo que hacer un check-in",
+      "level": 3,
+      "parent": "check-ins",
+      "url": "/ayuda/usuario#cuándo-tengo-que-hacer-un-check-in",
+      "plainText": "Un check-in es el registro de cómo avanza un resultado clave. Lo hacés con la frecuencia que marca el ciclo: semanal, quincenal o mensual.\nSi pasás ese tiempo sin registrar, el KR queda vencido. Aparece en tus pendientes y suma al número del menú."
+    },
+    {
+      "id": "usuario#cómo-veo-mis-pendientes",
+      "manual": "usuario",
+      "anchor": "cómo-veo-mis-pendientes",
+      "title": "Cómo veo mis pendientes",
+      "level": 3,
+      "parent": "check-ins",
+      "url": "/ayuda/usuario#cómo-veo-mis-pendientes",
+      "plainText": "Hacé clic en Check-ins en el menú.\nMirá tus KR vencidos, agrupados por objetivo. Cada uno muestra la fecha del último check-in o de la publicación.\nHacé clic en Registrar check-in en el KR que quieras actualizar."
+    },
+    {
+      "id": "usuario#cómo-registro-un-check-in",
+      "manual": "usuario",
+      "anchor": "cómo-registro-un-check-in",
+      "title": "Cómo registro un check-in",
+      "level": 3,
+      "parent": "check-ins",
+      "url": "/ayuda/usuario#cómo-registro-un-check-in",
+      "plainText": "Abrí el detalle del objetivo, o entrá a Check-ins. Hacé clic en Registrar check-in en la fila del KR.\nEn el panel lateral, elegí ¿Qué vas a hacer?\nCargá el Valor actual, si el KR es numérico. Si es manual, elegí el puntaje de 0,0 a 1,0.\nMirá el recuadro Así quedaría el resultado clave. Muestra el puntaje y el estado antes de guardar.\nSi querés, escribí una Nota de hasta 2000 caracteres. Contá qué pasó o qué necesitás.\nHacé clic en Registrar check-in.\nEl puntaje del KR y del objetivo se actualizan al instante. El avance queda en el historial. Un check-in no se puede editar después."
+    },
+    {
+      "id": "usuario#qué-significa-cada-acción-del-check-in",
+      "manual": "usuario",
+      "anchor": "qué-significa-cada-acción-del-check-in",
+      "title": "Qué significa cada acción del check-in",
+      "level": 3,
+      "parent": "check-ins",
+      "url": "/ayuda/usuario#qué-significa-cada-acción-del-check-in",
+      "plainText": "Estas son las cuatro opciones de ¿Qué vas a hacer?\nAcción | Cuándo la elegís\nContinuar | Todo sigue igual. Lo que hacés funciona.\nActualizar | Cambió el valor y querés reflejarlo.\nIniciar | Vas a empezar algo nuevo para avanzar.\nDetener | Vas a dejar de hacer algo que no suma."
+    },
+    {
+      "id": "usuario#quién-puede-registrar-un-check-in",
+      "manual": "usuario",
+      "anchor": "quién-puede-registrar-un-check-in",
+      "title": "Quién puede registrar un check-in",
+      "level": 3,
+      "parent": "check-ins",
+      "url": "/ayuda/usuario#quién-puede-registrar-un-check-in",
+      "plainText": "Podés registrar un check-in en estos casos:\nSos responsable del KR.\nSos responsable del objetivo.\nSos integrante del equipo responsable.\nSos líder de ese equipo.\nEl objetivo debe estar publicado y su ciclo no puede estar cerrado. Administración no tiene permisos especiales para registrar check-ins.\nSi el botón está apagado, al lado dice el motivo."
+    },
+    {
+      "id": "usuario#feedback",
+      "manual": "usuario",
+      "anchor": "feedback",
+      "title": "Feedback",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/usuario#feedback",
+      "plainText": ""
+    },
+    {
+      "id": "usuario#quién-puede-ver-mi-feedback",
+      "manual": "usuario",
+      "anchor": "quién-puede-ver-mi-feedback",
+      "title": "Quién puede ver mi feedback",
+      "level": 3,
+      "parent": "feedback",
+      "url": "/ayuda/usuario#quién-puede-ver-mi-feedback",
+      "plainText": "El feedback es una conversación privada entre dos personas. Solo lo ven quien lo escribe y quien lo recibe.\nNo lo ven líderes ni administración. Tampoco aparece en reportes ni en el PDF. En Inicio solo se muestra cuántos mensajes tenés sin leer."
+    },
+    {
+      "id": "usuario#cómo-leo-mi-feedback",
+      "manual": "usuario",
+      "anchor": "cómo-leo-mi-feedback",
+      "title": "Cómo leo mi feedback",
+      "level": 3,
+      "parent": "feedback",
+      "url": "/ayuda/usuario#cómo-leo-mi-feedback",
+      "plainText": "Hacé clic en Feedback.\nElegí la pestaña Recibido o Enviado. Los mensajes nuevos dicen Sin leer.\nAbrí un mensaje para leerlo completo. Al abrirlo, queda marcado como leído."
+    },
+    {
+      "id": "usuario#cómo-doy-feedback",
+      "manual": "usuario",
+      "anchor": "cómo-doy-feedback",
+      "title": "Cómo doy feedback",
+      "level": 3,
+      "parent": "feedback",
+      "url": "/ayuda/usuario#cómo-doy-feedback",
+      "plainText": "En Feedback, hacé clic en Dar feedback.\nElegí Para quién.\nEscribí el Mensaje. Puede tener hasta 2000 caracteres. Contá qué viste, qué impacto tuvo y qué podría seguir o cambiar.\nSi querés, enlazá un objetivo o resultado clave relacionado.\nHacé clic en Enviar feedback.\nQuien escribió un feedback puede editarlo o eliminarlo desde su detalle. Si lo edita, aparece la marca \"Editado\". No podés mandarte feedback a vos mismo."
+    },
+    {
+      "id": "usuario#reconocimientos",
+      "manual": "usuario",
+      "anchor": "reconocimientos",
+      "title": "Reconocimientos",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/usuario#reconocimientos",
+      "plainText": ""
+    },
+    {
+      "id": "usuario#qué-es-el-muro-de-reconocimientos",
+      "manual": "usuario",
+      "anchor": "qué-es-el-muro-de-reconocimientos",
+      "title": "Qué es el muro de reconocimientos",
+      "level": 3,
+      "parent": "reconocimientos",
+      "url": "/ayuda/usuario#qué-es-el-muro-de-reconocimientos",
+      "plainText": "El muro es público. Sirve para agradecer logros concretos. No hay puntos, rankings ni posiciones.\nCada tarjeta muestra quién reconoce a quién, el mensaje, el logro y la fecha. El logro incluye su estado y su puntaje actual. El muro muestra 10 por página, del más nuevo al más viejo."
+    },
+    {
+      "id": "usuario#cómo-veo-el-muro",
+      "manual": "usuario",
+      "anchor": "cómo-veo-el-muro",
+      "title": "Cómo veo el muro",
+      "level": 3,
+      "parent": "reconocimientos",
+      "url": "/ayuda/usuario#cómo-veo-el-muro",
+      "plainText": "Hacé clic en Reconocimientos.\nPara ver los de una persona, elegila en Filtrar por persona.\nHacé clic en Filtrar."
+    },
+    {
+      "id": "usuario#cómo-reconozco-un-logro",
+      "manual": "usuario",
+      "anchor": "cómo-reconozco-un-logro",
+      "title": "Cómo reconozco un logro",
+      "level": 3,
+      "parent": "reconocimientos",
+      "url": "/ayuda/usuario#cómo-reconozco-un-logro",
+      "plainText": "Hacé clic en Reconocer un logro.\nElegí la Persona y hacé clic en Continuar.\nElegí el Logro. La lista incluye los KR de esa persona con puntaje de 0,70 o más. También incluye sus objetivos ya cerrados.\nEscribí el Mensaje. Contá qué hizo y por qué importó.\nHacé clic en Reconocer logro.\nNo podés reconocerte a vos mismo. Si la persona todavía no tiene logros que cumplan la regla, la lista queda vacía."
+    },
+    {
+      "id": "usuario#equipos-y-ciclos",
+      "manual": "usuario",
+      "anchor": "equipos-y-ciclos",
+      "title": "Equipos y ciclos",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/usuario#equipos-y-ciclos",
+      "plainText": ""
+    },
+    {
+      "id": "usuario#cómo-consulto-los-equipos",
+      "manual": "usuario",
+      "anchor": "cómo-consulto-los-equipos",
+      "title": "Cómo consulto los equipos",
+      "level": 3,
+      "parent": "equipos-y-ciclos",
+      "url": "/ayuda/usuario#cómo-consulto-los-equipos",
+      "plainText": "Equipos muestra cómo se organiza Flock IT, como un árbol. En cada equipo ves:\nlos integrantes y quién lidera;\nla mezcla 50/50 del ciclo que elijas;\nel botón Descargar reporte PDF, si lideras ese equipo o sos administración."
+    },
+    {
+      "id": "usuario#cómo-consulto-los-ciclos",
+      "manual": "usuario",
+      "anchor": "cómo-consulto-los-ciclos",
+      "title": "Cómo consulto los ciclos",
+      "level": 3,
+      "parent": "equipos-y-ciclos",
+      "url": "/ayuda/usuario#cómo-consulto-los-ciclos",
+      "plainText": "Ciclos muestra los ciclos anuales con sus trimestres, sus fechas y su estado. En cada ciclo ves la cadencia de check-in y los umbrales de logro."
+    },
+    {
+      "id": "usuario#reportes-pdf",
+      "manual": "usuario",
+      "anchor": "reportes-pdf",
+      "title": "Reportes PDF",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/usuario#reportes-pdf",
+      "plainText": ""
+    },
+    {
+      "id": "usuario#quién-puede-descargar-el-reporte-de-un-equipo",
+      "manual": "usuario",
+      "anchor": "quién-puede-descargar-el-reporte-de-un-equipo",
+      "title": "Quién puede descargar el reporte de un equipo",
+      "level": 3,
+      "parent": "reportes-pdf",
+      "url": "/ayuda/usuario#quién-puede-descargar-el-reporte-de-un-equipo",
+      "plainText": "Pueden descargarlo:\nadministración;\nlos líderes de ese equipo.\nNo pueden descargarlo los integrantes del equipo ni los líderes de otro equipo. Para ellos el botón no aparece. Si necesitás el reporte, pedile uno a tu líder."
+    },
+    {
+      "id": "usuario#cómo-descargo-el-reporte-de-mi-equipo-líderes",
+      "manual": "usuario",
+      "anchor": "cómo-descargo-el-reporte-de-mi-equipo-líderes",
+      "title": "Cómo descargo el reporte de mi equipo (líderes)",
+      "level": 3,
+      "parent": "reportes-pdf",
+      "url": "/ayuda/usuario#cómo-descargo-el-reporte-de-mi-equipo-líderes",
+      "plainText": "Entrá a Equipos y abrí tu equipo. También podés usar el enlace de Mis equipos en Inicio.\nEn Mezcla de objetivos (50/50), elegí el Ciclo.\nHacé clic en Descargar reporte PDF.\nSe descarga un archivo con un nombre como reporte-producto-digital-q4-2026.pdf.\nSi elegís Sin ciclo, el botón queda apagado. El reporte siempre corresponde a un ciclo."
+    },
+    {
+      "id": "usuario#qué-incluye-el-reporte-pdf",
+      "manual": "usuario",
+      "anchor": "qué-incluye-el-reporte-pdf",
+      "title": "Qué incluye el reporte PDF",
+      "level": 3,
+      "parent": "reportes-pdf",
+      "url": "/ayuda/usuario#qué-incluye-el-reporte-pdf",
+      "plainText": "El PDF incluye:\nla mezcla de origen top-down y bottom-up;\ncada objetivo del equipo, con sus KR, su estado, su puntaje y la fecha del último check-in.\nEl PDF nunca incluye feedback, rankings ni datos de compensación. Las personas aparecen en orden alfabético."
+    },
+    {
+      "id": "usuario#ayudas-de-ia",
+      "manual": "usuario",
+      "anchor": "ayudas-de-ia",
+      "title": "Ayudas de IA",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/usuario#ayudas-de-ia",
+      "plainText": ""
+    },
+    {
+      "id": "usuario#qué-son-las-ayudas-de-ia",
+      "manual": "usuario",
+      "anchor": "qué-son-las-ayudas-de-ia",
+      "title": "Qué son las ayudas de IA",
+      "level": 3,
+      "parent": "ayudas-de-ia",
+      "url": "/ayuda/usuario#qué-son-las-ayudas-de-ia",
+      "plainText": "IA quiere decir inteligencia artificial. OKR Platform la usa para que los textos sean más fáciles de leer y de escribir.\nHay cuatro ayudas:\nVer en lectura fácil.\nVer en lenguaje claro.\nSugerir redacción.\nResumir check-ins.\nEstas ayudas cumplen con el Real Decreto 707/2026 de accesibilidad cognitiva. Ese decreto pide que los textos puedan adaptarse para que todas las personas los entiendan."
+    },
+    {
+      "id": "usuario#qué-debo-saber-antes-de-usarlas",
+      "manual": "usuario",
+      "anchor": "qué-debo-saber-antes-de-usarlas",
+      "title": "Qué debo saber antes de usarlas",
+      "level": 3,
+      "parent": "ayudas-de-ia",
+      "url": "/ayuda/usuario#qué-debo-saber-antes-de-usarlas",
+      "plainText": "Son gratuitas. No pagás nada por usarlas. Las paga la organización.\nSon opcionales. Si no querés usarlas, el resto de la plataforma funciona igual.\nNunca cambian nada solas. Siempre decidís vos.\nPueden fallar. Si la IA está apagada, no ves los botones. Si no responde, ves el aviso \"La ayuda de IA no está disponible ahora. El resto de la plataforma funciona normal.\" Tu texto original queda intacto.\nTienen un tope. Si hacés muchos pedidos seguidos, ves \"Hiciste muchos pedidos seguidos. Probá en un minuto.\"\nCuidan tu privacidad. La IA recibe solo el texto, sin nombres, emails ni identificadores."
+    },
+    {
+      "id": "usuario#qué-diferencia-hay-entre-lectura-fácil-y-lenguaje-claro",
+      "manual": "usuario",
+      "anchor": "qué-diferencia-hay-entre-lectura-fácil-y-lenguaje-claro",
+      "title": "Qué diferencia hay entre lectura fácil y lenguaje claro",
+      "level": 3,
+      "parent": "ayudas-de-ia",
+      "url": "/ayuda/usuario#qué-diferencia-hay-entre-lectura-fácil-y-lenguaje-claro",
+      "plainText": "Lectura fácil. Usa frases muy cortas y palabras simples. Sirve para quien necesita máxima sencillez.\nLenguaje claro. Mantiene el contenido completo, pero con frases directas y sin rodeos. Sirve para cualquier persona."
+    },
+    {
+      "id": "usuario#cómo-veo-un-texto-en-lectura-fácil-o-en-lenguaje-claro",
+      "manual": "usuario",
+      "anchor": "cómo-veo-un-texto-en-lectura-fácil-o-en-lenguaje-claro",
+      "title": "Cómo veo un texto en lectura fácil o en lenguaje claro",
+      "level": 3,
+      "parent": "ayudas-de-ia",
+      "url": "/ayuda/usuario#cómo-veo-un-texto-en-lectura-fácil-o-en-lenguaje-claro",
+      "plainText": "Abrí el detalle de un objetivo, un check-in del historial o el detalle de un feedback.\nHacé clic en Ver en lectura fácil o en Ver en lenguaje claro.\nEsperá unos segundos. La versión aparece debajo del texto original.\nSi te sirve, hacé clic en Me sirve.\nSolo puede marcar Me sirve la persona que pidió esa versión. Es el mismo botón en las versiones adaptadas y en el resumen de check-ins.\nSi preferís que te ayude una persona, hacé clic en Pedilo a una persona. Mirá Cómo pido un documento adaptado.\nLa versión puede traer un glosario con la explicación de palabras difíciles."
+    },
+    {
+      "id": "usuario#qué-significa-pendiente-de-validación",
+      "manual": "usuario",
+      "anchor": "qué-significa-pendiente-de-validación",
+      "title": "Qué significa \"pendiente de validación\"",
+      "level": 3,
+      "parent": "ayudas-de-ia",
+      "url": "/ayuda/usuario#qué-significa-pendiente-de-validación",
+      "plainText": "Toda versión generada por IA lleva esta marca: Generado por IA · pendiente de validación. Significa que la generó una máquina y que ninguna persona la revisó todavía.\nEstas son las marcas posibles:\nMarca | Qué significa\nGenerado por IA · pendiente de validación | La IA la generó. Todavía no la revisó nadie. Leela con atención.\nValidado por una persona | Una persona autorizada la revisó y la aprobó.\nRequiere revisión humana | La IA no pudo garantizar que la versión sea fiel. Te mostramos el texto original. Pedile a alguien que lo revise."
+    },
+    {
+      "id": "usuario#cómo-valido-una-versión-si-soy-líder",
+      "manual": "usuario",
+      "anchor": "cómo-valido-una-versión-si-soy-líder",
+      "title": "Cómo valido una versión si soy líder",
+      "level": 3,
+      "parent": "ayudas-de-ia",
+      "url": "/ayuda/usuario#cómo-valido-una-versión-si-soy-líder",
+      "plainText": "Quién puede validar depende de quién es la persona dueña del objetivo:\nEl objetivo es... | Pueden validar\nDe un equipo | Administración y quien figura como Líder del equipo de ese equipo.\nIndividual (de una persona) | Administración y quien figura como Líder del equipo en alguno de los equipos de esa persona.\nEstas reglas valen siempre:\nEl rol Líder solo no alcanza. Tenés que figurar como Líder del equipo en el equipo que corresponde.\nSi liderás otro equipo, no podés validar.\nSi sos dueña de un objetivo individual, no podés validar tu propia versión, aunque además liderés uno de tus equipos. Tiene que validarla otra persona.\nUn integrante común no valida.\nAbrí el texto con su versión adaptada.\nHacé clic en Validar.\nSi hace falta, corregí el texto. Mantené los mismos bloques y el mismo orden.\nSi querés, escribí una Nota de validación.\nHacé clic en Validar versión.\nLa marca pasa a Validado por una persona. Una versión validada ya no vuelve atrás.\nSi no podés validar, el botón Validar se ve apagado y explica por qué.\nEl feedback no se valida. Es privado entre dos personas y nadie más puede leerlo. En un feedback solo podés marcar Me sirve."
+    },
+    {
+      "id": "usuario#cómo-pido-una-sugerencia-de-redacción",
+      "manual": "usuario",
+      "anchor": "cómo-pido-una-sugerencia-de-redacción",
+      "title": "Cómo pido una sugerencia de redacción",
+      "level": 3,
+      "parent": "ayudas-de-ia",
+      "url": "/ayuda/usuario#cómo-pido-una-sugerencia-de-redacción",
+      "plainText": "Al crear un objetivo o un resultado clave, escribí un borrador.\nHacé clic en Sugerir redacción.\nLeé la sugerencia. Aparece aparte, con observaciones sobre tu borrador. Los valores que propone la IA aparecen resaltados: revisalos.\nHacé clic en Usar sugerencia para completar los campos del formulario. O hacé clic en Descartar.\nUsar la sugerencia no guarda nada. Vos enviás el formulario cuando quieras.\nLa sugerencia está disponible al crear un objetivo y en el formulario de resultado clave. No está al editar un objetivo que ya existe."
+    },
+    {
+      "id": "usuario#cómo-resumo-los-check-ins-de-un-resultado-clave",
+      "manual": "usuario",
+      "anchor": "cómo-resumo-los-check-ins-de-un-resultado-clave",
+      "title": "Cómo resumo los check-ins de un resultado clave",
+      "level": 3,
+      "parent": "ayudas-de-ia",
+      "url": "/ayuda/usuario#cómo-resumo-los-check-ins-de-un-resultado-clave",
+      "plainText": "Abrí el historial de un resultado clave.\nHacé clic en Resumir check-ins.\nLeé el resumen. Incluye el avance, la tendencia, lo destacado y los riesgos.\nHacé clic en Me sirve o en Descartar.\nLa tendencia puede ser Mejorando, Estable, Empeorando o Pocos datos. El resumen habla del resultado clave. Nunca evalúa a las personas."
+    },
+    {
+      "id": "usuario#cómo-pido-un-documento-adaptado",
+      "manual": "usuario",
+      "anchor": "cómo-pido-un-documento-adaptado",
+      "title": "Cómo pido un documento adaptado",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/usuario#cómo-pido-un-documento-adaptado",
+      "plainText": ""
+    },
+    {
+      "id": "usuario#qué-es-un-pedido-de-documento-adaptado",
+      "manual": "usuario",
+      "anchor": "qué-es-un-pedido-de-documento-adaptado",
+      "title": "Qué es un pedido de documento adaptado",
+      "level": 3,
+      "parent": "cómo-pido-un-documento-adaptado",
+      "url": "/ayuda/usuario#qué-es-un-pedido-de-documento-adaptado",
+      "plainText": "Según el artículo 14.5 del Real Decreto 707/2026, toda persona trabajadora puede pedir documentos adaptados. Esto incluye una versión en lectura fácil o en lenguaje claro, en audio, con apoyo visual o una reunión adaptada.\nHay dos caminos:\nCon la IA. Usá Ver en lectura fácil o Ver en lenguaje claro en el texto que necesitás. La versión llega en segundos y no tiene costo.\nCon una persona. Le pedís el documento a una persona de administración. Funciona siempre, aunque la IA esté apagada. No tiene costo para vos."
+    },
+    {
+      "id": "usuario#cómo-pido-un-documento-a-una-persona",
+      "manual": "usuario",
+      "anchor": "cómo-pido-un-documento-a-una-persona",
+      "title": "Cómo pido un documento a una persona",
+      "level": 3,
+      "parent": "cómo-pido-un-documento-adaptado",
+      "url": "/ayuda/usuario#cómo-pido-un-documento-a-una-persona",
+      "plainText": "En el menú lateral, entrá a Documentos adaptados.\nHacé clic en Pedir un documento adaptado.\nEn ¿Qué documento necesitás?, escribí en pocas palabras qué es. Por ejemplo: \"El reporte del ciclo\".\nEn ¿En qué formato te sirve?, elegí una opción: lectura fácil, lenguaje claro, audio, apoyo visual, reunión adaptada u otro.\nEn Detalle, si querés, contanos más para ayudarte mejor.\nHacé clic en Enviar pedido.\nTambién podés empezar desde un objetivo, un check-in o un feedback. Hacé clic en ¿Necesitás otro formato? Pedilo a una persona. El pedido queda vinculado a ese elemento.\nSi lo vinculás a un feedback, solo funciona con los feedback que enviaste o recibiste. Administración no puede leer tu feedback: contanos en el Detalle lo que necesitás."
+    },
+    {
+      "id": "usuario#cómo-sigo-mi-pedido",
+      "manual": "usuario",
+      "anchor": "cómo-sigo-mi-pedido",
+      "title": "Cómo sigo mi pedido",
+      "level": 3,
+      "parent": "cómo-pido-un-documento-adaptado",
+      "url": "/ayuda/usuario#cómo-sigo-mi-pedido",
+      "plainText": "Entrá a Documentos adaptados.\nEn Mis pedidos vas a ver cada pedido con su estado. El estado siempre tiene ícono y palabra:\nEstado | Qué significa\nPendiente | Todavía nadie se hizo cargo.\nEn curso | Una persona de administración ya se está ocupando.\nEntregada | Ya tenés tu documento. Mirá la Nota de entrega y, si hay, el enlace.\nRechazada | No pudimos hacerlo. Mirá Por qué no pudimos hacerlo.\nMientras el pedido está abierto, ves la Fecha límite. Son 10 días corridos desde que lo pediste. Si pasa la fecha, el pedido muestra la marca Vencido y administración lo ve resaltado.\nSolo vos ves tus pedidos, además de administración. Ninguna otra persona puede abrirlos."
+    },
+    {
+      "id": "usuario#qué-pasa-si-rechazan-mi-pedido",
+      "manual": "usuario",
+      "anchor": "qué-pasa-si-rechazan-mi-pedido",
+      "title": "Qué pasa si rechazan mi pedido",
+      "level": 3,
+      "parent": "cómo-pido-un-documento-adaptado",
+      "url": "/ayuda/usuario#qué-pasa-si-rechazan-mi-pedido",
+      "plainText": "La organización solo puede negarse si la adaptación le exige un esfuerzo desproporcionado. En ese caso tiene que explicártelo por escrito, y esa explicación es obligatoria. La plataforma no deja rechazar un pedido sin ella.\nVas a leerla en Por qué no pudimos hacerlo, dentro de tu pedido, escrita en lenguaje claro. Si no la entendés o no estás de acuerdo, hablá con administración y podés hacer un pedido nuevo."
+    },
+    {
+      "id": "usuario#preguntas-frecuentes",
+      "manual": "usuario",
+      "anchor": "preguntas-frecuentes",
+      "title": "Preguntas frecuentes",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/usuario#preguntas-frecuentes",
+      "plainText": ""
+    },
+    {
+      "id": "usuario#por-qué-mi-objetivo-está-en-rojo-si-ya-cargué-check-ins",
+      "manual": "usuario",
+      "anchor": "por-qué-mi-objetivo-está-en-rojo-si-ya-cargué-check-ins",
+      "title": "Por qué mi objetivo está en rojo si ya cargué check-ins",
+      "level": 3,
+      "parent": "preguntas-frecuentes",
+      "url": "/ayuda/usuario#por-qué-mi-objetivo-está-en-rojo-si-ya-cargué-check-ins",
+      "plainText": "El puntaje del objetivo es el promedio de todos sus KR. Un KR sin check-ins vale 0.\nEjemplo con los datos de prueba: un objetivo tiene tres KR. Sus puntajes son 0,15, 0,50 y uno sin check-ins, que vale 0. El promedio es (0,15 + 0,50 + 0) ÷ 3 = 0,22. Eso es En riesgo, aunque un KR esté en amarillo.\nRegistrá el avance de los KR que faltan. Aunque sea un primer valor."
+    },
+    {
+      "id": "usuario#por-qué-un-objetivo-dice-sin-check-ins-y-no-tiene-color",
+      "manual": "usuario",
+      "anchor": "por-qué-un-objetivo-dice-sin-check-ins-y-no-tiene-color",
+      "title": "Por qué un objetivo dice \"Sin check-ins\" y no tiene color",
+      "level": 3,
+      "parent": "preguntas-frecuentes",
+      "url": "/ayuda/usuario#por-qué-un-objetivo-dice-sin-check-ins-y-no-tiene-color",
+      "plainText": "Porque ninguno de sus KR tiene avances registrados. La plataforma no le asigna estado hasta que haya datos."
+    },
+    {
+      "id": "usuario#qué-significa-check-in-vencido",
+      "manual": "usuario",
+      "anchor": "qué-significa-check-in-vencido",
+      "title": "Qué significa \"Check-in vencido\"",
+      "level": 3,
+      "parent": "preguntas-frecuentes",
+      "url": "/ayuda/usuario#qué-significa-check-in-vencido",
+      "plainText": "Pasó más tiempo que la cadencia del ciclo desde el último check-in del KR. Si nunca tuvo uno, se cuenta desde la publicación. Registrá un check-in y deja de estar vencido."
+    },
+    {
+      "id": "usuario#por-qué-no-puedo-registrar-un-check-in",
+      "manual": "usuario",
+      "anchor": "por-qué-no-puedo-registrar-un-check-in",
+      "title": "Por qué no puedo registrar un check-in",
+      "level": 3,
+      "parent": "preguntas-frecuentes",
+      "url": "/ayuda/usuario#por-qué-no-puedo-registrar-un-check-in",
+      "plainText": "El botón apagado muestra el motivo. Las causas posibles son estas:\nEl objetivo todavía es borrador.\nEl objetivo o el ciclo está cerrado.\nNo sos responsable del KR ni del objetivo, ni integrante o líder del equipo responsable."
+    },
+    {
+      "id": "usuario#por-qué-no-puedo-publicar-mi-objetivo",
+      "manual": "usuario",
+      "anchor": "por-qué-no-puedo-publicar-mi-objetivo",
+      "title": "Por qué no puedo publicar mi objetivo",
+      "level": 3,
+      "parent": "preguntas-frecuentes",
+      "url": "/ayuda/usuario#por-qué-no-puedo-publicar-mi-objetivo",
+      "plainText": "Cada responsable necesita al menos 3 objetivos en el ciclo. Cada objetivo necesita al menos 3 resultados clave. El mensaje de la pantalla dice qué falta."
+    },
+    {
+      "id": "usuario#puedo-borrar-un-objetivo-publicado-o-quitarle-un-kr",
+      "manual": "usuario",
+      "anchor": "puedo-borrar-un-objetivo-publicado-o-quitarle-un-kr",
+      "title": "Puedo borrar un objetivo publicado o quitarle un KR",
+      "level": 3,
+      "parent": "preguntas-frecuentes",
+      "url": "/ayuda/usuario#puedo-borrar-un-objetivo-publicado-o-quitarle-un-kr",
+      "plainText": "No. Solo se eliminan objetivos y KR en borrador."
+    },
+    {
+      "id": "usuario#por-qué-no-puedo-cambiar-la-meta-de-un-kr",
+      "manual": "usuario",
+      "anchor": "por-qué-no-puedo-cambiar-la-meta-de-un-kr",
+      "title": "Por qué no puedo cambiar la meta de un KR",
+      "level": 3,
+      "parent": "preguntas-frecuentes",
+      "url": "/ayuda/usuario#por-qué-no-puedo-cambiar-la-meta-de-un-kr",
+      "plainText": "Después de publicar, solo un líder o administración puede cambiar el valor inicial y la meta. Así nadie mueve la meta a mitad de camino."
+    },
+    {
+      "id": "usuario#mi-líder-puede-leer-mi-feedback",
+      "manual": "usuario",
+      "anchor": "mi-líder-puede-leer-mi-feedback",
+      "title": "Mi líder puede leer mi feedback",
+      "level": 3,
+      "parent": "preguntas-frecuentes",
+      "url": "/ayuda/usuario#mi-líder-puede-leer-mi-feedback",
+      "plainText": "No. Solo lo leen vos y la otra persona. Ni tu líder ni administración."
+    },
+    {
+      "id": "usuario#por-qué-no-puedo-reconocer-a-alguien-por-un-objetivo-o-kr",
+      "manual": "usuario",
+      "anchor": "por-qué-no-puedo-reconocer-a-alguien-por-un-objetivo-o-kr",
+      "title": "Por qué no puedo reconocer a alguien por un objetivo o KR",
+      "level": 3,
+      "parent": "preguntas-frecuentes",
+      "url": "/ayuda/usuario#por-qué-no-puedo-reconocer-a-alguien-por-un-objetivo-o-kr",
+      "plainText": "Solo se reconocen KR con puntaje de 0,70 o más, y objetivos ya cerrados. Tampoco podés reconocerte a vos mismo."
+    },
+    {
+      "id": "usuario#el-puntaje-de-un-reconocimiento-es-el-del-día-en-que-se-hizo",
+      "manual": "usuario",
+      "anchor": "el-puntaje-de-un-reconocimiento-es-el-del-día-en-que-se-hizo",
+      "title": "El puntaje de un reconocimiento es el del día en que se hizo",
+      "level": 3,
+      "parent": "preguntas-frecuentes",
+      "url": "/ayuda/usuario#el-puntaje-de-un-reconocimiento-es-el-del-día-en-que-se-hizo",
+      "plainText": "No. Es el puntaje actual del KR o del objetivo."
+    },
+    {
+      "id": "usuario#los-okr-influyen-en-mi-sueldo-o-en-bonos",
+      "manual": "usuario",
+      "anchor": "los-okr-influyen-en-mi-sueldo-o-en-bonos",
+      "title": "Los OKR influyen en mi sueldo o en bonos",
+      "level": 3,
+      "parent": "preguntas-frecuentes",
+      "url": "/ayuda/usuario#los-okr-influyen-en-mi-sueldo-o-en-bonos",
+      "plainText": "No. Los resultados de los OKR nunca se vinculan con compensaciones."
+    },
+    {
+      "id": "usuario#olvidé-mi-contraseña-qué-hago",
+      "manual": "usuario",
+      "anchor": "olvidé-mi-contraseña-qué-hago",
+      "title": "Olvidé mi contraseña. Qué hago",
+      "level": 3,
+      "parent": "preguntas-frecuentes",
+      "url": "/ayuda/usuario#olvidé-mi-contraseña-qué-hago",
+      "plainText": "Pedile a administración que te dé una nueva. Lo hacen desde la sección Usuarios."
+    },
+    {
+      "id": "usuario#por-qué-no-veo-los-botones-de-ia",
+      "manual": "usuario",
+      "anchor": "por-qué-no-veo-los-botones-de-ia",
+      "title": "Por qué no veo los botones de IA",
+      "level": 3,
+      "parent": "preguntas-frecuentes",
+      "url": "/ayuda/usuario#por-qué-no-veo-los-botones-de-ia",
+      "plainText": "La IA puede estar apagada. Es una decisión de la organización. Todo lo demás funciona igual. Si necesitás una adaptación, pedísela a una persona en Documentos adaptados. Mirá Cómo pido un documento adaptado."
+    },
+    {
+      "id": "usuario#por-qué-no-puedo-validar-la-versión-de-mi-propio-objetivo",
+      "manual": "usuario",
+      "anchor": "por-qué-no-puedo-validar-la-versión-de-mi-propio-objetivo",
+      "title": "Por qué no puedo validar la versión de mi propio objetivo",
+      "level": 3,
+      "parent": "preguntas-frecuentes",
+      "url": "/ayuda/usuario#por-qué-no-puedo-validar-la-versión-de-mi-propio-objetivo",
+      "plainText": "Si sos dueña de un objetivo individual, no podés validar tu propia versión, ni siquiera si liderás uno de tus equipos. Tiene que validarla otra persona: administración o quien lidera alguno de tus equipos. Mirá Cómo valido una versión si soy líder."
+    },
+    {
+      "id": "usuario#por-qué-la-ia-me-mostró-mi-texto-original-en-vez-de-una-versión-nueva",
+      "manual": "usuario",
+      "anchor": "por-qué-la-ia-me-mostró-mi-texto-original-en-vez-de-una-versión-nueva",
+      "title": "Por qué la IA me mostró mi texto original en vez de una versión nueva",
+      "level": 3,
+      "parent": "preguntas-frecuentes",
+      "url": "/ayuda/usuario#por-qué-la-ia-me-mostró-mi-texto-original-en-vez-de-una-versión-nueva",
+      "plainText": "La IA no pudo garantizar que la versión fuera fiel al original. Por seguridad, te muestra el original y marca Requiere revisión humana. Pedile a alguien que lo revise."
+    },
+    {
+      "id": "usuario#glosario",
+      "manual": "usuario",
+      "anchor": "glosario",
+      "title": "Glosario",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/usuario#glosario",
+      "plainText": "Término | Qué significa\nAdministración | Rol que gestiona usuarios, equipos y ciclos.\nAlineación | Vínculo entre un objetivo y otro de nivel superior al que ayuda.\nAspiracional | Objetivo ambicioso. Llegar a 0,70 ya es un éxito.\nBanda | Grupo de puntaje con nombre y color: En ruta, Requiere atención o En riesgo.\nBottom-up | Objetivo que nace en las personas.\nCadencia | Cada cuánto se espera un check-in: semanal, quincenal o mensual.\nCheck-in | Registro del avance de un resultado clave. Incluye acción, valor o puntaje, y nota.\nCheck-in vencido | Resultado clave que pasó la cadencia sin registrar avance.\nCiclo | Período en el que se organizan los objetivos. Puede ser anual o trimestral.\nComprometido | Objetivo que se espera cumplir por completo. Su meta es 1,00.\nFeedback | Mensaje privado entre dos personas. Solo ellas lo ven.\nIA (inteligencia artificial) | Programa que genera textos. En esta plataforma ayuda a escribir y a leer.\nLectura fácil | Texto con frases cortas y palabras simples, para máxima comprensión.\nLenguaje claro | Texto directo y ordenado, que se entiende en una sola lectura.\nFecha límite | Día hasta el que hay que responder un pedido de documento adaptado. Son 10 días corridos desde el pedido.\nLíder | Rol de una persona en toda la plataforma. No alcanza para liderar un equipo.\nLíder del equipo | Persona marcada como líder en un equipo en particular.\nMezcla 50/50 | Proporción de objetivos top-down y bottom-up de un equipo. Lo ideal es entre 40 % y 60 % de cada uno.\nObjetivo | Lo que querés lograr en un ciclo. Pertenece a una persona o a un equipo.\nOKR | \"Objectives and Key Results\": un objetivo y los resultados clave que lo miden.\nPedido de documento adaptado | Pedido que le hacés a una persona de administración para recibir un documento en otro formato.\nPendiente de validación | Marca de una versión generada por IA que ninguna persona revisó todavía.\nPuntaje | Número de 0,00 a 1,00 que indica el avance hacia la meta.\nReconocimiento | Agradecimiento público en el muro por un logro concreto.\nResultado clave (KR) | Medida concreta del avance de un objetivo. Puede ser numérica o manual.\nSin check-ins | Estado de un KR u objetivo que no tiene avances registrados.\nTop-down | Objetivo que baja desde la dirección.\nUmbral de logro | Puntaje mínimo para que un objetivo cuente como logrado al cerrar el ciclo.\nValidar | Revisar una versión de IA y aprobarla. Lo hace una persona autorizada.\nVencido | Pedido de documento adaptado que sigue abierto y ya pasó su fecha límite.\nVersión adaptada | Texto reescrito en lectura fácil o en lenguaje claro."
+    },
+    {
+      "id": "admin#manual-de-administración-de-okr-platform",
+      "manual": "admin",
+      "anchor": "manual-de-administración-de-okr-platform",
+      "title": "Manual de administración de OKR Platform",
+      "level": 1,
+      "parent": null,
+      "url": "/ayuda/admin#manual-de-administración-de-okr-platform",
+      "plainText": "Este manual es para las personas con rol Administración. Explica las tareas que solo vos podés hacer: gestionar usuarios, equipos y ciclos, controlar la ayuda de IA, atender los pedidos de documentos adaptados y consultar la auditoría.\nTodo lo que hacen integrantes y líderes está en el manual de usuario. Leelo primero. Aquí no se repite.\nLos ejemplos usan los datos de la demo: el equipo \"Producto Digital\", el equipo \"Comercial\" y los ciclos \"2026\" y \"Q4 2026\"."
+    },
+    {
+      "id": "admin#qué-puede-hacer-administración",
+      "manual": "admin",
+      "anchor": "qué-puede-hacer-administración",
+      "title": "Qué puede hacer administración",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/admin#qué-puede-hacer-administración",
+      "plainText": ""
+    },
+    {
+      "id": "admin#qué-tareas-son-solo-de-administración",
+      "manual": "admin",
+      "anchor": "qué-tareas-son-solo-de-administración",
+      "title": "Qué tareas son solo de administración",
+      "level": 3,
+      "parent": "qué-puede-hacer-administración",
+      "url": "/ayuda/admin#qué-tareas-son-solo-de-administración",
+      "plainText": "Solo Administración puede:\ncrear y editar usuarios, cambiar su rol, desactivarlos y darles una contraseña nueva;\nusar el Asistente para pedir tareas de administración en un chat;\ncrear y editar equipos, y agregar o quitar integrantes y líderes;\ncrear, editar, activar y cerrar ciclos;\ncrear objetivos para cualquier persona o equipo;\nver el panel Uso de IA;\natender los Pedidos de adaptación: asignarlos, entregarlos o rechazarlos;\nconsultar la pantalla Auditoría.\nAdministración también puede descargar el reporte PDF de cualquier equipo y cambiar el valor inicial y la meta de cualquier resultado clave publicado."
+    },
+    {
+      "id": "admin#qué-no-puede-hacer-administración",
+      "manual": "admin",
+      "anchor": "qué-no-puede-hacer-administración",
+      "title": "Qué no puede hacer administración",
+      "level": 3,
+      "parent": "qué-puede-hacer-administración",
+      "url": "/ayuda/admin#qué-no-puede-hacer-administración",
+      "plainText": "Estas reglas valen para todos los roles. Son a propósito.\nNo puede leer el feedback de otras personas. El feedback es privado entre dos personas.\nNo tiene permisos especiales para registrar check-ins. Solo registra en lo suyo o en lo de su equipo.\nNo puede cambiar su propio rol ni desactivarse a sí misma. Otra persona de administración lo tiene que hacer.\nNo ve rankings ni datos por persona. Los reportes y el panel de IA son agregados.\nNo puede reabrir un ciclo cerrado."
+    },
+    {
+      "id": "admin#qué-ves-en-inicio",
+      "manual": "admin",
+      "anchor": "qué-ves-en-inicio",
+      "title": "Qué ves en Inicio",
+      "level": 3,
+      "parent": "qué-puede-hacer-administración",
+      "url": "/ayuda/admin#qué-ves-en-inicio",
+      "plainText": "En Inicio tenés la tarjeta Gestión. Muestra el ciclo activo y accesos directos a Ciclos, Equipos y Usuarios.\nEl menú lateral suma cuatro secciones que otros roles ven apagadas: Usuarios, Uso de IA, Pedidos de adaptación y Auditoría."
+    },
+    {
+      "id": "admin#usuarios",
+      "manual": "admin",
+      "anchor": "usuarios",
+      "title": "Usuarios",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/admin#usuarios",
+      "plainText": ""
+    },
+    {
+      "id": "admin#cómo-veo-la-lista-de-usuarios",
+      "manual": "admin",
+      "anchor": "cómo-veo-la-lista-de-usuarios",
+      "title": "Cómo veo la lista de usuarios",
+      "level": 3,
+      "parent": "usuarios",
+      "url": "/ayuda/admin#cómo-veo-la-lista-de-usuarios",
+      "plainText": "Entrá a Usuarios. La lista muestra nombre, email, rol y estado de cada persona."
+    },
+    {
+      "id": "admin#qué-roles-existen",
+      "manual": "admin",
+      "anchor": "qué-roles-existen",
+      "title": "Qué roles existen",
+      "level": 3,
+      "parent": "usuarios",
+      "url": "/ayuda/admin#qué-roles-existen",
+      "plainText": "La plataforma tiene tres roles globales:\nRol | Qué es\nAdministración | Gestiona usuarios, equipos, ciclos y el panel de IA.\nLíder | Persona con rol de líder. Puede crear objetivos para los equipos que lidera.\nIntegrante | Persona que trabaja con sus objetivos y los de su equipo.\nEl rol Líder solo no alcanza para liderar un equipo. Además, la persona debe figurar como Líder del equipo en ese equipo. Son dos cosas distintas: el rol es de toda la plataforma y el liderazgo de equipo es de un equipo en particular. Mirá Cómo marco a una persona como líder de un equipo."
+    },
+    {
+      "id": "admin#cómo-creo-un-usuario",
+      "manual": "admin",
+      "anchor": "cómo-creo-un-usuario",
+      "title": "Cómo creo un usuario",
+      "level": 3,
+      "parent": "usuarios",
+      "url": "/ayuda/admin#cómo-creo-un-usuario",
+      "plainText": "Hacé clic en Crear usuario.\nCompletá Nombre y Email.\nElegí el Rol: Administración, Líder o Integrante.\nEscribí una Contraseña inicial si querés elegirla vos. Debe tener entre 8 y 200 caracteres. Si la dejás en blanco, la plataforma genera una segura.\nHacé clic en Crear usuario.\nSi dejaste la contraseña en blanco, aparece el aviso Usuario creado con la contraseña. Hacé clic en Copiar contraseña y cerrá el aviso.\nCompartí la contraseña inicial con la persona por un canal seguro. No hay email automático. No puede haber dos usuarios con el mismo email.\nLa contraseña generada se muestra una sola vez. No la guardamos y no se puede volver a ver. Si la perdés, restablecé la contraseña de la persona."
+    },
+    {
+      "id": "admin#qué-es-el-cambio-de-contraseña-obligatorio",
+      "manual": "admin",
+      "anchor": "qué-es-el-cambio-de-contraseña-obligatorio",
+      "title": "Qué es el cambio de contraseña obligatorio",
+      "level": 3,
+      "parent": "usuarios",
+      "url": "/ayuda/admin#qué-es-el-cambio-de-contraseña-obligatorio",
+      "plainText": "Todo usuario nuevo nace con la obligación de cambiar su contraseña. Pasa igual si elegiste vos la contraseña inicial.\nCuando la persona ingresa por primera vez, ve la pantalla Elegí tu contraseña. Hasta que la cambie, no puede usar nada más de la plataforma. Solo puede cambiarla o cerrar sesión.\nLa contraseña nueva tiene que tener al menos 12 caracteres y ser distinta de la inicial. Al cambiarla, se cierran las otras sesiones abiertas de esa persona.\nAdministración no ve la contraseña nueva. Queda registrado en Auditoría que la persona la cambió, con la acción Cambio de contraseña.\nEsto también pasa cuando restablecés una contraseña: la persona tiene que elegir otra al ingresar."
+    },
+    {
+      "id": "admin#cómo-cambio-el-rol-o-el-nombre-de-un-usuario",
+      "manual": "admin",
+      "anchor": "cómo-cambio-el-rol-o-el-nombre-de-un-usuario",
+      "title": "Cómo cambio el rol o el nombre de un usuario",
+      "level": 3,
+      "parent": "usuarios",
+      "url": "/ayuda/admin#cómo-cambio-el-rol-o-el-nombre-de-un-usuario",
+      "plainText": "En la fila de la persona, hacé clic en Editar.\nCambiá el Nombre o el Rol.\nGuardá los cambios.\nNo podés cambiar tu propio rol. El cambio de rol queda en la auditoría y rige desde el siguiente pedido de la persona."
+    },
+    {
+      "id": "admin#cómo-desactivo-un-usuario",
+      "manual": "admin",
+      "anchor": "cómo-desactivo-un-usuario",
+      "title": "Cómo desactivo un usuario",
+      "level": 3,
+      "parent": "usuarios",
+      "url": "/ayuda/admin#cómo-desactivo-un-usuario",
+      "plainText": "En la fila de la persona, hacé clic en Editar.\nApagá la opción Usuario activo.\nGuardá los cambios.\nUna persona desactivada no puede ingresar. Sus sesiones abiertas se cierran. Sus datos siguen en la plataforma. Para volver a activarla, prendé de nuevo Usuario activo.\nNo podés desactivarte a vos misma."
+    },
+    {
+      "id": "admin#cómo-restablezco-una-contraseña",
+      "manual": "admin",
+      "anchor": "cómo-restablezco-una-contraseña",
+      "title": "Cómo restablezco una contraseña",
+      "level": 3,
+      "parent": "usuarios",
+      "url": "/ayuda/admin#cómo-restablezco-una-contraseña",
+      "plainText": "En la fila de la persona, hacé clic en Contraseña.\nEscribí la Contraseña nueva. Debe tener entre 8 y 200 caracteres.\nConfirmá.\nLa contraseña anterior deja de funcionar y se cierran las sesiones abiertas de esa persona. Pasale la nueva por un canal seguro. La persona va a tener que cambiarla al ingresar. Mirá Qué es el cambio de contraseña obligatorio.\nNo existe la opción \"Olvidé mi contraseña\". Todo pedido de contraseña llega a vos."
+    },
+    {
+      "id": "admin#equipos-y-líderes",
+      "manual": "admin",
+      "anchor": "equipos-y-líderes",
+      "title": "Equipos y líderes",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/admin#equipos-y-líderes",
+      "plainText": ""
+    },
+    {
+      "id": "admin#cómo-se-organizan-los-equipos",
+      "manual": "admin",
+      "anchor": "cómo-se-organizan-los-equipos",
+      "title": "Cómo se organizan los equipos",
+      "level": 3,
+      "parent": "equipos-y-líderes",
+      "url": "/ayuda/admin#cómo-se-organizan-los-equipos",
+      "plainText": "Los equipos forman un árbol. Hay un equipo raíz, que no tiene padre. En la demo es \"Flockit\". Los demás equipos, como \"Producto Digital\" y \"Comercial\", cuelgan de otro equipo."
+    },
+    {
+      "id": "admin#cómo-creo-o-edito-un-equipo",
+      "manual": "admin",
+      "anchor": "cómo-creo-o-edito-un-equipo",
+      "title": "Cómo creo o edito un equipo",
+      "level": 3,
+      "parent": "equipos-y-líderes",
+      "url": "/ayuda/admin#cómo-creo-o-edito-un-equipo",
+      "plainText": "En Equipos, hacé clic en Crear equipo. Para uno existente, abrilo y hacé clic en Editar equipo.\nEscribí el Nombre.\nElegí el Equipo padre.\nGuardá los cambios."
+    },
+    {
+      "id": "admin#cómo-agrego-o-quito-integrantes",
+      "manual": "admin",
+      "anchor": "cómo-agrego-o-quito-integrantes",
+      "title": "Cómo agrego o quito integrantes",
+      "level": 3,
+      "parent": "equipos-y-líderes",
+      "url": "/ayuda/admin#cómo-agrego-o-quito-integrantes",
+      "plainText": "Abrí el detalle del equipo.\nEn Integrantes, hacé clic en Agregar integrante.\nElegí a la persona.\nSi corresponde, activá Es líder del equipo.\nConfirmá.\nPara sacar a alguien, usá Quitar en su fila. La plataforma pide confirmación."
+    },
+    {
+      "id": "admin#cómo-marco-a-una-persona-como-líder-de-un-equipo",
+      "manual": "admin",
+      "anchor": "cómo-marco-a-una-persona-como-líder-de-un-equipo",
+      "title": "Cómo marco a una persona como líder de un equipo",
+      "level": 3,
+      "parent": "equipos-y-líderes",
+      "url": "/ayuda/admin#cómo-marco-a-una-persona-como-líder-de-un-equipo",
+      "plainText": "En Integrantes del equipo:\nUsá Hacer líder del equipo para marcar a un integrante como líder.\nUsá Quitar como líder del equipo para sacarle ese papel.\nEn la lista de integrantes, quien lidera el equipo muestra la etiqueta Líder del equipo.\nSer líder da permisos solo en ese equipo. Esa persona puede crear y editar objetivos del equipo, cambiar metas de KR y descargar el reporte PDF. También puede validar versiones adaptadas por IA. Mirá Quién valida y por qué.\nUn líder de otro equipo no tiene esos permisos aquí."
+    },
+    {
+      "id": "admin#ciclos",
+      "manual": "admin",
+      "anchor": "ciclos",
+      "title": "Ciclos",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/admin#ciclos",
+      "plainText": ""
+    },
+    {
+      "id": "admin#qué-tipos-de-ciclo-hay",
+      "manual": "admin",
+      "anchor": "qué-tipos-de-ciclo-hay",
+      "title": "Qué tipos de ciclo hay",
+      "level": 3,
+      "parent": "ciclos",
+      "url": "/ayuda/admin#qué-tipos-de-ciclo-hay",
+      "plainText": "Anual. Es estratégico. No tiene ciclo padre. Ejemplo: \"2026\".\nTrimestral. Es táctico. Pertenece a un ciclo anual. Ejemplo: \"Q4 2026\".\nUn trimestre debe estar dentro de las fechas de su ciclo anual. No puede superponerse con otro trimestre del mismo anual.\nLa plataforma no ofrece ciclos mensuales. Lo mensual es una opción de cadencia de check-in."
+    },
+    {
+      "id": "admin#qué-estados-tiene-un-ciclo",
+      "manual": "admin",
+      "anchor": "qué-estados-tiene-un-ciclo",
+      "title": "Qué estados tiene un ciclo",
+      "level": 3,
+      "parent": "ciclos",
+      "url": "/ayuda/admin#qué-estados-tiene-un-ciclo",
+      "plainText": "Un ciclo solo avanza en un sentido:\nEstado | Qué significa\nBorrador | Recién creado. Se pueden editar todas las fechas.\nActivo | Rige la cadencia de check-ins. Las fechas ya no se editan.\nCerrado | Terminó. Se calculó el puntaje final. No se puede editar ni reabrir."
+    },
+    {
+      "id": "admin#cómo-creo-un-ciclo",
+      "manual": "admin",
+      "anchor": "cómo-creo-un-ciclo",
+      "title": "Cómo creo un ciclo",
+      "level": 3,
+      "parent": "ciclos",
+      "url": "/ayuda/admin#cómo-creo-un-ciclo",
+      "plainText": "Entrá a Ciclos y hacé clic en Crear ciclo.\nCompletá el formulario: Nombre. Ejemplos: \"OKR 2026\" o \"Q1 2027\".\nTipo: Anual o Trimestral. Si elegís Trimestral, aparece Ciclo anual. Elegí a cuál pertenece.\nInicio y Fin.\nCadencia de check-in.\nUmbral de comprometidos y Umbral de aspiracionales.\nHacé clic en Crear ciclo.\nEl ciclo se crea en estado Borrador."
+    },
+    {
+      "id": "admin#qué-es-la-cadencia-de-check-in",
+      "manual": "admin",
+      "anchor": "qué-es-la-cadencia-de-check-in",
+      "title": "Qué es la cadencia de check-in",
+      "level": 3,
+      "parent": "ciclos",
+      "url": "/ayuda/admin#qué-es-la-cadencia-de-check-in",
+      "plainText": "La cadencia dice cada cuánto se espera un check-in en el ciclo.\nCadencia | Días\nSemanal | 7\nQuincenal | 14\nMensual | 30\nUn KR queda vencido si pasa más tiempo que la cadencia sin check-in. El tiempo se cuenta desde el último check-in. Si no hubo ninguno, se cuenta desde la publicación del objetivo. Solo vencen los KR de objetivos publicados."
+    },
+    {
+      "id": "admin#qué-son-los-umbrales-de-logro",
+      "manual": "admin",
+      "anchor": "qué-son-los-umbrales-de-logro",
+      "title": "Qué son los umbrales de logro",
+      "level": 3,
+      "parent": "ciclos",
+      "url": "/ayuda/admin#qué-son-los-umbrales-de-logro",
+      "plainText": "El umbral es el puntaje mínimo para considerar logrado un objetivo al cerrar el ciclo. Hay uno por tipo de objetivo:\nUmbral | Valor por defecto | Qué significa\nUmbral de comprometidos | 1,00 | Un objetivo comprometido se logra con 1,00 o más.\nUmbral de aspiracionales | 0,70 | Un objetivo aspiracional se logra con 0,70 o más.\nCada umbral debe ser mayor que 0 y no pasar de 1. El borde cuenta: con un puntaje igual al umbral, el objetivo se logra.\nLos umbrales se pueden cambiar hasta que el ciclo se cierre. Cada cambio queda en la auditoría. Se usan los umbrales vigentes al momento del cierre."
+    },
+    {
+      "id": "admin#cómo-edito-un-ciclo",
+      "manual": "admin",
+      "anchor": "cómo-edito-un-ciclo",
+      "title": "Cómo edito un ciclo",
+      "level": 3,
+      "parent": "ciclos",
+      "url": "/ayuda/admin#cómo-edito-un-ciclo",
+      "plainText": "Abrí el ciclo y hacé clic en Editar.\nCambiá lo que necesites.\nGuardá los cambios.\nLas fechas solo se editan mientras el ciclo es borrador. Los umbrales se editan hasta el cierre."
+    },
+    {
+      "id": "admin#cómo-activo-un-ciclo",
+      "manual": "admin",
+      "anchor": "cómo-activo-un-ciclo",
+      "title": "Cómo activo un ciclo",
+      "level": 3,
+      "parent": "ciclos",
+      "url": "/ayuda/admin#cómo-activo-un-ciclo",
+      "plainText": "Abrí el ciclo en borrador.\nHacé clic en Activar ciclo.\nConfirmá con Activar ciclo.\nDesde ese momento rige la cadencia de check-ins. Las fechas ya no se pueden editar."
+    },
+    {
+      "id": "admin#cómo-cierro-un-ciclo",
+      "manual": "admin",
+      "anchor": "cómo-cierro-un-ciclo",
+      "title": "Cómo cierro un ciclo",
+      "level": 3,
+      "parent": "ciclos",
+      "url": "/ayuda/admin#cómo-cierro-un-ciclo",
+      "plainText": "Abrí el ciclo activo.\nHacé clic en Cerrar ciclo.\nLeé el aviso y confirmá con Cerrar ciclo.\nEsta acción no se puede deshacer. Al cerrar:\ncada objetivo publicado pasa a Cerrado;\ncada objetivo guarda su puntaje final;\ncada objetivo queda como Logrado o No logrado, según los umbrales;\nya no se admiten check-ins.\nLos objetivos en borrador no se puntúan ni se cierran.\nAntes de cerrar, revisá los umbrales. Después del cierre, el resultado de cada objetivo no cambia."
+    },
+    {
+      "id": "admin#objetivos-de-la-organización-y-de-los-equipos",
+      "manual": "admin",
+      "anchor": "objetivos-de-la-organización-y-de-los-equipos",
+      "title": "Objetivos de la organización y de los equipos",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/admin#objetivos-de-la-organización-y-de-los-equipos",
+      "plainText": ""
+    },
+    {
+      "id": "admin#qué-objetivos-puede-crear-administración",
+      "manual": "admin",
+      "anchor": "qué-objetivos-puede-crear-administración",
+      "title": "Qué objetivos puede crear administración",
+      "level": 3,
+      "parent": "objetivos-de-la-organización-y-de-los-equipos",
+      "url": "/ayuda/admin#qué-objetivos-puede-crear-administración",
+      "plainText": "Administración puede elegir como responsable a cualquier persona o a cualquier equipo. Esto sirve para cargar los objetivos de la organización en el ciclo anual y los de cada equipo.\nEl proceso de crear, agregar KR y publicar es el mismo que en el manual de usuario."
+    },
+    {
+      "id": "admin#qué-límites-rigen-para-todos",
+      "manual": "admin",
+      "anchor": "qué-límites-rigen-para-todos",
+      "title": "Qué límites rigen para todos",
+      "level": 3,
+      "parent": "objetivos-de-la-organización-y-de-los-equipos",
+      "url": "/ayuda/admin#qué-límites-rigen-para-todos",
+      "plainText": "Estas reglas valen para cualquier responsable, también para administración:\nMáximo 5 objetivos por responsable y ciclo. Cuentan los borradores y los publicados.\nMáximo 5 resultados clave por objetivo.\nPara publicar hacen falta al menos 3 objetivos del responsable en el ciclo y al menos 3 KR en el objetivo.\nDespués de publicar solo se editan el título, la descripción y la alineación.\nSolo se eliminan objetivos y KR en borrador."
+    },
+    {
+      "id": "admin#cómo-funciona-la-alineación",
+      "manual": "admin",
+      "anchor": "cómo-funciona-la-alineación",
+      "title": "Cómo funciona la alineación",
+      "level": 3,
+      "parent": "objetivos-de-la-organización-y-de-los-equipos",
+      "url": "/ayuda/admin#cómo-funciona-la-alineación",
+      "plainText": "Un objetivo puede alinearse a otro ya publicado. El otro objetivo puede ser de otro ciclo. Así se conecta un objetivo trimestral con uno anual de la organización.\nLa alineación no puede formar un círculo. Por ejemplo, A alineado a B y B alineado a A no es posible."
+    },
+    {
+      "id": "admin#reglas-de-equilibrio-5050",
+      "manual": "admin",
+      "anchor": "reglas-de-equilibrio-5050",
+      "title": "Reglas de equilibrio 50/50",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/admin#reglas-de-equilibrio-5050",
+      "plainText": ""
+    },
+    {
+      "id": "admin#qué-es-la-mezcla-5050",
+      "manual": "admin",
+      "anchor": "qué-es-la-mezcla-5050",
+      "title": "Qué es la mezcla 50/50",
+      "level": 3,
+      "parent": "reglas-de-equilibrio-5050",
+      "url": "/ayuda/admin#qué-es-la-mezcla-5050",
+      "plainText": "Cada objetivo tiene un origen: top-down (baja desde la dirección) o bottom-up (nace en las personas). La mezcla 50/50 mide esa proporción en cada equipo.\nLa regla es que el porcentaje bottom-up esté entre 40 % y 60 %."
+    },
+    {
+      "id": "admin#qué-pasa-si-un-equipo-se-sale-del-rango",
+      "manual": "admin",
+      "anchor": "qué-pasa-si-un-equipo-se-sale-del-rango",
+      "title": "Qué pasa si un equipo se sale del rango",
+      "level": 3,
+      "parent": "reglas-de-equilibrio-5050",
+      "url": "/ayuda/admin#qué-pasa-si-un-equipo-se-sale-del-rango",
+      "plainText": "La plataforma muestra un aviso suave. El aviso es solo un indicador. Nunca bloquea nada: no impide crear, editar ni publicar."
+    },
+    {
+      "id": "admin#dónde-veo-la-mezcla",
+      "manual": "admin",
+      "anchor": "dónde-veo-la-mezcla",
+      "title": "Dónde veo la mezcla",
+      "level": 3,
+      "parent": "reglas-de-equilibrio-5050",
+      "url": "/ayuda/admin#dónde-veo-la-mezcla",
+      "plainText": "En el detalle de cada equipo, en Mezcla de objetivos (50/50). Elegí el ciclo.\nEn el reporte PDF del equipo.\nLos líderes la ven también en la tarjeta Mis equipos de Inicio.\nEjemplo: \"Top-down 44 % · Bottom-up 56 % · Equilibrado\"."
+    },
+    {
+      "id": "admin#auditoría",
+      "manual": "admin",
+      "anchor": "auditoría",
+      "title": "Auditoría",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/admin#auditoría",
+      "plainText": ""
+    },
+    {
+      "id": "admin#qué-registra-la-auditoría",
+      "manual": "admin",
+      "anchor": "qué-registra-la-auditoría",
+      "title": "Qué registra la auditoría",
+      "level": 3,
+      "parent": "auditoría",
+      "url": "/ayuda/admin#qué-registra-la-auditoría",
+      "plainText": "La plataforma anota ciertos cambios importantes. Cada anotación se guarda en la misma operación que el cambio. No se puede modificar ni borrar. Esto lo impone la base de datos.\nSe registran estos eventos:\npublicación y cierre de objetivos;\ncambio de meta o inicio de un KR publicado;\ncambio de puntaje de un KR;\nactivación y cierre de ciclos;\ncambio de umbrales de un ciclo;\ncambio de rol y desactivación de usuarios;\nuso de IA: versión adaptada, versión validada y sugerencia aceptada;\npedidos de documento adaptado: creado, asignado, entregado y rechazado;\nsesión cerrada por seguridad e intento de reutilizar una sesión ya cerrada."
+    },
+    {
+      "id": "admin#qué-no-registra-la-auditoría",
+      "manual": "admin",
+      "anchor": "qué-no-registra-la-auditoría",
+      "title": "Qué no registra la auditoría",
+      "level": 3,
+      "parent": "auditoría",
+      "url": "/ayuda/admin#qué-no-registra-la-auditoría",
+      "plainText": "No guarda el texto del feedback.\nNo guarda el contenido de los textos que genera la IA. Solo guarda referencias y el estado.\nNo guarda el texto de un pedido de documento adaptado: ni el asunto, ni el detalle, ni la nota de entrega, ni la justificación de un rechazo. Solo guarda quién lo hizo, cuándo y el estado."
+    },
+    {
+      "id": "admin#cómo-consulto-la-auditoría",
+      "manual": "admin",
+      "anchor": "cómo-consulto-la-auditoría",
+      "title": "Cómo consulto la auditoría",
+      "level": 3,
+      "parent": "auditoría",
+      "url": "/ayuda/admin#cómo-consulto-la-auditoría",
+      "plainText": "En el menú lateral, entrá a Auditoría.\nLeé la tabla. Va del registro más nuevo al más viejo. Cada fila muestra: Fecha: día y hora de Buenos Aires.\nQuién: el nombre de la persona. Si dice \"Usuario eliminado\", esa persona ya no existe en la plataforma.\nAcción: qué pasó, con palabras comunes. Por ejemplo, \"Objetivo publicado\" o \"Pedido de documento adaptado rechazado\".\nElemento: sobre qué cosa fue (un objetivo, un ciclo, una persona) y un código corto.\nQué cambió: el valor de antes y el de después. Por ejemplo, \"Estado: Borrador → Publicado\".\nPara acotar la búsqueda, usá los filtros Acción, Elemento, Quién, Desde y Hasta, y hacé clic en Filtrar.\nPara volver a ver todo, hacé clic en Quitar filtros.\nSi hay más de una página, usá Anterior y Siguiente. Cada página muestra hasta 20 registros.\nLa pantalla es solo de lectura. Nadie puede editar ni borrar un registro. Solo administración la ve: si otra persona escribe la dirección, la plataforma responde que no encontró la página.\nLa pantalla nunca muestra el contenido de un feedback ni el texto libre de un pedido. Muestra únicamente datos de estado, como puntajes, roles, ciclos y estados."
+    },
+    {
+      "id": "admin#uso-de-ia",
+      "manual": "admin",
+      "anchor": "uso-de-ia",
+      "title": "Uso de IA",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/admin#uso-de-ia",
+      "plainText": ""
+    },
+    {
+      "id": "admin#para-qué-sirve-el-panel-uso-de-ia",
+      "manual": "admin",
+      "anchor": "para-qué-sirve-el-panel-uso-de-ia",
+      "title": "Para qué sirve el panel Uso de IA",
+      "level": 3,
+      "parent": "uso-de-ia",
+      "url": "/ayuda/admin#para-qué-sirve-el-panel-uso-de-ia",
+      "plainText": "El panel Uso de IA muestra cuánto se usa la ayuda de IA, cuánto cuesta y qué impacto tiene. Solo lo ve Administración. Las demás personas ven la sección apagada, con una explicación.\nEl panel muestra datos agregados. No muestra personas ni rankings."
+    },
+    {
+      "id": "admin#cómo-elijo-el-período",
+      "manual": "admin",
+      "anchor": "cómo-elijo-el-período",
+      "title": "Cómo elijo el período",
+      "level": 3,
+      "parent": "uso-de-ia",
+      "url": "/ayuda/admin#cómo-elijo-el-período",
+      "plainText": "Arriba a la derecha hay tres opciones de Período:\nÚltimos 7 días.\nÚltimos 30 días.\nÚltimos 90 días.\nPor defecto se muestran los últimos 30 días."
+    },
+    {
+      "id": "admin#qué-mide-cada-número-de-adopción",
+      "manual": "admin",
+      "anchor": "qué-mide-cada-número-de-adopción",
+      "title": "Qué mide cada número de Adopción",
+      "level": 3,
+      "parent": "uso-de-ia",
+      "url": "/ayuda/admin#qué-mide-cada-número-de-adopción",
+      "plainText": "Número | Qué significa\nVersiones accesibles que sirvieron | Porcentaje de versiones adaptadas que una persona marcó con Me sirve o que se validaron. Debajo ves el total, por ejemplo \"3 de 4\".\nSugerencias aceptadas | Porcentaje de sugerencias de redacción que alguien usó. Debajo ves el total.\nSi no hay datos, el panel dice \"Sin datos\". No inventa un 0 %."
+    },
+    {
+      "id": "admin#qué-mide-cada-número-de-tiempo",
+      "manual": "admin",
+      "anchor": "qué-mide-cada-número-de-tiempo",
+      "title": "Qué mide cada número de Tiempo",
+      "level": 3,
+      "parent": "uso-de-ia",
+      "url": "/ayuda/admin#qué-mide-cada-número-de-tiempo",
+      "plainText": "Número | Qué significa\nTiempo de entrega de una versión accesible (mediana) | Cuánto tarda una persona en recibir la versión adaptada. Mediana: la mitad tarda menos y la otra mitad más.\nTiempo hasta decidir una sugerencia (mediana) | Cuánto tarda una persona en usar o descartar una sugerencia.\nEste tiempo se relaciona con el artículo 14.5 del RD 707/2026: las adaptaciones no deben demorarse sin motivo."
+    },
+    {
+      "id": "admin#qué-mide-cada-número-de-calidad",
+      "manual": "admin",
+      "anchor": "qué-mide-cada-número-de-calidad",
+      "title": "Qué mide cada número de Calidad",
+      "level": 3,
+      "parent": "uso-de-ia",
+      "url": "/ayuda/admin#qué-mide-cada-número-de-calidad",
+      "plainText": "Número | Qué significa\nMejora media de legibilidad | Cuántos puntos sube la facilidad de lectura entre el texto original y la versión adaptada. Se mide con el índice de Szigriszt-Pazos. Más puntos significa más fácil.\nVersiones que requirieron revisión humana | Porcentaje de versiones en las que la IA no pudo garantizar fidelidad. En esos casos se muestra el texto original."
+    },
+    {
+      "id": "admin#qué-mide-cada-número-de-costo-estimado",
+      "manual": "admin",
+      "anchor": "qué-mide-cada-número-de-costo-estimado",
+      "title": "Qué mide cada número de Costo (estimado)",
+      "level": 3,
+      "parent": "uso-de-ia",
+      "url": "/ayuda/admin#qué-mide-cada-número-de-costo-estimado",
+      "plainText": "Número | Qué significa\nCosto total estimado | Suma del costo estimado de todas las llamadas del período.\nPersonas que usaron la IA | Cuántas personas distintas la usaron. Solo el conteo, sin nombres.\nCosto estimado por persona usuaria | Costo total dividido por esas personas.\nCosto estimado: (nombre de la función) | Un número por cada función: Versión accesible, Sugerencia de redacción y Resumen de check-ins.\nEl costo siempre es una estimación. Se calcula con una tabla de precios de referencia. El plan gratuito del proveedor no factura, así que hoy el costo real es cero. En las pruebas, cada pedido costó entre US$ 0,0007 y US$ 0,0016.\nLas personas usuarias no pagan nada por la IA. Eso lo pide el artículo 5.1.b del RD 707/2026. Este panel te ayuda a planificar el costo para la organización."
+    },
+    {
+      "id": "admin#qué-muestran-las-tablas-uso-por-función-y-uso-por-modelo",
+      "manual": "admin",
+      "anchor": "qué-muestran-las-tablas-uso-por-función-y-uso-por-modelo",
+      "title": "Qué muestran las tablas Uso por función y Uso por modelo",
+      "level": 3,
+      "parent": "uso-de-ia",
+      "url": "/ayuda/admin#qué-muestran-las-tablas-uso-por-función-y-uso-por-modelo",
+      "plainText": "Cada fila tiene estas columnas:\nColumna | Qué significa\nLlamadas | Cuántas veces se llamó al modelo de IA. Una sola petición puede generar varias llamadas.\nFallidas | Cuántas llamadas fallaron.\nTokens de entrada | Cantidad de texto que se envió al modelo. Un token es un trozo de palabra.\nTokens de salida | Cantidad de texto que devolvió el modelo.\nCosto estimado | Costo calculado con precios de referencia.\nLatencia p50 | Tiempo de respuesta típico. La mitad de las llamadas tardó menos.\nLatencia p95 | Tiempo de respuesta en los casos lentos. El 95 % de las llamadas tardó menos.\nCon modelo de respaldo | Porcentaje de llamadas que usaron el modelo de reserva porque el principal falló.\nSi el modelo de respaldo se usa mucho, el modelo principal tiene problemas."
+    },
+    {
+      "id": "admin#qué-muestra-la-tabla-fallos-por-paso",
+      "manual": "admin",
+      "anchor": "qué-muestra-la-tabla-fallos-por-paso",
+      "title": "Qué muestra la tabla Fallos por paso",
+      "level": 3,
+      "parent": "uso-de-ia",
+      "url": "/ayuda/admin#qué-muestra-la-tabla-fallos-por-paso",
+      "plainText": "Cada pedido a la IA pasa por varios pasos. La tabla dice en qué paso falló y por qué.\nPaso | Qué hace\nClasificación | Revisa que el texto sea adecuado y no tenga contenido riesgoso.\nGeneración | Escribe la versión adaptada o la sugerencia.\nReparación | Intenta arreglar una respuesta con formato roto.\nVerificación (juez) | Comprueba que la versión sea fiel al original.\nRegeneración | Repite la generación con el motivo del rechazo.\nConexión con el agente | Falla la comunicación con el servicio de IA.\nMotivo | Qué significa\nTiempo agotado | El modelo tardó demasiado.\nError del proveedor | El proveedor del modelo devolvió un error.\nLímite del proveedor | El proveedor limitó los pedidos.\nRespuesta no válida | El modelo respondió algo ilegible.\nFormato inesperado | La respuesta no tenía la forma esperada.\nAgente inalcanzable | No hay conexión con el servicio de IA.\nEl agente no respondió a tiempo | El servicio de IA tardó demasiado.\nRespuesta ilegible del agente | El servicio de IA devolvió algo que no se pudo leer.\nLos fallos de conexión no cuentan como costo ni como personas activas."
+    },
+    {
+      "id": "admin#cómo-apago-la-ia",
+      "manual": "admin",
+      "anchor": "cómo-apago-la-ia",
+      "title": "Cómo apago la IA",
+      "level": 3,
+      "parent": "uso-de-ia",
+      "url": "/ayuda/admin#cómo-apago-la-ia",
+      "plainText": "La IA se apaga desde la configuración del servidor, con la variable AI_ENABLED=false. Es una tarea del equipo técnico. Al apagarla, los botones de IA desaparecen. El resto de la plataforma sigue igual.\nSi el servicio de IA se cae sin que lo apaguen, las personas ven el aviso \"La ayuda de IA no está disponible ahora. El resto de la plataforma funciona normal.\" No pierden ningún dato."
+    },
+    {
+      "id": "admin#validación-de-versiones-adaptadas",
+      "manual": "admin",
+      "anchor": "validación-de-versiones-adaptadas",
+      "title": "Validación de versiones adaptadas",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/admin#validación-de-versiones-adaptadas",
+      "plainText": ""
+    },
+    {
+      "id": "admin#quién-valida-y-por-qué",
+      "manual": "admin",
+      "anchor": "quién-valida-y-por-qué",
+      "title": "Quién valida y por qué",
+      "level": 3,
+      "parent": "validación-de-versiones-adaptadas",
+      "url": "/ayuda/admin#quién-valida-y-por-qué",
+      "plainText": "Toda versión generada por IA nace como Generado por IA · pendiente de validación. Una persona autorizada puede validarla. Esto es el control humano que exige el diseño: la IA nunca decide sola.\nQuién puede validar depende de quién es la persona dueña del objetivo:\nEl objetivo es... | Pueden validar\nDe un equipo | Administración y quien figura como Líder del equipo de ese equipo.\nIndividual (de una persona) | Administración y quien figura como Líder del equipo en alguno de los equipos de esa persona.\nEstas reglas valen siempre:\nEl rol Líder solo no alcanza. Hay que figurar como Líder del equipo en el equipo que corresponde.\nUn líder de otro equipo no puede validar.\nLa persona dueña de un objetivo individual no valida su propia versión, aunque además lidere uno de sus equipos. Hace falta una segunda persona: así hay cuatro ojos sobre el texto. Administración sí puede validar lo suyo.\nUn integrante común nunca valida.\nEl feedback no se valida nunca. Es privado entre dos personas y nadie más puede leerlo. Quien lo recibió solo puede marcar Me sirve.\nSi no podés validar, el botón Validar aparece apagado y explica el motivo. En un objetivo individual, la pantalla ofrece Validar a quien lidera algún equipo y la plataforma confirma al hacer clic. Si no corresponde, muestra un aviso."
+    },
+    {
+      "id": "admin#cómo-valido-una-versión",
+      "manual": "admin",
+      "anchor": "cómo-valido-una-versión",
+      "title": "Cómo valido una versión",
+      "level": 3,
+      "parent": "validación-de-versiones-adaptadas",
+      "url": "/ayuda/admin#cómo-valido-una-versión",
+      "plainText": "Abrí el objetivo o el check-in con una versión adaptada.\nLeé la versión y compará con el original.\nHacé clic en Validar.\nSi hace falta, corregí el texto. Mantené los mismos bloques y el mismo orden.\nSi querés, escribí una Nota de validación.\nHacé clic en Validar versión.\nLa marca pasa a Validado por una persona. Si corregiste el texto, queda anotado que hubo corrección humana. Una versión validada ya no vuelve atrás."
+    },
+    {
+      "id": "admin#qué-pasa-con-las-versiones-requiere-revisión-humana",
+      "manual": "admin",
+      "anchor": "qué-pasa-con-las-versiones-requiere-revisión-humana",
+      "title": "Qué pasa con las versiones \"Requiere revisión humana\"",
+      "level": 3,
+      "parent": "validación-de-versiones-adaptadas",
+      "url": "/ayuda/admin#qué-pasa-con-las-versiones-requiere-revisión-humana",
+      "plainText": "La IA no pudo garantizar que la versión fuera fiel. Se muestra el texto original con un aviso. Revisá el texto y, si la versión es buena, validala."
+    },
+    {
+      "id": "admin#cuándo-se-regenera-una-versión",
+      "manual": "admin",
+      "anchor": "cuándo-se-regenera-una-versión",
+      "title": "Cuándo se regenera una versión",
+      "level": 3,
+      "parent": "validación-de-versiones-adaptadas",
+      "url": "/ayuda/admin#cuándo-se-regenera-una-versión",
+      "plainText": "Si alguien cambia el texto original, se genera una versión nueva. Si cambia el prompt de la IA, las versiones sin validar se regeneran. Las versiones validadas o aceptadas se mantienen siempre, porque una persona respondió por ellas."
+    },
+    {
+      "id": "admin#pedidos-de-documentos-adaptados",
+      "manual": "admin",
+      "anchor": "pedidos-de-documentos-adaptados",
+      "title": "Pedidos de documentos adaptados",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/admin#pedidos-de-documentos-adaptados",
+      "plainText": ""
+    },
+    {
+      "id": "admin#qué-es-un-pedido-de-documento-adaptado",
+      "manual": "admin",
+      "anchor": "qué-es-un-pedido-de-documento-adaptado",
+      "title": "Qué es un pedido de documento adaptado",
+      "level": 3,
+      "parent": "pedidos-de-documentos-adaptados",
+      "url": "/ayuda/admin#qué-es-un-pedido-de-documento-adaptado",
+      "plainText": "Cualquier persona puede pedir a otra persona un documento en otro formato: lectura fácil, lenguaje claro, audio, apoyo visual o una reunión adaptada. Es el artículo 14.5 del RD 707/2026. Funciona aunque la IA esté apagada o no alcance.\nLa persona entra a Documentos adaptados, hace clic en Pedir un documento adaptado y completa el formulario. También puede pedirlo desde un objetivo, un check-in o un feedback, con el enlace Pedilo a una persona. Si el pedido es sobre un feedback, vos no ves cuál es: el feedback es privado.\nTu parte es atender los pedidos desde Pedidos de adaptación. Cada pedido tiene un estado:\nEstado | Qué significa\nPendiente | Nadie se hizo cargo todavía.\nEn curso | Una persona de administración lo está atendiendo.\nEntregada | Ya se entregó el documento, con una nota.\nRechazada | No se pudo hacer. La justificación es obligatoria."
+    },
+    {
+      "id": "admin#cómo-veo-los-pedidos-y-los-filtro",
+      "manual": "admin",
+      "anchor": "cómo-veo-los-pedidos-y-los-filtro",
+      "title": "Cómo veo los pedidos y los filtro",
+      "level": 3,
+      "parent": "pedidos-de-documentos-adaptados",
+      "url": "/ayuda/admin#cómo-veo-los-pedidos-y-los-filtro",
+      "plainText": "En el menú lateral, entrá a Pedidos de adaptación.\nMirá la tabla. Cada fila muestra el asunto, quién lo pidió, el formato, el estado, la fecha límite y quién se ocupa.\nPara ver solo algunos, hacé clic en Pendiente, En curso, Entregada, Rechazada o Vencidos. Todos vuelve a mostrar la lista completa.\nSolo administración ve esta pantalla. Las demás personas solo ven sus propios pedidos."
+    },
+    {
+      "id": "admin#cuál-es-el-plazo-para-responder",
+      "manual": "admin",
+      "anchor": "cuál-es-el-plazo-para-responder",
+      "title": "Cuál es el plazo para responder",
+      "level": 3,
+      "parent": "pedidos-de-documentos-adaptados",
+      "url": "/ayuda/admin#cuál-es-el-plazo-para-responder",
+      "plainText": "Cada pedido tiene una fecha límite: 10 días corridos desde que se pidió. El equipo técnico puede cambiar esos días con la variable ADAPTATION_DUE_DAYS.\nUn pedido Vencido está abierto y ya pasó su fecha límite. En la tabla se ve con fondo de advertencia, un ícono de alerta y la palabra \"Vencido\". El color solo no alcanza para saberlo. Atendé primero los vencidos.\nUn pedido entregado o rechazado nunca figura como vencido."
+    },
+    {
+      "id": "admin#cómo-asigno-un-pedido",
+      "manual": "admin",
+      "anchor": "cómo-asigno-un-pedido",
+      "title": "Cómo asigno un pedido",
+      "level": 3,
+      "parent": "pedidos-de-documentos-adaptados",
+      "url": "/ayuda/admin#cómo-asigno-un-pedido",
+      "plainText": "En la fila del pedido, hacé clic en Asignar.\nElegí quién se hace cargo. Solo aparecen personas de administración activas. Por defecto aparecés vos.\nHacé clic en Asignar.\nEl pedido pasa a En curso. Podés reasignarlo con Reasignar mientras siga abierto."
+    },
+    {
+      "id": "admin#cómo-entrego-un-documento-adaptado",
+      "manual": "admin",
+      "anchor": "cómo-entrego-un-documento-adaptado",
+      "title": "Cómo entrego un documento adaptado",
+      "level": 3,
+      "parent": "pedidos-de-documentos-adaptados",
+      "url": "/ayuda/admin#cómo-entrego-un-documento-adaptado",
+      "plainText": "Preparé el documento por fuera de la plataforma.\nEn la fila del pedido, hacé clic en Entregar.\nEn Nota de entrega, contá qué entregás y cómo acceder. Escribí al menos 10 caracteres.\nSi querés, pegá en Enlace al documento una dirección completa que empiece con https://.\nHacé clic en Marcar como entregado.\nLa persona ve la nota y el enlace en Documentos adaptados. El pedido pasa a Entregada y ya no se puede cambiar."
+    },
+    {
+      "id": "admin#cómo-rechazo-un-pedido-y-justifico",
+      "manual": "admin",
+      "anchor": "cómo-rechazo-un-pedido-y-justifico",
+      "title": "Cómo rechazo un pedido y justifico",
+      "level": 3,
+      "parent": "pedidos-de-documentos-adaptados",
+      "url": "/ayuda/admin#cómo-rechazo-un-pedido-y-justifico",
+      "plainText": "Solo corresponde rechazar si adaptar el documento supone una carga desproporcionada. El costo por sí solo no es un motivo válido. La justificación es obligatoria.\nEn la fila del pedido, hacé clic en Rechazar.\nEn Justificación, explicá el motivo por escrito, en lenguaje claro y con frases cortas. Escribí al menos 20 caracteres. La persona lo va a leer.\nHacé clic en Rechazar pedido.\nSi dejás la justificación vacía o muy corta, la plataforma no rechaza el pedido y te lo avisa. El pedido pasa a Rechazada y la persona ve tu justificación en Documentos adaptados. No se puede deshacer.\nCada paso queda en la auditoría, sin el texto que escribiste."
+    },
+    {
+      "id": "admin#cumplimiento-del-rd-7072026",
+      "manual": "admin",
+      "anchor": "cumplimiento-del-rd-7072026",
+      "title": "Cumplimiento del RD 707/2026",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/admin#cumplimiento-del-rd-7072026",
+      "plainText": ""
+    },
+    {
+      "id": "admin#qué-es-el-rd-7072026",
+      "manual": "admin",
+      "anchor": "qué-es-el-rd-7072026",
+      "title": "Qué es el RD 707/2026",
+      "level": 3,
+      "parent": "cumplimiento-del-rd-7072026",
+      "url": "/ayuda/admin#qué-es-el-rd-7072026",
+      "plainText": "El Real Decreto 707/2026 es el Reglamento de condiciones básicas de accesibilidad cognitiva. Entra en vigor el 2 de enero de 2027. No es una norma sobre IA. La plataforma usa la IA para cubrir la parte de textos y documentos.\nEsta sección no es un dictamen jurídico. Es una guía práctica de qué hace el software y qué le toca a la organización."
+    },
+    {
+      "id": "admin#qué-hace-el-software",
+      "manual": "admin",
+      "anchor": "qué-hace-el-software",
+      "title": "Qué hace el software",
+      "level": 3,
+      "parent": "cumplimiento-del-rd-7072026",
+      "url": "/ayuda/admin#qué-hace-el-software",
+      "plainText": "Artículo | Qué exige | Qué hace la plataforma\n3.i, 3.j, 3.k y 5.2 | Textos en lectura fácil, en lenguaje claro y en lenguaje sencillo | Ofrece Ver en lectura fácil y Ver en lenguaje claro. Mide la legibilidad de cada versión.\n5.1.b | Que las adaptaciones sean gratuitas para la persona | No cobra ni limita por costo. Mide el costo estimado para que la organización lo planifique.\n6 | Servicios digitales accesibles cognitivamente | Usa estados con ícono y palabra, textos con voseo claro, sugerencias de redacción y resumen de check-ins.\n14.5 | Que se puedan pedir documentos adaptados a una persona, sin demoras indebidas, y que un rechazo se justifique por escrito | Hay un circuito de Pedidos de adaptación: cualquier persona pide un formato, el pedido tiene fecha límite (10 días por defecto) y administración lo asigna, lo entrega o lo rechaza. El rechazo exige una justificación escrita que la persona lee. Cada paso queda en la auditoría. La IA suma una vía inmediata, pero no reemplaza a la persona.\n4.2.g | Verificar las medidas con personas con dificultades cognitivas, cuando sea posible | Cubre solo una parte: ofrece la validación humana. Ver más abajo."
+    },
+    {
+      "id": "admin#qué-le-toca-a-la-organización",
+      "manual": "admin",
+      "anchor": "qué-le-toca-a-la-organización",
+      "title": "Qué le toca a la organización",
+      "level": 3,
+      "parent": "cumplimiento-del-rd-7072026",
+      "url": "/ayuda/admin#qué-le-toca-a-la-organización",
+      "plainText": "El software no puede hacer estas tareas por sí solo. Tenés que planificarlas:\nValidar con personas con dificultades cognitivas (art. 4.2.g). La plataforma da la herramienta de validación humana. Pero la validación con personas con dificultades cognitivas es un proceso de la organización. Hay que planificarlo, convocar a las personas y registrar sus conclusiones.\nAtender los pedidos a tiempo. La plataforma registra los pedidos y marca los vencidos, pero alguien tiene que preparar los documentos. Definí quién lo hace y revisá Pedidos de adaptación con frecuencia.\nRechazar solo por carga desproporcionada (art. 14.5). La plataforma exige una justificación escrita para rechazar, pero no juzga si el motivo es válido. Eso lo decide tu organización. La plataforma nunca rechaza por costo.\nCertificar, si se necesita. Las versiones siguen las reglas de cada nivel, pero ninguna entidad validadora las certificó como lectura fácil. Por eso llevan la marca \"pendiente de validación\".\nResolver la protección de datos. El proveedor actual de IA procesa los textos en Estados Unidos. Eso es una transferencia internacional de datos. Antes de producción en España hay que cubrir la base legal, la evaluación de impacto y el contrato con el proveedor. Hay una alternativa sin transferencia: un modelo propio dentro de la Unión Europea.\nAcceso sin memorizar contraseña (art. 14.4). La plataforma no cambió el ingreso con contraseña. Ese artículo queda fuera de alcance y lo tiene que resolver la organización."
+    },
+    {
+      "id": "admin#qué-hace-la-plataforma-para-proteger-los-datos",
+      "manual": "admin",
+      "anchor": "qué-hace-la-plataforma-para-proteger-los-datos",
+      "title": "Qué hace la plataforma para proteger los datos",
+      "level": 3,
+      "parent": "cumplimiento-del-rd-7072026",
+      "url": "/ayuda/admin#qué-hace-la-plataforma-para-proteger-los-datos",
+      "plainText": "Envía a la IA solo texto, sin nombres, emails ni identificadores.\nOculta emails, DNI y teléfonos del texto antes de enviarlo.\nSolo quien escribió o recibió un feedback puede pedir su versión adaptada.\nNo guarda contenido en el servicio de IA ni en la auditoría.\nPermite apagar la IA sin afectar al resto.\nUn límite: el ocultamiento por patrones no detecta nombres propios escritos dentro de un texto libre. Avisale a las personas que no escriban datos personales en los títulos ni en las notas."
+    },
+    {
+      "id": "admin#qué-no-cubre-este-manual",
+      "manual": "admin",
+      "anchor": "qué-no-cubre-este-manual",
+      "title": "Qué no cubre este manual",
+      "level": 3,
+      "parent": "cumplimiento-del-rd-7072026",
+      "url": "/ayuda/admin#qué-no-cubre-este-manual",
+      "plainText": "Las conversaciones 1:1 quedan para una etapa futura.\nLa certificación UNE de las versiones adaptadas."
+    },
+    {
+      "id": "admin#asistente-de-administración",
+      "manual": "admin",
+      "anchor": "asistente-de-administración",
+      "title": "Asistente de administración",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/admin#asistente-de-administración",
+      "plainText": "El asistente es un chat que te ayuda con las tareas de administración. Vos le escribís qué necesitás, con tus palabras. Para cambiar algo, primero te muestra un plan. Solo si lo confirmás, lo hace."
+    },
+    {
+      "id": "admin#cómo-abro-el-asistente",
+      "manual": "admin",
+      "anchor": "cómo-abro-el-asistente",
+      "title": "Cómo abro el asistente",
+      "level": 3,
+      "parent": "asistente-de-administración",
+      "url": "/ayuda/admin#cómo-abro-el-asistente",
+      "plainText": "En el menú, hacé clic en Asistente.\nArriba vas a ver las Novedades.\nAbajo está la Conversación con un cuadro para escribir.\nSolo Administración ve esta pantalla. Las demás personas ven el ítem Asistente deshabilitado, con la explicación \"Solo administración puede usar el asistente\".\nSi el asistente no está disponible, la pantalla te avisa. El resto de la plataforma sigue funcionando igual. Podés hacer las mismas tareas desde las pantallas de siempre."
+    },
+    {
+      "id": "admin#qué-son-las-novedades-del-asistente",
+      "manual": "admin",
+      "anchor": "qué-son-las-novedades-del-asistente",
+      "title": "Qué son las novedades del asistente",
+      "level": 3,
+      "parent": "asistente-de-administración",
+      "url": "/ayuda/admin#qué-son-las-novedades-del-asistente",
+      "plainText": "Las Novedades son un resumen de lo que conviene revisar hoy. Por ejemplo, check-ins vencidos, equipos sin líder o ciclos por cerrar.\nCada línea tiene una cantidad y un enlace Resolver que te lleva a la pantalla donde se arregla.\nLos números salen de la base de datos, no de la IA. La IA solo los redacta. Una etiqueta te dice quién escribió el resumen:\nResumen generado por IA: lo redactó la IA y se verificó que no cambie los números.\nResumen automático (plantilla): lo armó la plataforma sin IA.\nPara volver a calcularlo, hacé clic en Actualizar novedades. Si no lo hacés, se reutiliza el resumen de los últimos 10 minutos."
+    },
+    {
+      "id": "admin#cómo-le-pido-una-acción-al-asistente",
+      "manual": "admin",
+      "anchor": "cómo-le-pido-una-acción-al-asistente",
+      "title": "Cómo le pido una acción al asistente",
+      "level": 3,
+      "parent": "asistente-de-administración",
+      "url": "/ayuda/admin#cómo-le-pido-una-acción-al-asistente",
+      "plainText": "Escribí lo que necesitás en el cuadro Qué necesitás. Podés usar hasta 2000 caracteres.\nPresioná Enter o hacé clic en Enviar. Para agregar un renglón, presioná Mayús + Enter.\nEsperá la respuesta. Puede tardar hasta un minuto y medio. Mientras tanto ves \"El asistente está pensando\" y los segundos que pasaron. Podés salir de la pantalla: la respuesta te espera cuando vuelvas.\nEjemplo: \"Creá el equipo Datos dentro de Producto Digital, dá de alta a Lucía Gómez (lucia@ejemplo.com) y poné a Lucía de líder del equipo\".\nEl asistente puede hacer estas acciones:\ncrear un usuario;\ncrear un equipo;\nagregar o quitar a una persona de un equipo, y marcarla como líder del equipo;\ncrear y activar un ciclo;\ncrear un objetivo;\ncrear un resultado clave;\ncambiar quién es responsable de un resultado clave.\nSi tu pedido no es claro, el asistente te pregunta antes de armar un plan. Si escribís algo que no puede procesar, te lo dice y tu texto sigue en el cuadro."
+    },
+    {
+      "id": "admin#cómo-confirmo-un-plan-del-asistente",
+      "manual": "admin",
+      "anchor": "cómo-confirmo-un-plan-del-asistente",
+      "title": "Cómo confirmo un plan del asistente",
+      "level": 3,
+      "parent": "asistente-de-administración",
+      "url": "/ayuda/admin#cómo-confirmo-un-plan-del-asistente",
+      "plainText": "El plan aparece en la conversación con el título Plan propuesto. Antes de confirmar, revisá cada parte:\nMirá la lista Qué voy a hacer, en este orden.\nLeé los Supuestos que tomé. Son cosas que el asistente decidió porque no las dijiste.\nLeé los Avisos para tener en cuenta. Por ejemplo, si el plan crea a una persona con acceso de administración.\nMirá cuándo vence el plan. Dura 15 minutos.\nHacé clic en Confirmar y ejecutar. Si no querés seguir, hacé clic en Descartar.\nHasta que confirmás, no se hace ningún cambio.\nSi el plan tiene problemas que impiden ejecutarlo, el botón Confirmar y ejecutar no aparece o está deshabilitado. Un texto explica el motivo. Por ejemplo, un email que ya existe. Pedí el plan de nuevo con más detalle.\nCuando termina, ves el resultado paso por paso. Cada paso dice Hecho, Falló o No se hizo, y tiene un enlace a lo que se creó.\nSi el asistente creó un usuario sin que vos escribieras contraseña, te muestra la contraseña inicial una sola vez. Hacé clic en Copiar contraseña y pasásela a la persona por un canal seguro. No la guardamos y no se puede volver a ver. La persona tendrá que cambiarla en su primer ingreso. Mirá Qué es el cambio de contraseña obligatorio."
+    },
+    {
+      "id": "admin#qué-pasa-si-un-paso-del-plan-falla",
+      "manual": "admin",
+      "anchor": "qué-pasa-si-un-paso-del-plan-falla",
+      "title": "Qué pasa si un paso del plan falla",
+      "level": 3,
+      "parent": "asistente-de-administración",
+      "url": "/ayuda/admin#qué-pasa-si-un-paso-del-plan-falla",
+      "plainText": "El asistente ejecuta los pasos en orden. Se detiene en el primer error.\nLos pasos anteriores quedan hechos. No se deshacen solos.\nEl paso con error aparece como Falló y dice por qué.\nLos pasos siguientes aparecen como No se hizo.\nPor ejemplo, si alguien creó el equipo \"Ventas\" justo antes de que confirmaras, el plan crea los equipos anteriores y se detiene en \"Ventas\".\nPara seguir, revisá el resultado y pedí el resto en un mensaje nuevo. El asistente no reintenta solo.\nOtros avisos que podés ver:\nEl plan venció: pasaron más de 15 minutos. No se hizo nada. Pedilo de nuevo.\nEl plan cambió desde que lo viste: no se hizo nada. Pedilo de nuevo y revisalo.\nEste plan ya se había confirmado: otra pestaña o persona lo decidió antes. La pantalla muestra cómo quedó.\nHiciste muchos pedidos seguidos: esperá un minuto."
+    },
+    {
+      "id": "admin#cómo-consulto-la-auditoría-o-pido-ayuda-al-asistente",
+      "manual": "admin",
+      "anchor": "cómo-consulto-la-auditoría-o-pido-ayuda-al-asistente",
+      "title": "Cómo consulto la auditoría o pido ayuda al asistente",
+      "level": 3,
+      "parent": "asistente-de-administración",
+      "url": "/ayuda/admin#cómo-consulto-la-auditoría-o-pido-ayuda-al-asistente",
+      "plainText": "Además de acciones, podés hacerle preguntas:\nConsultas de auditoría. Por ejemplo, \"¿Quién cambió el rol de Marta Miembro?\". El asistente muestra una tabla con los registros. La tabla la arma la plataforma, no la IA. Un enlace te lleva a Auditoría con los mismos filtros.\nPreguntas de ayuda. Por ejemplo, \"¿Cómo cierro un ciclo?\". El asistente responde con los pasos de este manual y enlaza la sección que usó.\nTodo lo que el asistente hace por vos queda en Auditoría con la marca Vía asistente."
+    },
+    {
+      "id": "admin#qué-no-puede-hacer-el-asistente-y-por-qué",
+      "manual": "admin",
+      "anchor": "qué-no-puede-hacer-el-asistente-y-por-qué",
+      "title": "Qué no puede hacer el asistente y por qué",
+      "level": 3,
+      "parent": "asistente-de-administración",
+      "url": "/ayuda/admin#qué-no-puede-hacer-el-asistente-y-por-qué",
+      "plainText": "El asistente no puede:\ncerrar ciclos;\npublicar ni borrar objetivos;\ncambiar roles;\ndesactivar usuarios;\nrestablecer contraseñas.\nEsas tareas son más delicadas o difíciles de deshacer. Hacelas vos desde su pantalla.\nAdemás, el asistente:\nno ejecuta nada sin tu confirmación;\nsolo hace lo que está en su lista, aunque se lo pidas;\nnunca ve el contenido del feedback ni quién pidió un documento adaptado;\nno tiene acceso directo a la base de datos: la plataforma valida y ejecuta cada paso."
+    },
+    {
+      "id": "admin#cómo-borro-la-conversación",
+      "manual": "admin",
+      "anchor": "cómo-borro-la-conversación",
+      "title": "Cómo borro la conversación",
+      "level": 3,
+      "parent": "asistente-de-administración",
+      "url": "/ayuda/admin#cómo-borro-la-conversación",
+      "plainText": "Hacé clic en Borrar conversación.\nLeé el aviso y confirmá con Borrar conversación.\nSe borran todos tus mensajes con el asistente. No se puede deshacer. Los registros de Auditoría no se borran."
+    },
+    {
+      "id": "admin#cuánto-tiempo-se-guarda-la-conversación",
+      "manual": "admin",
+      "anchor": "cuánto-tiempo-se-guarda-la-conversación",
+      "title": "Cuánto tiempo se guarda la conversación",
+      "level": 3,
+      "parent": "asistente-de-administración",
+      "url": "/ayuda/admin#cuánto-tiempo-se-guarda-la-conversación",
+      "plainText": "Los mensajes de la conversación se guardan 30 días.\nLos planes se guardan 90 días, para poder revisar qué se hizo.\nLa Auditoría se guarda sin límite de tiempo. No incluye el texto que escribiste, solo qué pasó.\nLa contraseña inicial nunca se guarda.\nPara pedir la respuesta, la plataforma le envía a la IA tu mensaje, la conversación reciente y una lista de nombres de usuarios, equipos, ciclos y objetivos. No le envía emails de personas que ya existen, contraseñas ni feedback."
+    },
+    {
+      "id": "admin#preguntas-frecuentes-de-administración",
+      "manual": "admin",
+      "anchor": "preguntas-frecuentes-de-administración",
+      "title": "Preguntas frecuentes de administración",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/admin#preguntas-frecuentes-de-administración",
+      "plainText": ""
+    },
+    {
+      "id": "admin#cómo-le-doy-acceso-a-una-persona-nueva",
+      "manual": "admin",
+      "anchor": "cómo-le-doy-acceso-a-una-persona-nueva",
+      "title": "Cómo le doy acceso a una persona nueva",
+      "level": 3,
+      "parent": "preguntas-frecuentes-de-administración",
+      "url": "/ayuda/admin#cómo-le-doy-acceso-a-una-persona-nueva",
+      "plainText": "Creá su usuario en Usuarios.\nAgregala a su equipo desde el detalle del equipo.\nSi lidera, activá Es líder del equipo.\nPasale la contraseña inicial por un canal seguro. En su primer ingreso, la persona va a elegir una contraseña propia."
+    },
+    {
+      "id": "admin#una-persona-me-pide-cambiar-de-equipo-qué-hago",
+      "manual": "admin",
+      "anchor": "una-persona-me-pide-cambiar-de-equipo-qué-hago",
+      "title": "Una persona me pide cambiar de equipo. Qué hago",
+      "level": 3,
+      "parent": "preguntas-frecuentes-de-administración",
+      "url": "/ayuda/admin#una-persona-me-pide-cambiar-de-equipo-qué-hago",
+      "plainText": "Sacala del equipo anterior con Quitar. Después agregala al equipo nuevo con Agregar integrante. Sus objetivos individuales siguen siendo suyos."
+    },
+    {
+      "id": "admin#puedo-reabrir-un-ciclo-cerrado",
+      "manual": "admin",
+      "anchor": "puedo-reabrir-un-ciclo-cerrado",
+      "title": "Puedo reabrir un ciclo cerrado",
+      "level": 3,
+      "parent": "preguntas-frecuentes-de-administración",
+      "url": "/ayuda/admin#puedo-reabrir-un-ciclo-cerrado",
+      "plainText": "No. El cierre no se puede deshacer. Si te equivocaste de umbral, ya no se puede corregir el resultado de ese ciclo."
+    },
+    {
+      "id": "admin#por-qué-una-persona-no-ve-los-botones-de-ia",
+      "manual": "admin",
+      "anchor": "por-qué-una-persona-no-ve-los-botones-de-ia",
+      "title": "Por qué una persona no ve los botones de IA",
+      "level": 3,
+      "parent": "preguntas-frecuentes-de-administración",
+      "url": "/ayuda/admin#por-qué-una-persona-no-ve-los-botones-de-ia",
+      "plainText": "La IA puede estar apagada para toda la organización. Si está encendida y la persona no ve los botones, puede ser un fallo de conexión con el servicio. Revisá el panel Uso de IA, en la tabla Fallos por paso."
+    },
+    {
+      "id": "admin#por-qué-el-costo-de-ia-es-cero-en-el-proveedor-pero-el-panel-muestra-un-número",
+      "manual": "admin",
+      "anchor": "por-qué-el-costo-de-ia-es-cero-en-el-proveedor-pero-el-panel-muestra-un-número",
+      "title": "Por qué el costo de IA es cero en el proveedor pero el panel muestra un número",
+      "level": 3,
+      "parent": "preguntas-frecuentes-de-administración",
+      "url": "/ayuda/admin#por-qué-el-costo-de-ia-es-cero-en-el-proveedor-pero-el-panel-muestra-un-número",
+      "plainText": "El plan gratuito del proveedor no factura. El panel muestra una estimación con precios de mercado, para planificar el costo si algún día se pasa a un plan pago."
+    },
+    {
+      "id": "admin#qué-hago-si-una-persona-pide-un-documento-adaptado-y-la-ia-no-está-disponible",
+      "manual": "admin",
+      "anchor": "qué-hago-si-una-persona-pide-un-documento-adaptado-y-la-ia-no-está-disponible",
+      "title": "Qué hago si una persona pide un documento adaptado y la IA no está disponible",
+      "level": 3,
+      "parent": "preguntas-frecuentes-de-administración",
+      "url": "/ayuda/admin#qué-hago-si-una-persona-pide-un-documento-adaptado-y-la-ia-no-está-disponible",
+      "plainText": "El pedido a una persona funciona igual, con o sin IA. Entrá a Pedidos de adaptación, asignate el pedido y entregalo. Mirá Cómo entrego un documento adaptado.\nNo podés negarte por el costo. Solo podés rechazar el pedido si supone una carga desproporcionada, y debés justificarlo por escrito. Mirá Cómo rechazo un pedido y justifico."
+    },
+    {
+      "id": "admin#por-qué-no-puedo-validar-la-versión-de-mi-propio-objetivo",
+      "manual": "admin",
+      "anchor": "por-qué-no-puedo-validar-la-versión-de-mi-propio-objetivo",
+      "title": "Por qué no puedo validar la versión de mi propio objetivo",
+      "level": 3,
+      "parent": "preguntas-frecuentes-de-administración",
+      "url": "/ayuda/admin#por-qué-no-puedo-validar-la-versión-de-mi-propio-objetivo",
+      "plainText": "Quien es dueña de un objetivo individual no puede validar su propia versión, ni siquiera si lidera uno de sus equipos. Pedile a otra persona que la valide. Solo Administración puede validar lo suyo. Mirá Quién valida y por qué."
+    },
+    {
+      "id": "admin#glosario-de-administración",
+      "manual": "admin",
+      "anchor": "glosario-de-administración",
+      "title": "Glosario de administración",
+      "level": 2,
+      "parent": null,
+      "url": "/ayuda/admin#glosario-de-administración",
+      "plainText": "Término | Qué significa\nAuditoría | Registro que no se puede modificar de los cambios importantes de la plataforma. Se consulta en la pantalla Auditoría.\nCadencia | Cada cuánto se espera un check-in en un ciclo.\nCiclo anual | Ciclo estratégico de un año. Contiene trimestres.\nCiclo trimestral | Ciclo táctico de tres meses, dentro de un anual.\nCosto estimado | Cálculo con precios de referencia. No es una factura.\nLatencia p50 | Tiempo de respuesta típico. La mitad de las llamadas tardó menos.\nLatencia p95 | Tiempo de respuesta en los casos lentos. El 95 % tardó menos.\nMediana | Valor del medio. La mitad de los casos queda por debajo y la otra mitad por encima.\nMezcla 50/50 | Proporción de objetivos top-down y bottom-up. Lo ideal es entre 40 % y 60 % de cada uno.\nModelo de respaldo | Modelo de IA de reserva. Se usa cuando falla el principal.\nFecha límite | Día hasta el que hay que responder un pedido de documento adaptado. Por defecto, 10 días corridos desde el pedido.\nLíder | Rol global de una persona. No alcanza para liderar un equipo.\nLíder del equipo | Persona marcada como líder en un equipo en particular. Tiene permisos solo en ese equipo.\nPedido de adaptación | Pedido de un documento en otro formato, que atiende una persona de administración (art. 14.5).\nPendiente de validación | Marca de una versión de IA que ninguna persona revisó todavía.\nRD 707/2026 | Reglamento español de accesibilidad cognitiva. Entra en vigor el 2 de enero de 2027.\nSzigriszt-Pazos (INFLESZ) | Índice que mide qué tan fácil es leer un texto en español.\nToken | Trozo de texto que procesa un modelo de IA. Una palabra puede tener varios tokens.\nTransferencia internacional | Envío de datos personales a un país fuera de la Unión Europea.\nUmbral de logro | Puntaje mínimo para considerar logrado un objetivo al cerrar el ciclo.\nValidar | Revisar una versión de IA y aprobarla.\nVencido | Pedido abierto que ya pasó su fecha límite."
+    }
+  ]
+}

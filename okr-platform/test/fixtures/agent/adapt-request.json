@@ -1,0 +1,20 @@
+{
+  "level": "EASY_READ",
+  "entityType": "CHECK_IN",
+  "locale": "es",
+  "segments": [
+    {
+      "key": "checkin.kr_title",
+      "text": "Reducir el tiempo medio de resolución de incidencias P1 de 8 h a 4 h"
+    },
+    {
+      "key": "checkin.action",
+      "text": "CONTINUE"
+    },
+    {
+      "key": "checkin.note",
+      "text": "Bajamos a 5,5 h gracias al runbook nuevo; el SLA del proveedor sigue siendo el cuello de botella y lo escalamos al comité el 15/11."
+    }
+  ],
+  "mustPreserve": ["8 h", "4 h", "5,5 h", "15/11"]
+}

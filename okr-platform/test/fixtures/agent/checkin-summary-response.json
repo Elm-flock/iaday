@@ -1,0 +1,86 @@
+{
+  "traceId": "9e7d6c5b-4a3f-4e2d-9c1b-0a9f8e7d6c5b",
+  "needsHumanReview": false,
+  "reviewReason": null,
+  "result": {
+    "summary": "En tres semanas el tiempo de resolución bajó de 7,5 h a 5,5 h. La meta es 4 h. El avance viene de los runbooks nuevos. El principal freno es el tiempo de respuesta del proveedor, que se va a tratar en el comité el 15/11.",
+    "trend": "IMPROVING",
+    "highlights": ["Se publicó el primer runbook.", "El tiempo bajó 2 h en tres semanas."],
+    "risks": ["El acuerdo de servicio (SLA) del proveedor limita la mejora."]
+  },
+  "readability": {
+    "output": {
+      "fernandezHuerta": 71.4,
+      "szigrisztPazos": 66.9,
+      "infleszBand": "BASTANTE_FACIL",
+      "words": 49,
+      "sentences": 4,
+      "avgSentenceLength": 12.3,
+      "maxSentenceLength": 19,
+      "unexplainedAcronyms": []
+    }
+  },
+  "checks": {
+    "piiMasked": 0,
+    "sensitiveContent": false,
+    "numbersPreserved": true,
+    "missingTokens": [],
+    "judge": {
+      "verdict": "FAITHFUL",
+      "reasons": []
+    },
+    "regenerated": false
+  },
+  "prompt": {
+    "id": "checkin_summary",
+    "version": "1",
+    "hash": "d03f8a61b2c7"
+  },
+  "usage": [
+    {
+      "step": "CLASSIFY",
+      "attempt": 1,
+      "model": "nvidia/nemotron-3-nano-30b-a3b",
+      "isFallback": false,
+      "promptId": "classify",
+      "promptVersion": "1",
+      "promptHash": "0c55e1f4a2b9",
+      "inputTokens": 700,
+      "outputTokens": 36,
+      "latencyMs": 420,
+      "costUsdEst": 4.22e-5,
+      "status": "OK",
+      "errorCode": null
+    },
+    {
+      "step": "GENERATE",
+      "attempt": 1,
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "isFallback": false,
+      "promptId": "checkin_summary",
+      "promptVersion": "1",
+      "promptHash": "d03f8a61b2c7",
+      "inputTokens": 1610,
+      "outputTokens": 290,
+      "latencyMs": 4980,
+      "costUsdEst": 0.000773,
+      "status": "OK",
+      "errorCode": null
+    },
+    {
+      "step": "JUDGE",
+      "attempt": 1,
+      "model": "qwen/qwen3-next-80b-a3b-instruct",
+      "isFallback": false,
+      "promptId": "judge",
+      "promptVersion": "1",
+      "promptHash": "77be2d90c1aa",
+      "inputTokens": 1720,
+      "outputTokens": 88,
+      "latencyMs": 1900,
+      "costUsdEst": 0.00039,
+      "status": "OK",
+      "errorCode": null
+    }
+  ]
+}

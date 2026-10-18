@@ -1,0 +1,52 @@
+{
+  "status": "ok",
+  "contractVersion": "1",
+  "version": "0.1.0",
+  "models": {
+    "classify": {
+      "model": "nvidia/nemotron-3-nano-30b-a3b",
+      "fallback": "meta/llama-3.1-8b-instruct"
+    },
+    "generate": {
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "fallback": "meta/llama-3.3-70b-instruct"
+    },
+    "judge": {
+      "model": "qwen/qwen3-next-80b-a3b-instruct",
+      "fallback": "mistralai/mistral-medium-3-instruct"
+    }
+  },
+  "prompts": [
+    {
+      "id": "classify",
+      "version": "1",
+      "hash": "0c55e1f4a2b9"
+    },
+    {
+      "id": "easy_read",
+      "version": "1",
+      "hash": "a91c03be77d2"
+    },
+    {
+      "id": "plain_language",
+      "version": "1",
+      "hash": "b2e7f019c3d4"
+    },
+    {
+      "id": "okr_suggest",
+      "version": "1",
+      "hash": "4e9d21c07fa3"
+    },
+    {
+      "id": "checkin_summary",
+      "version": "1",
+      "hash": "d03f8a61b2c7"
+    },
+    {
+      "id": "judge",
+      "version": "1",
+      "hash": "77be2d90c1aa"
+    }
+  ],
+  "apiKeyConfigured": true
+}

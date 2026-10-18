@@ -33,11 +33,11 @@ export class JwtAuthGuard implements CanActivate {
     const payload = await this.tokens.verifyAccess(token);
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
-      select: { id: true, role: true, active: true },
+      select: { id: true, role: true, active: true, mustChangePassword: true },
     });
     if (!user || !user.active) throw new UnauthorizedException('Usuario inexistente o desactivado');
 
-    req.user = { id: user.id, role: user.role };
+    req.user = { id: user.id, role: user.role, mustChangePassword: user.mustChangePassword };
     return true;
   }
 }

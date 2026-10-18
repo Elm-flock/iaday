@@ -1,0 +1,130 @@
+{
+  "traceId": "c0a8017e-2b3d-4e6f-8a9b-0c1d2e3f4a5b",
+  "needsHumanReview": false,
+  "reviewReason": null,
+  "result": {
+    "objective": {
+      "title": "Dar un soporte rápido y predecible en incidencias críticas",
+      "description": "Que los equipos usuarios recuperen el servicio en el mismo día cuando ocurre una incidencia P1 (crítica).",
+      "rationale": "Un objetivo describe el resultado buscado, no la tarea."
+    },
+    "keyResults": [
+      {
+        "title": "Cubrir con runbook el 100 % de los tipos de incidencia P1 recurrentes",
+        "unit": "%",
+        "startValue": "0",
+        "targetValue": "100",
+        "rationale": "Convierte la actividad 'hacer runbooks' en un resultado medible.",
+        "proposedValues": true
+      },
+      {
+        "title": "Reducir el tiempo medio de resolución de incidencias P1 de 8 h a 4 h",
+        "unit": "h",
+        "startValue": "8",
+        "targetValue": "4",
+        "rationale": "Se mantiene la meta y se explicita el punto de partida.",
+        "proposedValues": false
+      }
+    ],
+    "warnings": [
+      {
+        "code": "KR_IS_ACTIVITY",
+        "message": "\"hacer runbooks\" es una tarea; te proponemos medir su cobertura."
+      },
+      {
+        "code": "TOO_FEW_KRS",
+        "message": "Un objetivo necesita entre 3 y 5 resultados clave; sumá al menos uno más."
+      }
+    ]
+  },
+  "readability": {
+    "output": {
+      "fernandezHuerta": 66.0,
+      "szigrisztPazos": 61.2,
+      "infleszBand": "NORMAL",
+      "words": 61,
+      "sentences": 6,
+      "avgSentenceLength": 10.2,
+      "maxSentenceLength": 16,
+      "unexplainedAcronyms": []
+    }
+  },
+  "checks": {
+    "piiMasked": 0,
+    "sensitiveContent": false,
+    "numbersPreserved": true,
+    "missingTokens": [],
+    "judge": {
+      "verdict": "FAITHFUL",
+      "reasons": []
+    },
+    "regenerated": false
+  },
+  "prompt": {
+    "id": "okr_suggest",
+    "version": "1",
+    "hash": "4e9d21c07fa3"
+  },
+  "usage": [
+    {
+      "step": "CLASSIFY",
+      "attempt": 1,
+      "model": "nvidia/nemotron-3-nano-30b-a3b",
+      "isFallback": false,
+      "promptId": "classify",
+      "promptVersion": "1",
+      "promptHash": "0c55e1f4a2b9",
+      "inputTokens": 540,
+      "outputTokens": 35,
+      "latencyMs": 380,
+      "costUsdEst": 3.4e-5,
+      "status": "OK",
+      "errorCode": null
+    },
+    {
+      "step": "GENERATE",
+      "attempt": 1,
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "isFallback": false,
+      "promptId": "okr_suggest",
+      "promptVersion": "1",
+      "promptHash": "4e9d21c07fa3",
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "latencyMs": 20000,
+      "costUsdEst": 0,
+      "status": "FAILED",
+      "errorCode": "TIMEOUT"
+    },
+    {
+      "step": "GENERATE",
+      "attempt": 2,
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "isFallback": false,
+      "promptId": "okr_suggest",
+      "promptVersion": "1",
+      "promptHash": "4e9d21c07fa3",
+      "inputTokens": 1320,
+      "outputTokens": 610,
+      "latencyMs": 7450,
+      "costUsdEst": 0.001006,
+      "status": "OK",
+      "errorCode": null
+    },
+    {
+      "step": "JUDGE",
+      "attempt": 1,
+      "model": "qwen/qwen3-next-80b-a3b-instruct",
+      "isFallback": false,
+      "promptId": "judge",
+      "promptVersion": "1",
+      "promptHash": "77be2d90c1aa",
+      "inputTokens": 1890,
+      "outputTokens": 120,
+      "latencyMs": 2100,
+      "costUsdEst": 0.0004635,
+      "status": "OK",
+      "errorCode": null
+    }
+  ]
+}

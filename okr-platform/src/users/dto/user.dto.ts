@@ -25,6 +25,20 @@ export class UserDto {
   @ApiProperty() active!: boolean;
 }
 
+export class CreatedUserDto extends UserDto {
+  @ApiProperty({
+    description:
+      'Siempre true en un alta: la persona debe cambiar la clave inicial al entrar (el login y /auth/me lo informan)',
+  })
+  mustChangePassword!: boolean;
+
+  @ApiPropertyOptional({
+    description:
+      'Clave inicial generada. Se muestra UNA sola vez, solo si el pedido no trajo `password`; nunca se guarda en claro ni se audita.',
+  })
+  initialPassword?: string;
+}
+
 export class CreateUserDto {
   @ApiProperty({ example: 'ana@empresa.com', description: 'Se guarda en minúsculas' })
   @Transform(trim)
@@ -39,15 +53,17 @@ export class CreateUserDto {
   @MaxLength(120)
   name!: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     minLength: 8,
     maxLength: 200,
-    description: 'Clave inicial (se guarda con argon2id)',
+    description:
+      'Clave inicial (se guarda con argon2id). Opcional: si se omite, el back genera una aleatoria y la devuelve una sola vez en `initialPassword`. En ambos casos la persona debe cambiarla al entrar.',
   })
+  @IsOptional()
   @IsString()
   @MinLength(8)
   @MaxLength(200)
-  password!: string;
+  password?: string;
 
   @ApiPropertyOptional({ enum: USER_ROLES, default: 'MEMBER' })
   @IsOptional()
