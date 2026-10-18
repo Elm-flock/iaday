@@ -20,7 +20,7 @@ export function AppNavView({ role, pathname, pendingCheckIns }: AppNavViewProps)
   return (
     <Sidebar>
       {NAV_ITEMS.filter((item) => !item.adminOnly || role !== undefined).map(
-        ({ href, label, icon: Icon, unavailableReason, adminOnly }) => {
+        ({ href, label, icon: Icon, unavailableReason, adminOnly, adminOnlyReason }) => {
           const blockedForRole = adminOnly && role !== 'ADMIN';
           const current =
             pathname !== null && (href === '/' ? pathname === '/' : pathname.startsWith(href));
@@ -30,7 +30,9 @@ export function AppNavView({ role, pathname, pendingCheckIns }: AppNavViewProps)
               href={href}
               icon={<Icon size={20} strokeWidth={1.75} />}
               current={current}
-              unavailableReason={blockedForRole ? ADMIN_ONLY_REASON : unavailableReason}
+              unavailableReason={
+                blockedForRole ? (adminOnlyReason ?? ADMIN_ONLY_REASON) : unavailableReason
+              }
               unavailableLabel={blockedForRole ? 'Admin' : undefined}
               count={href === '/check-ins' ? pendingCheckIns : undefined}
             >

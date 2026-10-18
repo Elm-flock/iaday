@@ -7,7 +7,7 @@ import type { components } from '@/lib/api/schema';
 type Me = components['schemas']['MeDto'];
 
 /** Datos acotados del usuario: nada de email ni tokens viajan a la UI. */
-export type CurrentUser = Pick<Me, 'id' | 'name' | 'role' | 'teams'>;
+export type CurrentUser = Pick<Me, 'id' | 'name' | 'role' | 'teams' | 'mustChangePassword'>;
 
 /**
  * Usuario actual vía GET /auth/me. 'use cache: private' lee cookies() sin que el token entre
@@ -21,5 +21,11 @@ export async function getCurrentUser(): Promise<CurrentUser> {
 
   const client = await authedApi();
   const me = unwrap(await client.GET('/auth/me'));
-  return { id: me.id, name: me.name, role: me.role, teams: me.teams };
+  return {
+    id: me.id,
+    name: me.name,
+    role: me.role,
+    teams: me.teams,
+    mustChangePassword: me.mustChangePassword,
+  };
 }

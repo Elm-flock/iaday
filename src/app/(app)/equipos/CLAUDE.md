@@ -29,3 +29,7 @@
 ## Tests
 
 `team-tree.test.ts`, `_components/equipos-views.test.tsx`, DAL en `src/lib/dal/dal-modules.test.ts`; e2e en `e2e/ciclos-equipos.spec.ts` y `e2e/reporte-equipo.spec.ts` (descarga real: nombre, `%PDF`, 401 sin sesión, botón deshabilitado sin ciclo). Tests del PDF: `src/lib/pdf/*.test.ts` y `src/app/api/reports/teams/[teamId]/pdf/route.test.ts`.
+
+## Nombres de liderazgo
+
+En la lista de integrantes la etiqueta es **Líder del equipo** (ícono + palabra) y las acciones son **Hacer líder del equipo** / **Quitar como líder del equipo**. "Líder" a secas es el rol global (ver `admin/usuarios`). Tests: `equipos-views.test.tsx`, `e2e/ciclos-equipos.spec.ts`, `e2e/journeys/01-admin-setup.spec.ts`.

@@ -1,6 +1,15 @@
 import { execFileSync } from 'node:child_process';
 import { expect, test, type Browser, type Page } from '@playwright/test';
-import { ADMIN, PASSWORD, SHOTS, api, loginApi, uniqueSuffix, uniqueYear } from './helpers';
+import {
+  ADMIN,
+  onboardUser,
+  PASSWORD,
+  SHOTS,
+  api,
+  loginApi,
+  uniqueSuffix,
+  uniqueYear,
+} from './helpers';
 
 // Requiere el back real con un admin sembrado (ver CLAUDE.md > Testing). Los datos se preparan por API;
 // el dashboard y el check-in que actualiza el card de pendientes se recorren por la UI. El "vencido" se
@@ -91,10 +100,7 @@ test.describe('Inicio / dashboard (contra el back real)', () => {
     ctx.cycleId = quarter.id;
 
     for (const who of Object.keys(people) as Who[]) {
-      await api(request, 'post', '/users', admin.token, {
-        ...people[who],
-        password: PASSWORD,
-      });
+      await onboardUser(request, admin.token, { ...people[who] });
       const session = await loginApi(request, people[who].email, PASSWORD);
       ctx.ids[who] = session.id;
       ctx.tokens[who] = session.token;

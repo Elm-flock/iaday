@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import {
   ADMIN,
+  onboardUser,
   PASSWORD,
   SHOTS,
   addKeyResultUi,
@@ -67,11 +68,7 @@ test.describe('objetivos (miembros reales contra el back)', () => {
     await api(request, 'post', `/cycles/${quarter.id}/activate`, admin.token);
     ctx.cycleId = quarter.id;
     for (const person of [ana, beto]) {
-      await api(request, 'post', '/users', admin.token, {
-        ...person,
-        password: PASSWORD,
-        role: 'MEMBER',
-      });
+      await onboardUser(request, admin.token, { ...person, role: 'MEMBER' });
     }
     ctx.ana = await loginApi(request, ana.email, PASSWORD);
     ctx.beto = await loginApi(request, beto.email, PASSWORD);

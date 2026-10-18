@@ -41,10 +41,11 @@ export function parseCreateUser(formData: FormData): ParseResult<CreateBody> {
   if (!EMAIL.test(email) || email.length > 254)
     errors.email = 'Ingresá un email válido, por ejemplo nombre@flockit.com.ar.';
   if (!isRole(role)) errors.role = 'Elegí un rol.';
-  checkPassword(password, errors);
+  // Opcional: en blanco, el back genera una clave inicial y la devuelve una sola vez.
+  if (password) checkPassword(password, errors);
 
   if (Object.keys(errors).length > 0 || !isRole(role)) return { ok: false, fieldErrors: errors };
-  return { ok: true, body: { name, email, role, password } };
+  return { ok: true, body: password ? { name, email, role, password } : { name, email, role } };
 }
 
 /** `self`: la persona edita su propia cuenta → no se envían rol ni estado (el back lo rechaza). */

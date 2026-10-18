@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { CheckInTimeline } from './check-in-timeline';
 import { Card } from '@/components/ui/card';
 import type { CheckIn } from '@/lib/dal/check-ins';
@@ -8,10 +9,20 @@ type Props = {
   /** Historial por id de KR (más nuevo primero). */
   history: Map<string, CheckIn[]>;
   names: Map<string, string>;
+  /** Ranura bajo cada check-in (versión accesible). */
+  renderCheckInExtra?: (checkIn: CheckIn) => ReactNode;
+  /** Ranura bajo el título de cada KR (resumen de check-ins). */
+  renderKrExtra?: (kr: Pick<KeyResult, 'id' | 'title' | 'unit'>) => ReactNode;
 };
 
 /** Historial de check-ins de todos los KRs del objetivo. Presentacional. */
-export function KrHistoryCard({ keyResults, history, names }: Props) {
+export function KrHistoryCard({
+  keyResults,
+  history,
+  names,
+  renderCheckInExtra,
+  renderKrExtra,
+}: Props) {
   return (
     <Card title="Historial de check-ins">
       <div className="flex flex-col gap-s20">
@@ -22,7 +33,13 @@ export function KrHistoryCard({ keyResults, history, names }: Props) {
             className="flex flex-col gap-s10"
           >
             <h4 className="text-body font-bold text-ink">{kr.title}</h4>
-            <CheckInTimeline checkIns={history.get(kr.id) ?? []} names={names} unit={kr.unit} />
+            {renderKrExtra?.(kr)}
+            <CheckInTimeline
+              checkIns={history.get(kr.id) ?? []}
+              names={names}
+              unit={kr.unit}
+              renderExtra={renderCheckInExtra}
+            />
           </section>
         ))}
       </div>

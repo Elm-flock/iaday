@@ -3,6 +3,7 @@ import {
   ADMIN,
   PASSWORD,
   SHOTS,
+  completeForcedChange,
   dialog,
   loginUi as login,
   navLink,
@@ -21,6 +22,8 @@ const overlapName = `Q-solapado ${suffix}`;
 const teamName = `Equipo ${suffix}`;
 const memberName = `Beto ${suffix}`;
 const memberEmail = `beto.${suffix}@e2e.test`;
+/** Clave inicial que se define al crear por la UI; la persona la cambia antes de usar la app. */
+const memberInitialPassword = 'Inicial-Pass-123!';
 const memberPassword = PASSWORD;
 
 /** Elige el ciclo anual creado en este test por su texto (selectOption no acepta regex). */
@@ -151,7 +154,7 @@ test.describe('ciclos, equipos y usuarios (admin)', () => {
     await dialog(page).getByLabel(/Email/).fill(memberEmail);
     await dialog(page)
       .getByLabel(/Contraseña inicial/)
-      .fill(memberPassword);
+      .fill(memberInitialPassword);
     await dialog(page).getByRole('button', { name: 'Crear usuario' }).click();
     const row = page.getByRole('row', { name: new RegExp(memberName) });
     await expect(row).toContainText(memberEmail);
@@ -166,7 +169,7 @@ test.describe('ciclos, equipos y usuarios (admin)', () => {
     await dialog(page).getByLabel(/Email/).fill(memberEmail);
     await dialog(page)
       .getByLabel(/Contraseña inicial/)
-      .fill(memberPassword);
+      .fill(memberInitialPassword);
     await dialog(page).getByRole('button', { name: 'Crear usuario' }).click();
     await expect(dialog(page).getByRole('alert')).toContainText(
       'Ya existe un usuario con ese email',
@@ -203,7 +206,7 @@ test.describe('ciclos, equipos y usuarios (admin)', () => {
       has: page.getByRole('heading', { name: 'Integrantes' }),
     });
     await expect(members.getByText(memberName)).toBeVisible();
-    await expect(members.getByText('Líder', { exact: true })).toBeVisible();
+    await expect(members.getByText('Líder del equipo', { exact: true })).toBeVisible();
 
     // Indicador 50/50 con el ciclo activo por defecto (sin objetivos todavía).
     await expect(page.getByText('Mezcla de objetivos (50/50)')).toBeVisible();
@@ -213,8 +216,8 @@ test.describe('ciclos, equipos y usuarios (admin)', () => {
     await page.screenshot({ path: `${SHOTS}/equipos-detalle.png`, fullPage: true });
 
     // Quitar liderazgo (acción inline) y persistencia tras recargar.
-    await page.getByRole('button', { name: 'Quitar liderazgo' }).click();
-    await expect(members.getByText('Líder', { exact: true })).toHaveCount(0);
+    await page.getByRole('button', { name: 'Quitar como líder del equipo' }).click();
+    await expect(members.getByText('Líder del equipo', { exact: true })).toHaveCount(0);
     await page.reload();
     await expect(members.getByText(memberName)).toBeVisible();
   });
@@ -262,7 +265,9 @@ test.describe('ciclos, equipos y usuarios (admin)', () => {
 test.describe('usuario sin permisos de administración', () => {
   test('un integrante no ve ni accede a administración de usuarios y las acciones explican por qué están deshabilitadas', async ({
     page,
+    request,
   }) => {
+    await completeForcedChange(request, memberEmail, memberInitialPassword, memberPassword);
     await login(page, memberEmail, memberPassword);
 
     // Nav: Usuarios deshabilitado y con explicación.

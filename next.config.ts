@@ -2,6 +2,9 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
+  // Carpeta de build alternativa (p. ej. NEXT_DIST_DIR=.next-e2e): permite correr los e2e en :3001 mientras
+  // otro `next dev` del mismo proyecto (la demo) usa `.next`. Sin la variable no cambia nada.
+  ...(process.env.NEXT_DIST_DIR ? { distDir: process.env.NEXT_DIST_DIR } : {}),
   cacheComponents: true,
   partialPrefetching: true,
   // PDF del equipo: los .woff de Public Sans se leen con fs en runtime; hay que incluirlos en el trace.

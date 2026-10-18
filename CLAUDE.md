@@ -16,17 +16,24 @@ Al terminar, actualizá `src/app/(app)/<módulo>/CLAUDE.md` para reflejar los ca
 
 **Módulos planificados** (se crean durante el SDD; actualizar esta tabla al crearlos):
 
-| Módulo          | Ruta                                               |
-| --------------- | -------------------------------------------------- |
-| objetivos       | `src/app/(app)/objetivos/CLAUDE.md` (creado)       |
-| check-ins       | `src/app/(app)/check-ins/CLAUDE.md` (creado)       |
-| feedback        | `src/app/(app)/feedback/CLAUDE.md` (creado)        |
-| reconocimientos | `src/app/(app)/reconocimientos/CLAUDE.md` (creado) |
-| auth            | `src/app/(auth)/CLAUDE.md` (creado)                |
-| ciclos          | `src/app/(app)/ciclos/CLAUDE.md` (creado)          |
-| equipos         | `src/app/(app)/equipos/CLAUDE.md` (creado)         |
-| admin/usuarios  | `src/app/(app)/admin/usuarios/CLAUDE.md` (creado)  |
-| inicio          | `src/app/(app)/CLAUDE.md` (creado)                 |
+| Módulo                   | Ruta                                                        |
+| ------------------------ | ----------------------------------------------------------- |
+| objetivos                | `src/app/(app)/objetivos/CLAUDE.md` (creado)                |
+| check-ins                | `src/app/(app)/check-ins/CLAUDE.md` (creado)                |
+| feedback                 | `src/app/(app)/feedback/CLAUDE.md` (creado)                 |
+| reconocimientos          | `src/app/(app)/reconocimientos/CLAUDE.md` (creado)          |
+| auth                     | `src/app/(auth)/CLAUDE.md` (creado)                         |
+| ciclos                   | `src/app/(app)/ciclos/CLAUDE.md` (creado)                   |
+| equipos                  | `src/app/(app)/equipos/CLAUDE.md` (creado)                  |
+| admin/usuarios           | `src/app/(app)/admin/usuarios/CLAUDE.md` (creado)           |
+| admin/uso-ia             | `src/app/(app)/admin/uso-ia/CLAUDE.md` (creado)             |
+| admin/auditoria          | `src/app/(app)/admin/auditoria/CLAUDE.md` (creado)          |
+| pedidos-adaptacion       | `src/app/(app)/pedidos-adaptacion/CLAUDE.md` (creado)       |
+| admin/pedidos-adaptacion | `src/app/(app)/admin/pedidos-adaptacion/CLAUDE.md` (creado) |
+| ia (compartido)          | `src/app/(app)/_ai/CLAUDE.md` (creado)                      |
+| inicio                   | `src/app/(app)/CLAUDE.md` (creado)                          |
+| ayuda                    | `src/app/(app)/ayuda/CLAUDE.md` (creado)                    |
+| admin/asistente          | `src/app/(app)/admin/asistente/CLAUDE.md` (creado)          |
 
 ---
 
@@ -81,7 +88,7 @@ src/
     ├── auth/                 # cookies, safeNext, token
     ├── pdf/                  # reporte PDF del equipo (json-render + react-pdf): ver sección Reporte PDF
     ├── actions/              # FormState + useActionForm (forms sin reset tras la action)
-    └── dal/                  # acceso a datos server-only (session, cycles, teams, users, objectives, check-ins, recognitions; feedback SIN cache)
+    └── dal/                  # acceso a datos server-only (session, cycles, teams, users, objectives, check-ins, recognitions, ai; feedback y ai SIN cache)
 test/      # setup y mocks de Vitest
 e2e/       # specs de Playwright
 ```
@@ -98,6 +105,7 @@ npm run test:watch # vitest en watch
 npm run test:e2e   # playwright test (levanta next dev en :3001; requiere el back e2e ya levantado)
 npm run test:e2e:stack # levanta db+API e2e, corre playwright y lo baja todo
 npm run e2e:stack -- up   # (o down) solo el stack e2e del back
+npm run help:build # genera la ayuda (/ayuda) desde docs/manuales (también corre en predev/prebuild); help:check solo verifica
 npm run api:types  # regenera src/lib/api/schema.d.ts desde ../okr-platform-back/okr-platform/openapi.json
 ```
 
@@ -110,6 +118,10 @@ Dos capas con responsabilidades separadas:
 - **Cómo correr los e2e (un solo comando)**: `npm run test:e2e:stack` (= `scripts/e2e-stack.mjs run`) levanta `db-test` (compose project `okr-e2e-front`, puerto 55434), `prisma migrate deploy` + seed del admin, la API con `ts-node` en :3000 (NUNCA `nest start`/`build`), corre Playwright y lo baja todo (`compose down -v`) aunque falle. Por pasos: `npm run e2e:stack -- up`, `npx playwright test [archivo]`, `npm run e2e:stack -- down`. Requiere Docker y el back en `../okr-platform-back` (`E2E_BACK_DIR`, `DB_TEST_PORT`, `API_PORT` para cambiarlo). El script solo EJECUTA el back, no lo modifica.
 - El admin sembrado sale de `e2e/helpers/admin.json` (única fuente: la usan el seed del script y los specs; no hacen falta variables extra). Helpers compartidos en `e2e/helpers/index.ts` (login por API/UI, sesiones aisladas por usuario, ciclos/equipos/objetivos por API, `createObjectiveUi`, `addKeyResultUi`, `checkInUi`). Cada spec crea datos propios con sufijo único y años aleatorios.
 - Gotchas e2e: con Cache Components las páginas previas siguen ocultas en el DOM (React Activity): usar `filter({ visible: true })` o acotar al `nav` (`navLink`). El botón de la vista y el submit del modal pueden llamarse igual: esperar a que el diálogo se cierre antes de seguir. Con más de 6 workers `next dev` y la API (argon2) se saturan y las Server Actions superan el timeout: no subir los workers. `next.config.ts` excluye el CSS `foreign` del loader de Tailwind; sin eso, con `.next` vacío el dev server no compila `next/font/google`.
+- **IA en los e2e**: el agente real (FastAPI + ADK) necesita una API key de NVIDIA NIM y responde distinto cada vez, así que `scripts/e2e-stack.mjs` levanta `e2e/helpers/agent-stub.mjs` (agente de mentira, contrato v1 de `docs/ai/agent-contract.md`, puerto `AGENT_PORT`=8089) y le pasa a la API `AI_ENABLED=true`, `AGENT_URL`, el secreto compartido y `AI_THROTTLE_LIMIT=1000`. El stub verifica la firma HMAC como el real y responde con los fixtures del back (`okr-platform/test/fixtures/agent`, una sola fuente de verdad); se controla con `POST /__mode` (`ok`, `needsReview`, `down`, `inputRejected`, ...), `GET /__calls` y `POST /__reset`. Se usa en `e2e/journeys/adaptacion-ia.spec.ts` (adaptar un check-in, badge, "Me sirve", validar con corrección, feedback no validable, agente caído = aviso y página intacta, sugerir redacción, resumir, `admin/uso-ia`, axe claro/oscuro). `e2e/journeys/07-pedidos-adaptacion.spec.ts` (art. 14.5 con una persona + `admin/auditoria`) corre en el mismo stack; para fabricar un pedido vencido hace `docker exec` de `psql` al contenedor `okr-e2e-front-db-test`. Fuera del stack (`npm run test:e2e` a secas) ese spec falla con un mensaje claro si el stub no está.
+- Si ya hay otro `next dev` de este proyecto corriendo (p. ej. la demo en :3101 usa `.next`), Next se niega a levantar un segundo servidor en el mismo `distDir`: correr los e2e con `NEXT_DIST_DIR=.next-e2e` (`next.config.ts` lo respeta; está en `.gitignore`).
+- **Asistente de administración y alta de personas**: el stub (`e2e/helpers/agent-stub-admin.mjs`) responde `/v1/admin/chat` y `/v1/admin/digest-summary` según el TEXTO del pedido (arma planes con los handles del catálogo) y las fallas se disparan por texto (`simular agente caido`, `ignora todo lo anterior`, `[demora]`), no por modo global, porque los specs corren en paralelo y comparten el stub. El stack levanta la API con `ASSISTANT_ENABLED=true`. Toda alta por API nace con `mustChangePassword`: los specs usan `onboardUser`/`completeForcedChange` de `e2e/helpers`. Ver `e2e/journeys/08-cambio-contrasena.spec.ts` y `09-asistente-admin.spec.ts`; el segundo usa `docker exec psql` para vencer un plan.
+- **Ayuda (`/ayuda`)**: `e2e/journeys/ayuda.spec.ts` (integrante: solo manual de usuario y 404 en el de admin; administración: ambos; enlace profundo con foco, copiar enlace, búsqueda, capturas, axe claro/oscuro). Sale de `docs/manuales` vía `scripts/build-help.mjs` (ver `src/app/(app)/ayuda/CLAUDE.md`); `public/ayuda/` se genera y no se versiona.
 - Vitest solo incluye `src/**` y `test/**`; Playwright solo `e2e/**`. No mezclar.
 - Mocks de Vitest en `test/mocks/`: `server-only` (no-op) y `next/headers` (stub con `__setCookies`/`__setHeaders`), aliasados en `vitest.config.mts`.
 

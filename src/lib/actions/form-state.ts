@@ -6,6 +6,11 @@ export type FormState = {
   fieldErrors?: Record<string, string>;
   /** Lo tipeado, para no perderlo ante un error (nunca contraseñas). */
   values?: Record<string, string>;
+  /**
+   * Valor sensible que el back entrega UNA vez (clave inicial). Solo vive en el estado en memoria
+   * del cliente; nunca se guarda ni se vuelve a pedir.
+   */
+  secret?: string;
 };
 
 export const idleState: FormState = { status: 'idle' };
@@ -17,8 +22,8 @@ export function errorState(
   return { status: 'error', message, ...extra };
 }
 
-export function successState(message: string): FormState {
-  return { status: 'success', message };
+export function successState(message: string, secret?: string): FormState {
+  return secret ? { status: 'success', message, secret } : { status: 'success', message };
 }
 
 /** Valores de texto del FormData sin contraseñas, para devolver ante un error. */

@@ -33,7 +33,9 @@ export async function createUserAction(_prev: FormState, formData: FormData): Pr
   if (!result.ok) return errorState(failureMessage(result.failure, USER_ERROR_COPY), { values });
 
   invalidateUsers();
-  return successState(`Creamos el usuario de ${parsed.body.name}.`);
+  // `initialPassword` solo viene si no se definió una: se devuelve al cliente y nada más (sin log).
+  const initialPassword = result.data?.initialPassword;
+  return successState(`Creamos el usuario de ${parsed.body.name}.`, initialPassword);
 }
 
 export async function updateUserAction(

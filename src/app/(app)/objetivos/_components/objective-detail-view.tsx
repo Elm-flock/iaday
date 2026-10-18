@@ -1,4 +1,5 @@
 import NextLink from 'next/link';
+import type { ReactNode } from 'react';
 import { Card } from '@/components/ui/card';
 import { ScoreBar } from '@/components/ui/score-bar';
 import type { Objective } from '@/lib/dal/objectives';
@@ -28,12 +29,15 @@ export function ObjectiveDetailView({
   cycleName,
   parent,
   aligned,
+  accessibleVersion,
 }: {
   objective: Objective;
   ownerName: string;
   cycleName: string;
   parent: Related | null;
   aligned: Related[];
+  /** Ranura para "Ver en lectura fácil / lenguaje claro" (solo si la ayuda de IA está activa). */
+  accessibleVersion?: ReactNode;
 }) {
   return (
     <div className="flex flex-col gap-s20">
@@ -58,6 +62,7 @@ export function ObjectiveDetailView({
           ) : (
             <p className="text-body text-ink-muted">Sin descripción.</p>
           )}
+          {accessibleVersion}
           {objective.status === 'DRAFT' ? (
             <p className="text-body-sm text-ink-muted">
               Es un borrador: solo lo ven quienes pueden editarlo y todavía no tiene puntaje.

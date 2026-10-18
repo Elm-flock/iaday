@@ -37,3 +37,9 @@ Objetivos y resultados clave (`/objetivos`, `/objetivos/nuevo`, `/objetivos/[id]
 
 - Objetivo CLOSED: `FinalResult` (objective-meta) muestra "Puntaje final 0,80" + Logrado / No logrado (ícono + palabra) en lista y detalle.
 - Tabla de KRs: tabla completa desde `xl`; debajo, cada fila se apila (`data-label` por celda, roles ARIA explícitos) sin scroll horizontal. Los IconButton de la tabla usan `tooltipAlign="end"`.
+
+## Ayuda de IA (ver `_ai/CLAUDE.md`)
+
+- Detalle (`[id]/page.tsx`): pide `getAiStatus()` en el mismo `Promise.all`. Con IA activa, `ObjectiveDetailView` recibe la ranura `accessibleVersion` ("Ver en lectura fácil / lenguaje claro" del objetivo), `KeyResultsCard` recibe `suggestContext` y el historial recibe las ranuras de check-ins. Con IA apagada nada de esto se renderiza.
+- Alta (`nuevo/page.tsx` -> `ObjectiveCreateForm aiEnabled`): "Sugerir redacción" lee ciclo, responsable, título, descripción y tipo; "Usar sugerencia" remonta `ObjectiveFields` con `key` para precargar título/descripción sin perder el resto. NUNCA envía el formulario.
+- Modal de KR: "Sugerir redacción" usa el objetivo como contexto y precarga título, unidad, inicio y meta (es-AR); con inicio/meta bloqueados no los pisa.

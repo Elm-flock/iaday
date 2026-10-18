@@ -47,3 +47,41 @@ describe('authedApi', () => {
     await expect(client.GET('/auth/me')).rejects.toThrow('NEXT_REDIRECT:/login');
   });
 });
+
+describe('authedApi: cambio de contraseña obligatorio', () => {
+  it('redirige a /cambiar-contrasena ante 403 PASSWORD_CHANGE_REQUIRED', async () => {
+    __setCookies({ okr_at: 'tok' });
+    fetchMock.mockResolvedValue(
+      Response.json(
+        {
+          statusCode: 403,
+          message: 'Tenés que cambiar la contraseña',
+          code: 'PASSWORD_CHANGE_REQUIRED',
+        },
+        { status: 403 },
+      ),
+    );
+    const client = await authedApi();
+    await expect(client.GET('/objectives')).rejects.toThrow('NEXT_REDIRECT:/cambiar-contrasena');
+  });
+
+  it('un 403 de permisos común NO redirige', async () => {
+    __setCookies({ okr_at: 'tok' });
+    fetchMock.mockResolvedValue(
+      Response.json({ statusCode: 403, message: 'Prohibido' }, { status: 403 }),
+    );
+    const client = await authedApi();
+    const result = await client.GET('/objectives');
+    expect(result.response.status).toBe(403);
+    expect(redirect).not.toHaveBeenCalled();
+  });
+
+  it('un 403 sin cuerpo JSON tampoco redirige', async () => {
+    __setCookies({ okr_at: 'tok' });
+    fetchMock.mockResolvedValue(new Response('no es json', { status: 403 }));
+    const client = await authedApi();
+    const result = await client.GET('/objectives');
+    expect(result.response.status).toBe(403);
+    expect(redirect).not.toHaveBeenCalled();
+  });
+});

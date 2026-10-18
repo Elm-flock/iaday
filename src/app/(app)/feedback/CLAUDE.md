@@ -31,3 +31,8 @@ Feedback **privado** entre dos personas (`/feedback`, `/feedback/nuevo`, `/feedb
 ## Tests
 
 `feedback-logic.test.ts` (políticas, parseo, copy incl. autoenvío), `actions.test.ts` (fetch mockeado: sin `updateTag`, redirects, 403/404), `_components/feedback-views.test.tsx` (aviso de privacidad, badge "Sin leer", formulario, confirmación "Eliminar feedback", `MarkAsRead`), `src/lib/dal/cfr.test.ts` (sin cache); e2e contra el back real en `e2e/cfr.spec.ts` (A envía → B lo ve "Sin leer" y lo abre; C y ADMIN no lo ven ni por URL directa; A edita y elimina).
+
+## Ayuda de IA (ver `_ai/CLAUDE.md`)
+
+- El detalle (`[id]/page.tsx`) renderiza `<AccessibleVersion entityType="feedback" owner={null}/>` dentro de su propio `<Suspense>` y se lo pasa a `FeedbackDetailView` por la ranura `accessibleVersion`. Solo se llega acá siendo emisor o receptor (lo ajeno es 404, también para ADMIN y también para `/ai/adapt/feedback/:id`).
+- PRIVACIDAD: la versión accesible es tan privada como el feedback: sin cache de Next, vive en el estado del cliente, nunca se loguea. "Validar" va deshabilitado con la razón (no hay validador externo posible); solo "Me sirve" para quien la pidió.

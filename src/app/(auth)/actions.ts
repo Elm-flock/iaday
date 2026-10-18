@@ -1,16 +1,22 @@
 'use server';
 
+import { updateTag } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { publicApi } from '@/lib/api/client';
+import { authedApi, publicApi } from '@/lib/api/client';
+import { callApi } from '@/lib/api/call-api';
+import { failureMessage } from '@/lib/api/error-copy';
+import { errorState, textValues, type FormState } from '@/lib/actions/form-state';
 import {
   ACCESS_COOKIE,
+  CHANGE_PASSWORD_PATH,
   REFRESH_COOKIE,
   RETRY_COOKIE,
   cookieOptions,
   sessionMaxAges,
 } from '@/lib/auth/constants';
-import { LOGIN_MESSAGES } from './messages';
+import { CHANGE_PASSWORD_COPY, LOGIN_MESSAGES } from './messages';
+import { parseChangePassword } from './password-form-data';
 import { safeNext } from '@/lib/auth/redirect';
 
 export type LoginState = {
@@ -46,6 +52,14 @@ export async function loginAction(_prev: LoginState, formData: FormData): Promis
   store.set(REFRESH_COOKIE, session.refreshToken, cookieOptions(maxAge.refresh));
   store.delete(RETRY_COOKIE);
 
+  // Clave inicial sin cambiar: lo único que puede hacer es cambiarla (el back lo exige igual).
+  if (session.user.mustChangePassword) {
+    redirect(
+      next === '/'
+        ? CHANGE_PASSWORD_PATH
+        : `${CHANGE_PASSWORD_PATH}?next=${encodeURIComponent(next)}`,
+    );
+  }
   redirect(next);
 }
 
@@ -65,4 +79,40 @@ export async function logoutAction(): Promise<void> {
   store.delete(REFRESH_COOKIE);
   store.delete(RETRY_COOKIE);
   redirect('/login');
+}
+
+/**
+ * Cambio de contraseña propio (obligatorio con la clave inicial, o voluntario desde el menú).
+ * El back revoca las demás sesiones y devuelve una sesión nueva: se reemplazan las cookies.
+ */
+export async function changePasswordAction(
+  _prev: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  const values = textValues(formData, ['currentPassword', 'newPassword', 'confirmPassword']);
+  const parsed = parseChangePassword(formData);
+  if (!parsed.ok) {
+    return errorState('Revisá los campos marcados y probá de nuevo.', {
+      fieldErrors: parsed.fieldErrors,
+      values,
+    });
+  }
+
+  const client = await authedApi();
+  const result = await callApi(() => client.POST('/auth/change-password', { body: parsed.body }));
+  if (!result.ok) {
+    const message = failureMessage(result.failure, CHANGE_PASSWORD_COPY);
+    return errorState(message, { values });
+  }
+  if (!result.data) return errorState(failureMessage({ status: 500 }), { values });
+
+  const session = result.data;
+  const maxAge = sessionMaxAges(session);
+  const store = await cookies();
+  store.set(ACCESS_COOKIE, session.accessToken, cookieOptions(maxAge.access));
+  store.set(REFRESH_COOKIE, session.refreshToken, cookieOptions(maxAge.refresh));
+  store.delete(RETRY_COOKIE);
+  updateTag('me');
+
+  redirect(safeNext(formData.get('next')));
 }

@@ -3,6 +3,7 @@
 import { KeyRound, Pencil, Plus } from 'lucide-react';
 import { useCallback, useEffect, useId, useState } from 'react';
 import { createUserAction, resetPasswordAction, updateUserAction } from '../actions';
+import { OneTimeSecret } from '../../../_components/one-time-secret';
 import { ROLE_LABEL } from '../messages';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -12,7 +13,7 @@ import { Select } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { TextInput } from '@/components/ui/text-input';
 import { useToast } from '@/components/ui/toast';
-import type { FormState } from '@/lib/actions/form-state';
+import { idleState, type FormState } from '@/lib/actions/form-state';
 import { useActionForm } from '@/lib/actions/use-action-form';
 import type { components } from '@/lib/api/schema';
 
@@ -41,14 +42,30 @@ function CreateUserModal({ onClose }: { onClose: () => void }) {
   const formId = useId();
   const values = state.values ?? {};
   const errors = state.fieldErrors ?? {};
-  useCloseOnSuccess(state, onClose);
+  // Con clave generada por el back NO se cierra solo: hay que mostrarla (una sola vez).
+  const generated = state.status === 'success' ? state.secret : undefined;
+  useCloseOnSuccess(state.secret ? idleState : state, onClose);
+
+  if (generated) {
+    return (
+      <Modal
+        open
+        onClose={onClose}
+        title="Usuario creado"
+        description={state.message}
+        footer={<Button onClick={onClose}>Ya la copié, cerrar</Button>}
+      >
+        <OneTimeSecret label="Contraseña inicial" value={generated} />
+      </Modal>
+    );
+  }
 
   return (
     <Modal
       open
       onClose={onClose}
       title="Crear usuario"
-      description="La persona va a ingresar con este email y la contraseña inicial que definas."
+      description="La persona va a ingresar con este email y una contraseña inicial, y tendrá que cambiarla en su primer ingreso."
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>
@@ -83,9 +100,8 @@ function CreateUserModal({ onClose }: { onClose: () => void }) {
         </FormField>
         <FormField
           label="Contraseña inicial"
-          required
           error={errors.password}
-          help="Entre 8 y 200 caracteres."
+          help="Opcional. Si la dejás en blanco, generamos una segura y te la mostramos una sola vez. Si la definís, entre 8 y 200 caracteres."
         >
           <TextInput name="password" type="password" autoComplete="new-password" />
         </FormField>
@@ -175,7 +191,7 @@ function ResetPasswordModal({ user, onClose }: { user: User; onClose: () => void
       open
       onClose={onClose}
       title="Restablecer contraseña"
-      description={`Definí una contraseña nueva para ${user.name}. La anterior deja de funcionar.`}
+      description={`Definí una contraseña nueva para ${user.name}. La anterior deja de funcionar y tendrá que cambiarla al ingresar.`}
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>

@@ -1,5 +1,7 @@
 # Manual de usuario · OKR Platform
 
+> **Este manual fue reemplazado.** La versión vigente está dividida por rol en [`manuales/manual-usuario.md`](manuales/manual-usuario.md) (integrantes y líderes) y [`manuales/manual-admin.md`](manuales/manual-admin.md) (administración). Este archivo se conserva como referencia histórica y sus capturas (`manual/img/`) siguen en uso. No lo actualices.
+
 Guía para las personas que usan OKR Platform en Flock IT: integrantes, líderes y administración. No hace falta ningún conocimiento técnico.
 
 > Las capturas se tomaron con datos de ejemplo (ciclos "2026" y "Q4 2026"). Lo que veas en tu cuenta puede variar.
@@ -316,6 +318,29 @@ No podés reconocerte a vos mismo. Si la persona todavía no tiene logros que cu
 - **Equipos** muestra cómo se organiza Flock IT (un árbol de equipos). En cada equipo ves los integrantes, quién lidera, la mezcla 50/50 del ciclo elegido y, si administrás o liderás ese equipo, el botón **Descargar reporte PDF** (ver [5.3](#53-descargar-el-reporte-pdf-del-equipo)).
 - **Ciclos** muestra los ciclos anuales con sus trimestres, sus fechas y su estado. En cada ciclo ves la cadencia de check-in y los umbrales de logro.
 
+### 4.11 Ayuda de IA: versión accesible, sugerir redacción y resumen
+
+OKR Platform puede usar inteligencia artificial (IA) para que los textos sean más fáciles de leer. La ayuda es **opcional**: si la IA está apagada o no responde, no ves los botones (o ves un aviso) y todo lo demás funciona igual. La IA **nunca cambia nada por su cuenta**: siempre decidís vos.
+
+**Ver un texto en lectura fácil o en lenguaje claro**
+
+1. En el detalle de un objetivo, en un check-in del historial o en el detalle de un feedback, hacé clic en **Ver en lectura fácil** o en **Ver en lenguaje claro**.
+2. Aparece la versión adaptada debajo del texto original, con la marca **Generado por IA · pendiente de validación**.
+3. Si te sirve, hacé clic en **Me sirve**. Solo puede hacerlo quien pidió la versión.
+4. Si aparece **Requiere revisión humana**, la IA no pudo garantizar que la versión sea fiel y se muestra el texto original: pedile a alguien que lo revise.
+
+**Validar una versión (administración y liderazgo)**
+
+Administración y quien lidera el equipo del objetivo pueden hacer clic en **Validar**. Podés corregir el texto (manteniendo los mismos bloques) y dejar una nota. Después la marca pasa a **Validado por una persona**. Quien es dueño del objetivo no puede validar su propia versión. El **feedback no se valida**: es privado entre dos personas, así que solo podés marcar **Me sirve**.
+
+**Sugerir redacción**
+
+Al crear un objetivo o un resultado clave, escribí un borrador y hacé clic en **Sugerir redacción**. La sugerencia aparece aparte, con observaciones sobre tu borrador y los valores que propone la IA resaltados (revisalos). Con **Usar sugerencia** se completan los campos del formulario (no se guarda nada hasta que vos lo envíes) y con **Descartar** se cierra.
+
+**Resumir check-ins**
+
+En el historial de cada resultado clave, **Resumir check-ins** muestra un resumen del avance, la tendencia (Mejorando, Estable, Empeorando o Pocos datos), lo destacado y los riesgos. Habla del resultado clave, nunca evalúa a las personas.
+
 ---
 
 ## 5. Guía para líderes
@@ -436,6 +461,16 @@ Con **Editar** podés cambiar el nombre, el rol y si el usuario está activo (**
 
 Con **Contraseña** definís una contraseña nueva para la persona; la anterior deja de funcionar.
 
+### 6.4 Uso de IA
+
+La sección **Uso de IA** (solo administración) muestra cuánto se usa la ayuda de IA y qué impacto tiene. Son **datos agregados**: no se muestran personas ni rankings.
+
+- **Período**: últimos 7, 30 o 90 días.
+- **Adopción, tiempo y calidad**: qué proporción de versiones accesibles y sugerencias se aceptan, cuánto tarda una versión y cuánto mejora la legibilidad.
+- **Costo (estimado)**: el costo es una **estimación** según una tabla de precios de referencia; el plan gratuito del proveedor no factura.
+- **Uso por función y por modelo**: llamadas, tokens, latencia (mediana y percentil 95) y cuántas veces se usó el modelo de respaldo.
+- **Fallos por paso**: qué paso falló y por qué.
+
 ---
 
 ## 7. Preguntas frecuentes
@@ -486,27 +521,28 @@ La plataforma registra internamente ciertos cambios (por ejemplo, de umbrales de
 
 ## 8. Glosario
 
-| Término                            | Definición                                                                                                  |
-| ---------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| **OKR**                            | _Objectives and Key Results_: un objetivo cualitativo más los resultados clave que lo miden.                |
-| **Objetivo**                       | Lo que se quiere lograr en un ciclo. Pertenece a una persona o a un equipo.                                 |
-| **Resultado clave (KR)**           | Medida concreta del avance de un objetivo. Puede ser numérico o manual.                                     |
-| **Check-in**                       | Registro periódico del avance de un KR: acción, valor o puntaje y nota.                                     |
-| **Puntaje (score)**                | Valor entre 0,00 y 1,00 que indica el avance hacia la meta.                                                 |
-| **Banda**                          | Clasificación del puntaje: En ruta (≥ 0,70), Requiere atención (0,40 a 0,69) y En riesgo (< 0,40).          |
-| **Sin check-ins**                  | Estado neutro de un KR u objetivo sin avances registrados.                                                  |
-| **Check-in vencido**               | KR que superó la cadencia del ciclo sin un check-in.                                                        |
-| **Cadencia**                       | Frecuencia esperada de check-ins del ciclo: semanal, quincenal o mensual.                                   |
-| **Ciclo**                          | Período en el que se organizan los objetivos: anual o trimestral.                                           |
-| **Umbral de logro**                | Puntaje mínimo para que un objetivo se considere logrado al cerrar el ciclo, según su tipo.                 |
-| **Comprometido**                   | Objetivo que se espera cumplir por completo (1,00).                                                         |
-| **Aspiracional**                   | Objetivo ambicioso; se considera exitoso alrededor de 0,70.                                                 |
-| **Top-down**                       | Objetivo que baja desde la dirección.                                                                       |
-| **Bottom-up**                      | Objetivo que nace en las personas.                                                                          |
-| **Mezcla 50/50**                   | Proporción de objetivos top-down y bottom-up de un equipo en un ciclo; lo ideal es 40 % a 60 % de cada uno. |
-| **Alineación**                     | Vínculo entre un objetivo y otro de nivel superior al que contribuye.                                       |
-| **Borrador / Publicado / Cerrado** | Estados de un objetivo (y, con Activo en lugar de Publicado, de un ciclo).                                  |
-| **Feedback**                       | Mensaje privado entre dos personas, visible solo para ellas.                                                |
-| **Reconocimiento**                 | Agradecimiento público en el muro por un logro concreto.                                                    |
-| **Líder**                          | Persona marcada como líder de un equipo.                                                                    |
-| **Administración**                 | Rol que gestiona ciclos, equipos y usuarios.                                                                |
+| Término                            | Definición                                                                                                      |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| **OKR**                            | _Objectives and Key Results_: un objetivo cualitativo más los resultados clave que lo miden.                    |
+| **Objetivo**                       | Lo que se quiere lograr en un ciclo. Pertenece a una persona o a un equipo.                                     |
+| **Resultado clave (KR)**           | Medida concreta del avance de un objetivo. Puede ser numérico o manual.                                         |
+| **Check-in**                       | Registro periódico del avance de un KR: acción, valor o puntaje y nota.                                         |
+| **Puntaje (score)**                | Valor entre 0,00 y 1,00 que indica el avance hacia la meta.                                                     |
+| **Banda**                          | Clasificación del puntaje: En ruta (≥ 0,70), Requiere atención (0,40 a 0,69) y En riesgo (< 0,40).              |
+| **Sin check-ins**                  | Estado neutro de un KR u objetivo sin avances registrados.                                                      |
+| **Check-in vencido**               | KR que superó la cadencia del ciclo sin un check-in.                                                            |
+| **Cadencia**                       | Frecuencia esperada de check-ins del ciclo: semanal, quincenal o mensual.                                       |
+| **Ciclo**                          | Período en el que se organizan los objetivos: anual o trimestral.                                               |
+| **Umbral de logro**                | Puntaje mínimo para que un objetivo se considere logrado al cerrar el ciclo, según su tipo.                     |
+| **Comprometido**                   | Objetivo que se espera cumplir por completo (1,00).                                                             |
+| **Aspiracional**                   | Objetivo ambicioso; se considera exitoso alrededor de 0,70.                                                     |
+| **Top-down**                       | Objetivo que baja desde la dirección.                                                                           |
+| **Bottom-up**                      | Objetivo que nace en las personas.                                                                              |
+| **Mezcla 50/50**                   | Proporción de objetivos top-down y bottom-up de un equipo en un ciclo; lo ideal es 40 % a 60 % de cada uno.     |
+| **Alineación**                     | Vínculo entre un objetivo y otro de nivel superior al que contribuye.                                           |
+| **Borrador / Publicado / Cerrado** | Estados de un objetivo (y, con Activo en lugar de Publicado, de un ciclo).                                      |
+| **Feedback**                       | Mensaje privado entre dos personas, visible solo para ellas.                                                    |
+| **Reconocimiento**                 | Agradecimiento público en el muro por un logro concreto.                                                        |
+| **Líder**                          | Persona marcada como líder de un equipo.                                                                        |
+| **Versión accesible**              | Adaptación de un texto a lectura fácil o lenguaje claro, generada por IA y marcada hasta que alguien la valida. |
+| **Administración**                 | Rol que gestiona ciclos, equipos y usuarios.                                                                    |

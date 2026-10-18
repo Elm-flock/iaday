@@ -28,6 +28,23 @@ describe('parseCreateUser', () => {
   });
 });
 
+describe('parseCreateUser: contraseña opcional', () => {
+  it('sin contraseña no la envía: el back genera una y la devuelve una sola vez', () => {
+    const result = parseCreateUser(
+      form({ name: 'Ana', email: 'ana@x.com', role: 'MEMBER', password: '' }),
+    );
+    expect(result).toEqual({ ok: true, body: { name: 'Ana', email: 'ana@x.com', role: 'MEMBER' } });
+    expect(result.ok && 'password' in result.body).toBe(false);
+  });
+
+  it('si la define, sigue validando el largo', () => {
+    const result = parseCreateUser(
+      form({ name: 'Ana', email: 'ana@x.com', role: 'MEMBER', password: 'corta' }),
+    );
+    expect(result.ok).toBe(false);
+  });
+});
+
 describe('parseUpdateUser', () => {
   it('editando a otra persona envía rol y estado', () => {
     const on = parseUpdateUser(form({ name: 'Ana', role: 'LEADER', active: 'on' }), {

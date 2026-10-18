@@ -16,6 +16,8 @@ import adminCredentials from './admin.json';
 export const API = process.env.API_URL ?? 'http://localhost:3000';
 export const SHOTS = 'e2e/__screenshots__';
 export const PASSWORD = 'Miembro-Pass-123!';
+/** Clave inicial que da administración: toda alta nace con `mustChangePassword` (hay que cambiarla antes de usar la API). */
+export const INITIAL_PASSWORD = 'Inicial-Pass-123!';
 
 export const ADMIN = {
   email: process.env.E2E_ADMIN_EMAIL ?? adminCredentials.email,
@@ -95,8 +97,36 @@ export async function createUser(
   role: Role = 'MEMBER',
   password = PASSWORD,
 ): Promise<Session> {
-  await api(request, 'post', '/users', adminToken, { ...person, password, role });
+  await onboardUser(request, adminToken, { ...person, role }, password);
   return loginApi(request, person.email, password);
+}
+
+/**
+ * Alta de una persona lista para usar: la crea con clave inicial y hace el cambio obligatorio por API,
+ * así los specs que no prueban ese flujo siguen entrando con `password`.
+ */
+/** Cambio obligatorio por API (la persona ya existe con `initial`). */
+export async function completeForcedChange(
+  request: APIRequestContext,
+  email: string,
+  initial: string,
+  password = PASSWORD,
+): Promise<void> {
+  const first = await loginApi(request, email, initial);
+  await api(request, 'post', '/auth/change-password', first.token, {
+    currentPassword: initial,
+    newPassword: password,
+  });
+}
+
+export async function onboardUser(
+  request: APIRequestContext,
+  adminToken: string,
+  body: Person & { role?: Role },
+  password = PASSWORD,
+): Promise<void> {
+  await api(request, 'post', '/users', adminToken, { ...body, password: INITIAL_PASSWORD });
+  await completeForcedChange(request, body.email, INITIAL_PASSWORD, password);
 }
 
 /** Ciclo anual + trimestre Q1, ambos activos. Devuelve ids. */

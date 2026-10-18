@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { expect, test, type Page } from '@playwright/test';
 import {
   ADMIN,
+  onboardUser,
   PASSWORD,
   SHOTS,
   loginApi,
@@ -76,11 +77,7 @@ test.describe('check-ins (contra el back real)', () => {
     await api(request, 'post', `/cycles/${annual.id}/activate`, admin.token);
     await api(request, 'post', `/cycles/${quarter.id}/activate`, admin.token);
     ctx.cycleId = quarter.id;
-    await api(request, 'post', '/users', admin.token, {
-      ...ana,
-      password: PASSWORD,
-      role: 'MEMBER',
-    });
+    await onboardUser(request, admin.token, { ...ana, role: 'MEMBER' });
     ctx.ana = await loginApi(request, ana.email, PASSWORD);
 
     // 3 objetivos de Ana con 3 KRs cada uno: numérico, numérico con meta menor al inicio y manual.
