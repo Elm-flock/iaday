@@ -1,6 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { __setCookies } from '../../../../test/mocks/next-headers';
-import { activateCycleAction, closeCycleAction, createCycleAction } from './actions';
+import {
+  activateCycleAction,
+  closeCycleAction,
+  createCycleAction,
+  updateCycleAction,
+} from './actions';
 import { idleState } from '@/lib/actions/form-state';
 
 const mocks = vi.hoisted(() => ({
@@ -41,6 +46,30 @@ beforeEach(() => {
   fetchMock.mockReset();
   mocks.updateTag.mockClear();
   __setCookies({ okr_at: 'tok' });
+});
+
+describe('nombre de ciclo repetido (409 CYCLE_NAME_TAKEN)', () => {
+  const taken = () =>
+    fetchMock.mockResolvedValue(
+      Response.json({ statusCode: 409, code: 'CYCLE_NAME_TAKEN', message: 'x' }, { status: 409 }),
+    );
+
+  it('al crear, se marca el campo Nombre y se conserva lo tipeado', async () => {
+    taken();
+    const state = await createCycleAction(idleState, form({ ...quarter, name: ' Q1 2026 ' }));
+    expect(state.status).toBe('error');
+    expect(state.fieldErrors?.name).toBe(
+      'Ya existe un ciclo llamado «Q1 2026». Elegí otro nombre o usá el existente.',
+    );
+    expect(state.values?.startDate).toBe('2026-01-01');
+    expect(mocks.updateTag).not.toHaveBeenCalled();
+  });
+
+  it('al editar, también se marca el campo Nombre', async () => {
+    taken();
+    const state = await updateCycleAction('q1', true, idleState, form(quarter));
+    expect(state.fieldErrors?.name).toContain('«Q1 2026»');
+  });
 });
 
 describe('createCycleAction', () => {

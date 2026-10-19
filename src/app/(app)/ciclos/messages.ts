@@ -17,6 +17,7 @@ export const CYCLE_ERROR_COPY: ErrorCopy = {
       'Ese trimestre se superpone con otro del mismo ciclo anual. Elegí fechas que no se pisen con los trimestres existentes.',
     INVALID_THRESHOLD:
       'Los umbrales tienen que ser mayores a 0 y hasta 1 (por ejemplo 1,00 y 0,70). Corregilos y probá de nuevo.',
+    CYCLE_NAME_TAKEN: 'Ya existe un ciclo con ese nombre. Elegí otro nombre o usá el existente.',
     INVALID_CYCLE_TRANSITION:
       'Ese ciclo ya cambió de estado y no se puede hacer esta acción. Recargá la página para ver su estado actual.',
   },
@@ -25,6 +26,10 @@ export const CYCLE_ERROR_COPY: ErrorCopy = {
     409: 'El ciclo ya está cerrado o cambió de estado y no admite este cambio. Recargá la página para ver su estado actual.',
   },
 };
+
+/** Error de campo para el nombre repetido (el back compara sin espacios, mayúsculas ni tildes). */
+export const cycleNameTakenCopy = (name: string): string =>
+  `Ya existe un ciclo llamado «${name.trim()}». Elegí otro nombre o usá el existente.`;
 
 export const CYCLE_STATUS_LABEL = {
   DRAFT: 'Borrador',
