@@ -88,11 +88,92 @@ def _action_ref(action: PlanAction, wire_field: str) -> EntityRef | None:
     return getattr(action, _ATTR[wire_field], None)
 
 
+def _cycle_hierarchy_issues(
+    index: int,
+    action,
+    catalog: Catalog,
+    new_cycles: list,
+) -> list[PlanIssue]:
+    """Regla de dominio (back: `validateCycleHierarchy`): ANNUAL sin padre; QUARTER con padre ANNUAL, dentro de
+    sus fechas y sin solaparse con QUARTERs hermanos. Usa solo datos del catalogo y de acciones anteriores."""
+
+    def bad(msg: str) -> PlanIssue:
+        return PlanIssue(action_index=index, code="DTO_INVALID", message=msg)
+
+    if action.kind == "ANNUAL":
+        # un ANNUAL nuevo que repite uno existente que cubre las mismas fechas: casi seguro un error del planner
+        if valid_iso_date(action.start_date) and valid_iso_date(action.end_date):
+            dup = next(
+                (
+                    c
+                    for c in catalog.cycles
+                    if c.kind == "ANNUAL"
+                    and c.start_date <= action.start_date
+                    and action.end_date <= c.end_date
+                ),
+                None,
+            )
+            if dup is not None:
+                return [
+                    bad(
+                        f'Ya existe el ciclo ANNUAL {dup.handle} ("{dup.name}", {dup.start_date} a {dup.end_date}) que cubre '
+                        "esas fechas: no lo crees de nuevo; si necesitas un trimestre, usa "
+                        f'{{"kind": "EXISTING", "handle": "{dup.handle}"}} como padre.'
+                    )
+                ]
+        return []
+    if action.kind != "QUARTER":
+        return []
+    if action.parent is None:
+        return [
+            bad(
+                "Un QUARTER requiere un ciclo ANNUAL como padre (`parent`). Si en el catalogo no hay un ANNUAL "
+                "que cubra sus fechas, agrega ANTES una accion CREATE_CYCLE ANNUAL y usa su ref como padre. (QUARTER_REQUIRES_ANNUAL_PARENT)"
+            )
+        ]
+    parent = action.parent
+    siblings: list[tuple[str, str]] = []
+    if parent.kind == "EXISTING":
+        cyc = next((c for c in catalog.cycles if c.handle == parent.handle), None)
+        if cyc is None:
+            return []  # UNKNOWN_HANDLE ya lo informa
+        p_kind, p_start, p_end = cyc.kind, cyc.start_date, cyc.end_date
+        siblings += [(c.start_date, c.end_date) for c in catalog.cycles if c.parent == parent.handle]
+        label = f"El ciclo {parent.handle}"
+        siblings += [(n.start_date, n.end_date) for n in new_cycles if n.parent == parent]
+    else:
+        prev = next((n for n in new_cycles if n.ref == parent.ref), None)
+        if prev is None:
+            return []  # UNKNOWN_REF ya lo informa
+        p_kind, p_start, p_end = prev.kind, prev.start_date, prev.end_date
+        label = f"El ciclo nuevo {parent.ref}"
+        siblings += [(n.start_date, n.end_date) for n in new_cycles if n.parent == parent]
+    if p_kind != "ANNUAL":
+        return [
+            bad(
+                f"{label} es {p_kind}: el padre de un QUARTER debe ser un ciclo ANNUAL. (QUARTER_REQUIRES_ANNUAL_PARENT)"
+            )
+        ]
+    if not (valid_iso_date(action.start_date) and valid_iso_date(action.end_date)):
+        return []
+    if action.start_date < p_start or action.end_date > p_end:
+        return [
+            bad(
+                f"El QUARTER ({action.start_date} a {action.end_date}) debe estar dentro de las fechas de su "
+                f"ANNUAL ({p_start} a {p_end}). {label} no lo cubre: elegi otro ANNUAL o crea uno nuevo. (QUARTER_OUT_OF_PARENT_RANGE)"
+            )
+        ]
+    if any(action.start_date <= e and s <= action.end_date for s, e in siblings):
+        return [bad("El QUARTER se solapa con otro QUARTER del mismo ANNUAL. (QUARTER_OVERLAPS_SIBLING)")]
+    return []
+
+
 def check_plan(plan: Plan, catalog: Catalog, adm_messages: list[str]) -> list[PlanIssue]:
     issues: list[PlanIssue] = []
     handles = catalog.handle_kinds()
     defined: dict[str, str] = {}
     seen_refs: set[str] = set()
+    new_cycles: list = []  # CREATE_CYCLE anteriores del plan (para la jerarquia)
     if len(plan.actions) > 25:
         issues.append(
             PlanIssue(action_index=None, code="TOO_MANY_ACTIONS", message="Hay mas de 25 acciones.")
@@ -177,6 +258,9 @@ def check_plan(plan: Plan, catalog: Catalog, adm_messages: list[str]) -> list[Pl
                 issues.append(
                     PlanIssue(action_index=i, code="DTO_INVALID", message="Un ciclo anual no tiene `parent`.")
                 )
+            else:
+                issues.extend(_cycle_hierarchy_issues(i, action, catalog, new_cycles))
+            new_cycles.append(action)
         if t == "CREATE_KEY_RESULT" and action.scoring == "DERIVED" and action.target_value is None:
             issues.append(
                 PlanIssue(action_index=i, code="DTO_INVALID", message="Un KR DERIVED necesita `targetValue`.")

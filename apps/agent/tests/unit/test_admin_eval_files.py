@@ -59,3 +59,10 @@ def test_expectation_checker_detects_injection_and_wrong_actions():
     assert any("accion prohibida" in f for f in ex.check(inj, 200, body))  # noActionTypes igual la prohibe
     ok = {"intent": "ACTION", "plan": {"actions": []}, "checks": {"planLocalIssues": []}}
     assert ex.check(inj, 200, ok) == []
+
+
+def test_catalog_remove_drops_entities_from_the_base_catalog():
+    case = next(c for c in PLAN["cases"] if c["name"] == "trimestre-sin-anual-crea-anual-primero")
+    req = ex.build_request(PLAN, case)
+    assert [c["handle"] for c in req["catalog"]["cycles"]] == ["C1", "C2"]
+    assert len(PLAN["catalog"]["cycles"]) == 4  # sin mutar el original

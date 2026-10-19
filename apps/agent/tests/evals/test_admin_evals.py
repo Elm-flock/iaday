@@ -168,6 +168,7 @@ def test_admin_eval_case(client, suite_name, case):
         print(f"   FALLA: {f}")
     if suite_name == "admin_plan" and body.get("plan"):
         print("   acciones:", [a["type"] for a in body["plan"]["actions"]])
+        print("   supuestos:", body["plan"].get("assumptions"))
     key = os.environ.get("NVIDIA_NIM_API_KEY") or Settings().nvidia_nim_api_key
     assert key and key not in r.text
     if infra:

@@ -91,7 +91,7 @@ SequentialAgent[ InputGuard -> GenerateStep -> Verify ]   (un pipeline por featu
 - Free tier: ráfagas de llamadas devuelven 429 (`UPSTREAM_RATE_LIMITED`); en evals/pruebas manuales espaciar los pedidos.
 - La regeneración por legibilidad recibe las palabras largas (≥ 4 sílabas) de la salida rechazada (`readability.long_words`);
   sin esa pista nemotron copia el texto o pierde cifras ("100 %" -> "todo"). `mustPreserve` entra al prompt de adapt (`$must_preserve`).
-- Prompts activos (admin: todos v1): classify v2, easy_read v3, plain_language v3, okr_suggest v2, checkin_summary v2, judge v2, judge_suggest v1
+- Prompts activos (admin: classify v2 y planner v2, el resto v1): classify v2, easy_read v3, plain_language v3, okr_suggest v2, checkin_summary v2, judge v2, judge_suggest v1
   (las anteriores no se tocan; sin `active.yaml` rige la mayor).
 - **Tier opcional `regenerate`** (`models.yaml`): modelo propio del paso REGENERATE (ultra, `timeout_s` 60); falta -> usa `generate`. Mismo
   `ResilientLlm` (retry + fallback + un `UsageStep` por intento con el modelo efectivo). `timeout_s` por tier sobreescribe `defaults.timeout_s`.
@@ -124,6 +124,14 @@ SequentialAgent[ InputGuard -> GenerateStep -> Verify ]   (un pipeline por featu
   sola llamada) la 2da vuelta del bucle no ve sus propios `function_call`/`function_response`. Las herramientas son `async def` sin `await` (orden de registro
   = orden de emisión). Cada vuelta del bucle es una llamada nueva a `ResilientLlm` (arranca por el primario). `ResilientLlm` acepta respuestas con solo `function_call`.
 - `planner`/`summarize` son tiers opcionales (si faltan, usan `generate`) y NO entran en el invariante de familia del juez (esos pipelines no juzgan).
+
+- **Planes de ciclos / historial (bug asistente-planes)**: el planner v1 proponía QUARTER sin ANNUAL padre (y lo anotaba como supuesto) y reutilizaba el
+  handle "C3" de un plan *propuesto* del historial (inexistente) tras 2 REPAIR. Causa: no conocía las reglas del dominio y trataba el texto de la conversación
+  como catálogo. Fix: `admin_planner` v2 (reglas de dominio, solo handles del catálogo, lo de planes PROPUESTO/VENCIDO/INVÁLIDO no existe, ANNUAL primero con
+  ref NEW), `admin_classify` v2 (seguimientos vagos => ACTION/CLARIFY, no QUERY), `local_checks._cycle_hierarchy_issues` (QUARTER sin padre / padre no ANNUAL /
+  fuera de fechas / solapado, con datos del catálogo; código `DTO_INVALID`) y `_issues_note` (lista handles válidos y exige cambiar de estrategia). El back
+  anota el historial con "[Plan PROPUESTO, todavía sin confirmar: nada de esto existe aún]" etc. Evals: `trimestre-*`, `repetir-plan-*`, `seguimiento-vago-*`
+  (`catalogRemove` en el request del caso quita entidades del catálogo base).
 
 ## Tests
 

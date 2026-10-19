@@ -506,4 +506,5 @@ def test_admin_prompts_are_versioned_and_have_hash(ah):
         "digest_summary",
     ):
         p = ah.prompts.get(pid)
-        assert p.version == "1" and len(p.hash) == 12
+        expected = "2" if pid in ("admin_classify", "admin_planner") else "1"
+        assert p.version == expected and len(p.hash) == 12

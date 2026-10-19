@@ -114,6 +114,15 @@ Con ultra, `json_mode: none` + Pydantic + REPAIR dio JSON válido 29/29. Evals d
 
 Evals reales: `$env:AGENT_PLANNER_MODE='tools'; .venv\Scripts\pytest -m eval -s tests/evals/test_admin_evals.py -k plan` (`EVAL_SLEEP_S`, `EVAL_RESULTS_FILE`).
 
+### Reglas de dominio y planes no confirmados (bug asistente-planes, prompts v2)
+
+`admin_planner` **v2** y `admin_classify` **v2** (v1 quedan publicados, sin tocar). El planner conoce las reglas del back (`validateCycleHierarchy`,
+`okrs/domain/limits.ts`): ANNUAL sin padre; QUARTER con padre ANNUAL que cubra sus fechas y sin solaparse; 5 objetivos por responsable/ciclo, 5 KRs por
+objetivo. Si piden un trimestre y ningún ANNUAL del catálogo lo cubre, el plan crea primero el ANNUAL (ref NEW) y lo usa de padre. Solo valen handles del
+catálogo actual; lo que figura en planes anteriores (PROPUESTO/VENCIDO/INVÁLIDO) no existe. El clasificador trata los seguimientos vagos tras un plan
+fallido ("damelo nuevamente", "busca lo que necesites") como ACTION/CLARIFY, nunca QUERY. `local_checks` valida la jerarquía de ciclos con los datos del
+catálogo (`DTO_INVALID`) y la nota de REPAIR lista los handles válidos y exige cambiar de estrategia.
+
 ## Cómo correrlo
 
 Requisitos: Python ≥ 3.12 (probado con 3.13). Sin `uv`: `venv` + `pip`.
