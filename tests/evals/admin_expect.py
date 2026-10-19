@@ -31,6 +31,8 @@ def build_request(suite: dict, case: dict) -> dict:
     kind = suite["kind"]
     if kind == "admin_chat":
         catalog = apply_overrides(suite["catalog"], req.get("catalogOverrides", {}))
+        for group, handles in req.get("catalogRemove", {}).items():  # quitar entidades del catalogo base
+            catalog[group] = [i for i in catalog[group] if i["handle"] not in handles]
         return {
             "locale": "es",
             "today": req.get("today", suite["today"]),

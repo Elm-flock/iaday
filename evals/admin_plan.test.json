@@ -498,7 +498,12 @@
    "name": "ciclo-proximo-trimestre",
    "endpoint": "/v1/admin/chat",
    "request": {
-    "message": "Creá el ciclo del próximo trimestre"
+    "message": "Creá el ciclo del próximo trimestre",
+    "catalogRemove": {
+     "cycles": [
+      "C3"
+     ]
+    }
    },
    "expect": {
     "status": 200,
@@ -522,6 +527,14 @@
       "action": 0,
       "path": "endDate",
       "equals": "2027-03-31"
+     },
+     {
+      "action": 0,
+      "path": "parent",
+      "equals": {
+       "kind": "EXISTING",
+       "handle": "C4"
+      }
      }
     ]
    },
@@ -1205,6 +1218,180 @@
     "planNull": true
    },
    "tags": []
+  },
+  {
+   "name": "trimestre-sin-anual-crea-anual-primero",
+   "endpoint": "/v1/admin/chat",
+   "request": {
+    "message": "Creá el ciclo trimestral Q1 2027 del 1 de enero al 31 de marzo de 2027",
+    "catalogRemove": {
+     "cycles": [
+      "C3",
+      "C4"
+     ]
+    }
+   },
+   "expect": {
+    "status": 200,
+    "intent": "ACTION",
+    "actionTypes": [
+     "CREATE_CYCLE",
+     "CREATE_CYCLE"
+    ],
+    "planLocalIssues": "empty",
+    "fields": [
+     {
+      "action": 0,
+      "path": "kind",
+      "equals": "ANNUAL"
+     },
+     {
+      "action": 0,
+      "path": "startDate",
+      "equals": "2027-01-01"
+     },
+     {
+      "action": 0,
+      "path": "endDate",
+      "equals": "2027-12-31"
+     },
+     {
+      "action": 1,
+      "path": "kind",
+      "equals": "QUARTER"
+     },
+     {
+      "action": 1,
+      "path": "parent.kind",
+      "equals": "NEW"
+     }
+    ]
+   },
+   "tags": [
+    "fechas",
+    "jerarquia-ciclos"
+   ]
+  },
+  {
+   "name": "trimestre-con-anual-existente-usa-ese-padre",
+   "endpoint": "/v1/admin/chat",
+   "request": {
+    "message": "Creá el ciclo trimestral Q1 2027 del 1 de enero al 31 de marzo de 2027",
+    "catalogRemove": {
+     "cycles": [
+      "C3"
+     ]
+    }
+   },
+   "expect": {
+    "status": 200,
+    "intent": "ACTION",
+    "actionTypes": [
+     "CREATE_CYCLE"
+    ],
+    "planLocalIssues": "empty",
+    "fields": [
+     {
+      "action": 0,
+      "path": "kind",
+      "equals": "QUARTER"
+     },
+     {
+      "action": 0,
+      "path": "parent",
+      "equals": {
+       "kind": "EXISTING",
+       "handle": "C4"
+      }
+     }
+    ]
+   },
+   "tags": [
+    "fechas",
+    "jerarquia-ciclos"
+   ]
+  },
+  {
+   "name": "repetir-plan-propuesto-sin-confirmar-no-inventa-handles",
+   "endpoint": "/v1/admin/chat",
+   "request": {
+    "message": "damelo nuevamente",
+    "catalogRemove": {
+     "cycles": [
+      "C3",
+      "C4"
+     ]
+    },
+    "history": [
+     {
+      "role": "ADMIN",
+      "text": "hace el ciclo anual 2027"
+     },
+     {
+      "role": "ASSISTANT",
+      "text": "Preparé un plan con 1 paso. Revisalo y, si está bien, tocá «Confirmar y ejecutar». [Plan PROPUESTO, todavía sin confirmar: nada de esto existe aún. Sigue pendiente de confirmación ahora: crear el ciclo anual 2027]"
+     }
+    ]
+   },
+   "expect": {
+    "status": 200,
+    "intent": "ACTION",
+    "actionTypes": [
+     "CREATE_CYCLE"
+    ],
+    "planLocalIssues": "empty",
+    "fields": [
+     {
+      "action": 0,
+      "path": "kind",
+      "equals": "ANNUAL"
+     },
+     {
+      "action": 0,
+      "path": "startDate",
+      "equals": "2027-01-01"
+     }
+    ]
+   },
+   "tags": [
+    "historial",
+    "jerarquia-ciclos"
+   ]
+  },
+  {
+   "name": "seguimiento-vago-tras-plan-invalido-no-es-consulta",
+   "endpoint": "/v1/admin/chat",
+   "request": {
+    "message": "busca lo que necesites",
+    "catalogRemove": {
+     "cycles": [
+      "C3",
+      "C4"
+     ]
+    },
+    "history": [
+     {
+      "role": "ADMIN",
+      "text": "Creá el ciclo trimestral Q1 2027 del 1 de enero al 31 de marzo de 2027"
+     },
+     {
+      "role": "ASSISTANT",
+      "text": "No pude armar un plan válido: el ciclo trimestral necesitaba un ciclo anual padre que no existe. [Plan INVÁLIDO: no se puede ejecutar]"
+     }
+    ]
+   },
+   "expect": {
+    "status": 200,
+    "intentIn": [
+     "ACTION",
+     "CLARIFY"
+    ],
+    "noActionTypes": []
+   },
+   "tags": [
+    "historial",
+    "seguimiento"
+   ]
   }
  ]
 }
