@@ -60,3 +60,37 @@ export function validateThresholds(t: { committed: number; aspirational: number 
     ? ok()
     : err('INVALID_THRESHOLD', 'Los umbrales deben estar en el rango (0, 1]');
 }
+
+/**
+ * Clave de comparación del nombre de un ciclo: sin espacios de más, sin mayúsculas ni tildes
+ * ("2027" == " 2027 ", "Q1 2027" == "q1 2027", "Año 2027" == "ano 2027").
+ */
+export function normalizeCycleName(name: string): string {
+  return name
+    .normalize('NFD')
+    .replace(/\p{M}+/gu, '')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** ¿Algún nombre existente coincide con `name` una vez normalizados? */
+export function isCycleNameTaken(name: string, existingNames: readonly string[]): boolean {
+  const key = normalizeCycleName(name);
+  return existingNames.some((n) => normalizeCycleName(n) === key);
+}
+
+/** Texto único del error, compartido por el alta/renombre de ciclos y el dry-run del asistente. */
+export function cycleNameTakenMessage(name: string): string {
+  return `Ya existe un ciclo llamado «${name.trim()}». Elegí otro nombre o usá el existente.`;
+}
+
+/** El nombre de un ciclo es único en toda la organización (incluye ciclos cerrados). */
+export function validateCycleNameAvailable(
+  name: string,
+  existingNames: readonly string[],
+): Result<void> {
+  return isCycleNameTaken(name, existingNames)
+    ? err('CYCLE_NAME_TAKEN', cycleNameTakenMessage(name))
+    : ok();
+}

@@ -1,10 +1,15 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import type { Cycle } from '../../generated/prisma/client';
+import type { Cycle, Prisma } from '../../generated/prisma/client';
 import type { AuthUser } from '../common/types/auth-user';
 import { isAchieved } from '../okrs/domain/closure';
 import { PrismaService } from '../prisma/prisma.service';
 import { cycleDomainError } from './cycles.errors';
-import { canTransitionCycle, validateCycleHierarchy, validateThresholds } from './domain/cycles';
+import {
+  canTransitionCycle,
+  validateCycleHierarchy,
+  validateCycleNameAvailable,
+  validateThresholds,
+} from './domain/cycles';
 import { CreateCycleDto, CycleCloseDto, CycleDto, UpdateCycleDto } from './dto/cycle.dto';
 
 const DEFAULT_COMMITTED = 1;
@@ -64,19 +69,22 @@ export class CyclesService {
     const thresholds = validateThresholds({ committed, aspirational });
     if (!thresholds.ok) throw cycleDomainError(thresholds);
 
-    const created = await this.prisma.cycle.create({
-      data: {
-        name: dto.name,
-        kind: dto.kind,
-        parentId: parent?.id ?? null,
-        startDate: start,
-        endDate: end,
-        checkInCadence: dto.checkInCadence,
-        committedThreshold: committed,
-        aspirationalThreshold: aspirational,
-      },
+    return this.prisma.$transaction(async (tx) => {
+      await this.assertNameAvailable(tx, dto.name);
+      const created = await tx.cycle.create({
+        data: {
+          name: dto.name,
+          kind: dto.kind,
+          parentId: parent?.id ?? null,
+          startDate: start,
+          endDate: end,
+          checkInCadence: dto.checkInCadence,
+          committedThreshold: committed,
+          aspirationalThreshold: aspirational,
+        },
+      });
+      return toDto(created);
     });
-    return toDto(created);
   }
 
   async update(actor: AuthUser, id: string, dto: UpdateCycleDto): Promise<CycleDto> {
@@ -100,6 +108,7 @@ export class CyclesService {
       aspirational !== Number(cycle.aspirationalThreshold);
 
     return this.prisma.$transaction(async (tx) => {
+      if (dto.name !== undefined) await this.assertNameAvailable(tx, dto.name, id);
       const updated = await tx.cycle.update({
         where: { id },
         data: {
@@ -259,6 +268,29 @@ export class CyclesService {
         if (!fit.ok) throw cycleDomainError(fit);
       }
     }
+  }
+
+  /**
+   * El nombre es único en toda la organización (trim, mayúsculas y tildes no cuentan). El chequeo
+   * va con un advisory lock transaccional: dos altas/renombres simultáneos con el mismo nombre se
+   * serializan, así que el segundo ve al primero. Sin índice único en DB: no hay forma segura de
+   * imponerlo sobre datos históricos que ya podrían tener nombres repetidos.
+   */
+  private async assertNameAvailable(
+    tx: Prisma.TransactionClient,
+    name: string,
+    excludeId?: string,
+  ): Promise<void> {
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext('cycles:name'))`;
+    const others = await tx.cycle.findMany({
+      where: excludeId ? { id: { not: excludeId } } : {},
+      select: { name: true },
+    });
+    const available = validateCycleNameAvailable(
+      name,
+      others.map((c) => c.name),
+    );
+    if (!available.ok) throw cycleDomainError(available);
   }
 
   private async siblingQuarters(parentId: string, excludeId?: string) {

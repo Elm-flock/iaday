@@ -1319,7 +1319,7 @@ describe('Asistente de administración (e2e)', () => {
     });
   });
 
-  it('el historial viaja resumido: un plan previo se envía como "[plan <estado>: <resumen>]", nunca completo', async () => {
+  it('el historial viaja resumido y con el estado real del plan: un plan propuesto avisa que todavía no existe, sin emails', async () => {
     const w = await world();
     await proposed(w);
     stub.calls.length = 0;
@@ -1331,10 +1331,188 @@ describe('Asistente de administración (e2e)', () => {
     await ask(w.auth, 'Gracias').expect(200);
     const history = stub.calls[0].body.history as { role: string; text: string }[];
     expect(history.map((h) => h.role)).toEqual(['ADMIN', 'ASSISTANT']);
-    expect(history[1].text).toBe(
-      '[plan PROPOSED: Creo el equipo Datos, doy de alta a Lucía y la pongo de líder.]',
+    expect(history[1].text).toContain(
+      '[Plan PROPUESTO, todavía sin confirmar: nada de esto existe aún. Creo el equipo Datos, doy de alta a Lucía y la pongo de líder.',
     );
-    expect(JSON.stringify(history)).not.toContain('CREATE_TEAM');
+    expect(history[1].text).toContain('Crear el usuario Lucía Gómez');
+    expect(history[1].text).not.toMatch(/CREATE_TEAM|lucia@test\.local/);
+  });
+
+  describe('regresión: plan parcial e inválido de la demo', () => {
+    const TEXT_QUARTER = 'Creá el ciclo Q1 2027';
+    const quarterNoParent = () => ({
+      summary: 'Creo el ciclo trimestral Q1 2027.',
+      assumptions: ['Se creará como ciclo QUARTER sin padre anual.'],
+      actions: [
+        {
+          type: 'CREATE_CYCLE',
+          ref: 'c1',
+          name: 'Q1 2027',
+          kind: 'QUARTER',
+          startDate: '2027-01-01',
+          endDate: '2027-03-31',
+          sourceQuote: 'Creá el ciclo Q1 2027',
+        },
+      ],
+    });
+    const annual2027 = () => ({
+      summary: 'Creo el ciclo anual 2027.',
+      assumptions: [],
+      actions: [
+        {
+          type: 'CREATE_CYCLE',
+          ref: 'c1',
+          name: 'Año 2027',
+          kind: 'ANNUAL',
+          startDate: '2027-01-01',
+          endDate: '2027-12-31',
+          sourceQuote: 'Creá el ciclo anual 2027',
+        },
+      ],
+    });
+
+    it('un trimestral sin anual queda INVALID antes de confirmar (no PARTIAL) y la respuesta explica qué hacer', async () => {
+      const w = await world();
+      const plan = await proposed(w, quarterNoParent, TEXT_QUARTER);
+      expect(plan.status).toBe('INVALID');
+      expect(plan.issues[0]).toMatchObject({ actionIndex: 0, code: 'DTO_INVALID' });
+      expect(plan.issues[0].message).toContain('necesita un ciclo anual');
+      // Se pidió una reparación al agente con el motivo.
+      const chats = stub.calls.filter((c) => c.path === '/v1/admin/chat');
+      expect(chats).toHaveLength(2);
+      expect(chats[1].body.repair.issues[0].message).toContain('necesita un ciclo anual');
+      const last = (
+        await http().get('/assistant/messages').set('Authorization', w.auth).expect(200)
+      ).body.at(-1);
+      expect(last.text).toContain('no se puede ejecutar:');
+      expect(last.text).toContain('Un ciclo trimestral necesita un ciclo anual');
+      expect(last.text).toContain('Qué podés hacer:');
+      expect((await confirm(w.auth, plan.id, plan.planHash).expect(422)).body.code).toBe(
+        'ASSISTANT_PLAN_INVALID',
+      );
+      expect(await prisma.cycle.count({ where: { name: 'Q1 2027' } })).toBe(0);
+    });
+
+    it('un trimestral con el anual creado antes en el mismo plan es válido y se ejecuta', async () => {
+      const w = await world();
+      const plan = await proposed(
+        w,
+        () => ({
+          summary: 'Creo el anual 2027 y su primer trimestre.',
+          actions: [
+            { ...annual2027().actions[0], sourceQuote: 'Creá el ciclo Q1 2027' },
+            {
+              ...quarterNoParent().actions[0],
+              ref: 'c2',
+              parent: { kind: 'NEW', ref: 'c1' },
+            },
+          ],
+        }),
+        TEXT_QUARTER,
+      );
+      expect(plan.status).toBe('PROPOSED');
+      const res = await confirm(w.auth, plan.id, plan.planHash).expect(200);
+      expect(res.body.status).toBe('EXECUTED');
+    });
+
+    it('un ciclo con el nombre de uno existente queda INVALID antes de confirmar y no crea nada', async () => {
+      const w = await world();
+      await prisma.cycle.create({
+        data: {
+          name: ' año 2027',
+          kind: 'ANNUAL',
+          startDate: new Date('2026-01-01'),
+          endDate: new Date('2026-12-31'),
+        },
+      });
+      const plan = await proposed(w, annual2027, 'Creá el ciclo anual 2027');
+      expect(plan.status).toBe('INVALID');
+      expect(plan.issues[0]).toMatchObject({ actionIndex: 0, code: 'DTO_INVALID' });
+      expect(plan.issues[0].message).toContain('Ya existe un ciclo llamado «Año 2027»');
+      expect(plan.issues[0].message).toContain('(CYCLE_NAME_TAKEN)');
+      expect((await confirm(w.auth, plan.id, plan.planHash).expect(422)).body.code).toBe(
+        'ASSISTANT_PLAN_INVALID',
+      );
+      expect(
+        await prisma.cycle.count({ where: { name: { contains: '2027', mode: 'insensitive' } } }),
+      ).toBe(1);
+    });
+
+    it('dos CREATE_CYCLE con el mismo nombre en un plan -> INVALID', async () => {
+      const w = await world();
+      const plan = await proposed(
+        w,
+        () => ({
+          summary: 'Creo dos ciclos iguales.',
+          assumptions: [],
+          actions: [
+            annual2027().actions[0],
+            {
+              ...annual2027().actions[0],
+              ref: 'c2',
+              name: 'AÑO 2027',
+              startDate: '2028-01-01',
+              endDate: '2028-12-31',
+            },
+          ],
+        }),
+        'Creá el ciclo anual 2027',
+      );
+      expect(plan.status).toBe('INVALID');
+      expect(plan.issues[0]).toMatchObject({ actionIndex: 1, code: 'DTO_INVALID' });
+      expect(plan.issues[0].message).toContain('(CYCLE_NAME_TAKEN)');
+      expect(
+        await prisma.cycle.count({ where: { name: { contains: '2027', mode: 'insensitive' } } }),
+      ).toBe(0);
+    });
+
+    it('"damelo nuevamente" con un plan anterior sin confirmar: el agente recibe la anotación PROPUESTO y la respuesta avisa del plan pendiente', async () => {
+      const w = await world();
+      const first = await proposed(w, annual2027, 'Creá el ciclo anual 2027');
+      expect(first.status).toBe('PROPOSED');
+      stub.calls.length = 0;
+      respondWithPlan(annual2027);
+      const res = await ask(w.auth, 'damelo nuevamente').expect(200);
+
+      const chat = stub.calls.find((c) => c.path === '/v1/admin/chat')!;
+      const history = chat.body.history as { role: string; text: string }[];
+      const planTurn = history.find((h) => h.role === 'ASSISTANT')!;
+      expect(planTurn.text).toContain(
+        '[Plan PROPUESTO, todavía sin confirmar: nada de esto existe aún.',
+      );
+      expect(planTurn.text).toContain('Sigue pendiente de confirmación ahora');
+      // No se descarta el plan anterior: conviven los dos.
+      expect(
+        (await prisma.assistantPlan.findUniqueOrThrow({ where: { id: first.id } })).status,
+      ).toBe('PROPOSED');
+      const assistantMsg = res.body.messages.at(-1);
+      expect(assistantMsg.text).toContain('Tenés un plan anterior sin confirmar');
+      expect(assistantMsg.text).toContain('Creo el ciclo anual 2027');
+    });
+
+    it('un plan ejecutado a medias viaja al agente como PARCIAL con el motivo del fallo', async () => {
+      const w = await world();
+      const plan = await proposed(w, annual2027, 'Creá el ciclo anual 2027');
+      await prisma.assistantPlan.update({
+        where: { id: plan.id },
+        data: {
+          status: 'PARTIAL',
+          stepResults: [
+            { index: 0, status: 'FAILED', error: { code: 'X', message: 'Se rompió el paso.' } },
+          ],
+        },
+      });
+      stub.calls.length = 0;
+      stub.setAdminResponder((path) =>
+        path === '/v1/admin/chat'
+          ? { body: chatBody({ intent: 'SMALL_TALK', reply: 'Hola' }) }
+          : undefined,
+      );
+      await ask(w.auth, 'y ahora?').expect(200);
+      const history = stub.calls[0].body.history as { text: string }[];
+      expect(history[1].text).toContain('[Plan PARCIAL:');
+      expect(history[1].text).toContain('por Se rompió el paso');
+    });
   });
 
   it('el login de la persona creada por el asistente exige cambiar la clave inicial', async () => {

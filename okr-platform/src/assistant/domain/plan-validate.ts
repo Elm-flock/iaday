@@ -10,6 +10,11 @@ import {
   type RawPlan,
   type RawRef,
 } from './plan-schema';
+import {
+  isCycleNameTaken,
+  normalizeCycleName,
+  validateCycleHierarchy,
+} from '../../cycles/domain/cycles';
 import { isQuoteGrounded, normalizeText } from './text';
 
 /** Límites de dominio replicados de okrs/domain/limits.ts (se comparan en un test para que no diverjan). */
@@ -20,6 +25,16 @@ export interface HandleInfo {
   label: string;
   /** Estado de ciclos (DRAFT/ACTIVE/CLOSED) y objetivos (DRAFT/PUBLISHED). */
   status?: string;
+}
+
+/** Ciclo real de la organización (fechas ISO `YYYY-MM-DD`) para simular la jerarquía antes de confirmar. */
+export interface CycleFact {
+  id: string;
+  name: string;
+  kind: string;
+  startDate: string;
+  endDate: string;
+  parentId: string | null;
 }
 
 export interface ValidationContext {
@@ -35,6 +50,8 @@ export interface ValidationContext {
   /** KRs actuales por objetivo (uuid). */
   krCounts: Record<string, number>;
   catalogTruncated: boolean;
+  /** Todos los ciclos existentes (no solo los del catálogo recortado): padres y hermanos del dry-run. */
+  existingCycles?: CycleFact[];
 }
 
 export interface PlanIssue {
@@ -112,6 +129,8 @@ export function validatePlan(raw: RawPlan, ctx: ValidationContext): PlanValidati
   const plannedObjectivesByOwner = new Map<string, number>();
   const plannedKrsByObjective = new Map<string, number>();
   const activatedCycles = new Set<string>();
+  // Ciclos que crea el plan (clave `new:<ref>`), para simular padres y hermanos de los siguientes.
+  const plannedCycles = new Map<string, PlannedCycle>();
   const objectiveMeta: { index: number; ownerKey: string; objectiveKey: string }[] = [];
 
   raw.actions.forEach((a, index) => {
@@ -237,9 +256,23 @@ export function validatePlan(raw: RawPlan, ctx: ValidationContext): PlanValidati
         });
         description = `Quitar a ${label('user')} del equipo ${label('team')}`;
         break;
-      case 'CREATE_CYCLE':
+      case 'CREATE_CYCLE': {
+        const planned = dryRunCycle({
+          index,
+          raw: a,
+          params,
+          refs,
+          keys,
+          ctx,
+          plannedCycles,
+          issue,
+        });
+        if (planned && a.ref && REF_PATTERN.test(a.ref) && !defined.has(a.ref)) {
+          plannedCycles.set(`new:${a.ref}`, planned);
+        }
         description = `Crear el ciclo "${text(params.name)}" (${KIND_LABEL[String(params.kind)] ?? text(params.kind)}, del ${text(params.startDate)} al ${text(params.endDate)})`;
         break;
+      }
       case 'ACTIVATE_CYCLE': {
         const cycle = a.refs.cycle;
         const info =
@@ -386,6 +419,178 @@ export function validatePlan(raw: RawPlan, ctx: ValidationContext): PlanValidati
     issues,
     warnings,
   };
+}
+
+interface PlannedCycle {
+  name: string;
+  kind: 'ANNUAL' | 'QUARTER';
+  start: Date;
+  end: Date;
+  /** Clave del padre: uuid si es existente, `new:<ref>` si lo crea el plan, null sin padre. */
+  parentKey: string | null;
+}
+
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+function parseIsoDate(v: unknown): Date | null {
+  if (typeof v !== 'string' || !ISO_DATE.test(v)) return null;
+  const d = new Date(`${v}T00:00:00.000Z`);
+  return Number.isNaN(d.getTime()) || d.toISOString().slice(0, 10) !== v ? null : d;
+}
+const iso = (d: Date): string => d.toISOString().slice(0, 10);
+
+/**
+ * Dry-run de CREATE_CYCLE con la MISMA regla pura que usa `CyclesService.create`
+ * (`validateCycleHierarchy`): el padre y los hermanos salen de los ciclos existentes o de los que
+ * crean pasos anteriores del plan. Devuelve el ciclo simulado (o null si no se puede simular).
+ */
+function dryRunCycle(args: {
+  index: number;
+  raw: RawAction;
+  params: Record<string, unknown>;
+  refs: Record<string, ResolvedRef>;
+  keys: Record<string, string>;
+  ctx: ValidationContext;
+  plannedCycles: Map<string, PlannedCycle>;
+  issue: (i: number | null, code: string, message: string) => void;
+}): PlannedCycle | null {
+  const { index, raw, params, refs, keys, ctx, plannedCycles, issue } = args;
+  checkCycleName({ index, params, ctx, plannedCycles, issue });
+  const kind = params.kind;
+  const start = parseIsoDate(params.startDate);
+  const end = parseIsoDate(params.endDate);
+  // Forma inválida: ya la reporta el DTO real; acá no hay nada que simular.
+  if ((kind !== 'ANNUAL' && kind !== 'QUARTER') || !start || !end) return null;
+
+  const existing = ctx.existingCycles ?? [];
+  const toRange = (c: CycleFact) => ({
+    kind: c.kind as 'ANNUAL' | 'QUARTER',
+    start: parseIsoDate(c.startDate) ?? new Date(NaN),
+    end: parseIsoDate(c.endDate) ?? new Date(NaN),
+  });
+  const parentRef = refs.parent;
+  const parentKey = keys.parent ?? null;
+  const self: PlannedCycle = { name: text(params.name), kind, start, end, parentKey };
+  let parent: { kind: 'ANNUAL' | 'QUARTER'; start: Date; end: Date } | undefined;
+  if (parentRef?.kind === 'EXISTING') {
+    const fact = existing.find((c) => c.id === parentRef.id);
+    if (!fact) return self;
+    parent = toRange(fact);
+  } else if (parentRef?.kind === 'NEW' && parentKey) {
+    const made = plannedCycles.get(parentKey);
+    if (!made) return self;
+    parent = made;
+  } else if (raw.refs.parent) {
+    // El padre indicado no se resolvió: ya hay un issue (UNKNOWN_HANDLE / UNKNOWN_REF).
+    return self;
+  }
+
+  const siblings = parent
+    ? [
+        ...existing
+          .filter((c) => c.kind === 'QUARTER' && parentKey !== null && c.parentId === parentKey)
+          .map(toRange),
+        ...[...plannedCycles.values()].filter(
+          (p) => p.kind === 'QUARTER' && parentKey !== null && p.parentKey === parentKey,
+        ),
+      ]
+    : [];
+
+  const result = validateCycleHierarchy({ kind, start, end }, parent, siblings);
+  if (!result.ok) {
+    issue(
+      index,
+      // El conjunto de códigos del contrato es cerrado: el código de dominio va entre paréntesis en el mensaje.
+      'DTO_INVALID',
+      cycleIssueMessage(result.code, {
+        name: text(params.name),
+        start,
+        end,
+        parent,
+        parentLabel: parentRef?.label ?? '',
+        parentGiven: Boolean(parentRef),
+        ctx,
+      }),
+    );
+  }
+  return self;
+}
+
+/**
+ * El nombre de un ciclo es único (sin tildes, mayúsculas ni espacios de más), también frente a los
+ * ciclos cerrados y a los que crean pasos anteriores del plan: misma regla que `CyclesService`.
+ */
+function checkCycleName(args: {
+  index: number;
+  params: Record<string, unknown>;
+  ctx: ValidationContext;
+  plannedCycles: Map<string, PlannedCycle>;
+  issue: (i: number | null, code: string, message: string) => void;
+}): void {
+  const { index, params, ctx, plannedCycles, issue } = args;
+  if (typeof params.name !== 'string' || normalizeCycleName(params.name) === '') return;
+  const name = params.name.trim();
+  const taken = `Ya existe un ciclo llamado «${name}»`;
+  const existing = (ctx.existingCycles ?? []).find((c) => isCycleNameTaken(name, [c.name]));
+  if (existing) {
+    const handle = Object.entries(ctx.handles).find(
+      ([h, v]) => h[0] === 'C' && v.id === existing.id,
+    );
+    const use = handle
+      ? `usá el existente ${handle[0]} ("${handle[1].label}") en vez de crearlo`
+      : 'usá el existente en vez de crearlo';
+    issue(index, 'DTO_INVALID', `${taken}. Elegí otro nombre o ${use}. (CYCLE_NAME_TAKEN)`);
+    return;
+  }
+  const earlier = [...plannedCycles.entries()].find(([, p]) => isCycleNameTaken(name, [p.name]));
+  if (earlier) {
+    issue(
+      index,
+      'DTO_INVALID',
+      `${taken} en este mismo plan (lo crea otro paso, ${earlier[0].slice(4)}). Elegí otro nombre o quitá uno de los dos pasos. (CYCLE_NAME_TAKEN)`,
+    );
+  }
+}
+
+function cycleIssueMessage(
+  code: string,
+  c: {
+    name: string;
+    start: Date;
+    end: Date;
+    parent: { start: Date; end: Date } | undefined;
+    parentLabel: string;
+    parentGiven: boolean;
+    ctx: ValidationContext;
+  },
+): string {
+  const what = `El ciclo "${c.name}" (${iso(c.start)} a ${iso(c.end)})`;
+  switch (code) {
+    case 'QUARTER_REQUIRES_ANNUAL_PARENT': {
+      if (c.parentGiven) {
+        return `${what} es trimestral y su padre ${c.parentLabel} no es un ciclo anual. El padre de un trimestre tiene que ser anual. (${code})`;
+      }
+      const containing = (c.ctx.existingCycles ?? []).find(
+        (x) => x.kind === 'ANNUAL' && x.startDate <= iso(c.start) && x.endDate >= iso(c.end),
+      );
+      const found = containing
+        ? Object.entries(c.ctx.handles).find(([h, v]) => h[0] === 'C' && v.id === containing.id)
+        : undefined;
+      const use = found
+        ? ` o usá el anual existente ${found[0]} ("${found[1].label}") como parent`
+        : '';
+      return `Un ciclo trimestral necesita un ciclo anual que lo contenga y "${c.name}" no tiene padre. Agregá primero un paso CREATE_CYCLE de tipo ANNUAL que cubra esas fechas y usalo como parent${use}. (${code})`;
+    }
+    case 'QUARTER_OUT_OF_PARENT_RANGE':
+      return `${what} tiene que estar dentro de las fechas de su ciclo anual ${c.parentLabel}${c.parent ? ` (${iso(c.parent.start)} a ${iso(c.parent.end)})` : ''}. Corregí las fechas o elegí otro anual. (${code})`;
+    case 'QUARTER_OVERLAPS_SIBLING':
+      return `${what} se solapa con otro trimestre de ${c.parentLabel}. Elegí fechas que no se pisen con los otros trimestres de ese anual. (${code})`;
+    case 'ANNUAL_CANNOT_HAVE_PARENT':
+      return `${what} es anual y un ciclo anual no puede tener padre. Quitá el parent. (${code})`;
+    case 'INVALID_DATE_RANGE':
+      return `${what}: la fecha de inicio tiene que ser anterior a la de fin. (${code})`;
+    default:
+      return `${what} no cumple las reglas de ciclos. (${code})`;
+  }
 }
 
 function ownerExistingCount(ownerKey: string, ctx: ValidationContext): number {

@@ -4329,6 +4329,9 @@
           "404": {
             "description": "Ciclo padre inexistente"
           },
+          "409": {
+            "description": "Ya existe un ciclo con ese nombre (CYCLE_NAME_TAKEN)"
+          },
           "422": {
             "description": "El QUARTER se solapa con un hermano"
           }
@@ -4415,7 +4418,7 @@
             "description": "Ciclo inexistente"
           },
           "409": {
-            "description": "Ciclo cerrado, o fechas en un ciclo que no es DRAFT"
+            "description": "Ciclo cerrado, fechas en un ciclo que no es DRAFT, o nombre ya usado por otro ciclo (CYCLE_NAME_TAKEN)"
           }
         },
         "security": [

@@ -25,6 +25,12 @@ import type {
 } from './dto/assistant.dto';
 import { HelpIndexService } from './help-index.service';
 import { toWireChunks } from './domain/help-sections';
+import {
+  describePlanForHistory,
+  invalidPlanReply,
+  pendingPlanNote,
+  type HistoryPlan,
+} from './domain/history';
 import { computePlanHash } from './domain/plan-hash';
 import { parsePlan, parseReadQuery, type RawPlan } from './domain/plan-schema';
 import { buildActionCall } from './domain/plan-to-dto';
@@ -43,8 +49,6 @@ const GROUNDING_PREVIOUS_ADMIN_MESSAGES = 3;
 const PLACEHOLDER_UUID = '00000000-0000-4000-8000-000000000000';
 
 const REPLY_NO_PLAN = 'No pude armar un plan con ese pedido. Probá contarlo con otras palabras.';
-const REPLY_INVALID =
-  'Preparé un plan, pero tiene problemas y no se puede ejecutar. Revisá los motivos y probá de nuevo con más detalle.';
 
 type MessageWithPlan = AssistantMessage & { plan: AssistantPlan | null };
 
@@ -104,7 +108,7 @@ export class AssistantService {
       throw this.aiConfig.enabled ? mapAgentFailure({ code: 'AI_UNAVAILABLE' }) : aiDisabledError();
     }
 
-    const { history, adminTexts } = await this.loadHistory(admin.id, text);
+    const { history, adminTexts, pendingPlan } = await this.loadHistory(admin.id, text, now);
     const cat = await this.catalog.build();
     const chunks = this.help.search(text, 'ADMIN');
     const { wire, toCanonical } = toWireChunks(chunks);
@@ -168,6 +172,7 @@ export class AssistantService {
           adminMessage,
           assistantCreatedAt,
           reply,
+          pendingSummary: pendingPlan?.summary ?? null,
         });
       case 'QUERY':
         return this.handleQuery({
@@ -229,6 +234,8 @@ export class AssistantService {
     adminMessage: Prisma.AssistantMessageUncheckedCreateInput;
     assistantCreatedAt: Date;
     reply: string;
+    /** Resumen de otro plan de la persona que sigue PROPUESTO y sin vencer (se avisa al pie). */
+    pendingSummary: string | null;
   }): Promise<TurnResultDto> {
     const { admin, cat, adminTexts, planId, traceId, now, usageCtx } = args;
     let data = args.data;
@@ -278,7 +285,10 @@ export class AssistantService {
       requestedById: admin.id,
       expiresAt,
     });
-    const reply = invalid ? REPLY_INVALID : args.reply;
+    const base = invalid ? invalidPlanReply(validation.issues) : args.reply;
+    const reply = args.pendingSummary
+      ? appendNote(base, pendingPlanNote(args.pendingSummary))
+      : base;
 
     const planRow = await this.prisma.$transaction(async (tx) => {
       const plan = await tx.assistantPlan.create({
@@ -335,6 +345,7 @@ export class AssistantService {
       objectiveCounts: cat.objectiveCounts,
       krCounts: cat.krCounts,
       catalogTruncated: cat.truncated,
+      existingCycles: cat.existingCycles,
     };
     const result = validatePlan(raw, ctx);
 
@@ -439,7 +450,12 @@ export class AssistantService {
   private async loadHistory(
     adminId: string,
     text: string,
-  ): Promise<{ history: ChatTurn[]; adminTexts: string[] }> {
+    now: Date,
+  ): Promise<{
+    history: ChatTurn[];
+    adminTexts: string[];
+    pendingPlan: { id: string; summary: string } | null;
+  }> {
     const rows = await this.prisma.assistantMessage.findMany({
       where: { adminId },
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
@@ -447,19 +463,27 @@ export class AssistantService {
       include: { plan: true },
     });
     const chronological = rows.reverse();
+    // Otro plan propuesto y vigente: el agente tiene que saber que nada de eso existe todavía.
+    const pendingPlan = await this.prisma.assistantPlan.findFirst({
+      where: { requestedById: adminId, status: 'PROPOSED', expiresAt: { gt: now } },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      select: { id: true, summary: true },
+    });
     const history: ChatTurn[] = chronological.map((m) => ({
       role: m.role,
-      // Un plan previo viaja resumido; nunca completo (contrato §3.3).
+      // Un plan previo viaja resumido (nunca completo, contrato §3.3) y con su estado real.
       text:
-        m.kind === 'PLAN' && m.plan
-          ? `[plan ${m.plan.status}: ${m.plan.summary}]`.slice(0, 2000)
+        (m.kind === 'PLAN' || m.kind === 'EXECUTION_RESULT') && m.plan
+          ? describePlanForHistory(toHistoryPlan(m.plan), now, {
+              pendingNow: m.plan.id === pendingPlan?.id,
+            })
           : m.text,
     }));
     const previousAdmin = chronological
       .filter((m) => m.role === 'ADMIN')
       .slice(-GROUNDING_PREVIOUS_ADMIN_MESSAGES)
       .map((m) => m.text);
-    return { history, adminTexts: [text, ...previousAdmin] };
+    return { history, adminTexts: [text, ...previousAdmin], pendingPlan };
   }
 
   private async lastMessages(adminId: string, n: number): Promise<MessageDto[]> {
@@ -498,6 +522,24 @@ export class AssistantService {
       this.logger.warn(`Mantenimiento del asistente fallido: ${(error as Error).message}`);
     }
   }
+}
+
+/** Agrega un aviso al final sin pasarse del máximo del mensaje (2000). */
+function appendNote(reply: string, note: string): string {
+  const room = 2000 - note.length - 1;
+  return `${reply.slice(0, Math.max(room, 0))}
+${note}`.slice(0, 2000);
+}
+
+function toHistoryPlan(plan: AssistantPlan): HistoryPlan {
+  return {
+    status: plan.status,
+    summary: plan.summary,
+    expiresAt: plan.expiresAt,
+    actions: (plan.actions ?? []) as unknown as HistoryPlan['actions'],
+    issues: (plan.issues ?? []) as unknown as HistoryPlan['issues'],
+    steps: (plan.stepResults ?? null) as unknown as HistoryPlan['steps'],
+  };
 }
 
 function toMessageDto(row: MessageWithPlan): MessageDto {

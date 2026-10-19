@@ -59,6 +59,7 @@ export class CyclesController {
     description: 'Fechas, jerarquía o umbrales inválidos (REQ-CYC-1/2)',
   })
   @ApiNotFoundResponse({ description: 'Ciclo padre inexistente' })
+  @ApiConflictResponse({ description: 'Ya existe un ciclo con ese nombre (CYCLE_NAME_TAKEN)' })
   @ApiUnprocessableEntityResponse({ description: 'El QUARTER se solapa con un hermano' })
   create(@Body() dto: CreateCycleDto): Promise<CycleDto> {
     return this.cycles.create(dto);
@@ -72,7 +73,10 @@ export class CyclesController {
   })
   @ApiOkResponse({ type: CycleDto })
   @ApiNotFoundResponse({ description: 'Ciclo inexistente' })
-  @ApiConflictResponse({ description: 'Ciclo cerrado, o fechas en un ciclo que no es DRAFT' })
+  @ApiConflictResponse({
+    description:
+      'Ciclo cerrado, fechas en un ciclo que no es DRAFT, o nombre ya usado por otro ciclo (CYCLE_NAME_TAKEN)',
+  })
   update(
     @CurrentUser() actor: AuthUser,
     @Param('id', ParseUUIDPipe) id: string,

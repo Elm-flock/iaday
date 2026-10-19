@@ -360,6 +360,7 @@ En el check-in (`src/check-ins/domain/check-in.ts`), DERIVED exige `value` y cal
 `src/cycles/domain/cycles.ts` y `src/cycles/cycles.service.ts`:
 
 - **Jerarquía**: un ANNUAL no tiene padre. Un QUARTER es hijo de un ANNUAL, debe estar contenido en sus fechas y no puede solaparse con QUARTERs hermanos.
+- **Nombre único** (`normalizeCycleName`, `isCycleNameTaken`, `validateCycleNameAvailable`): global entre todos los ciclos, también los CLOSED (un nombre repetido confunde en reportes e historial). Se compara sin espacios de más, mayúsculas ni tildes ("Q1 2027" = " q1 2027 "). Alta y renombre responden 409 `CYCLE_NAME_TAKEN`. El chequeo corre dentro de la transacción con `pg_advisory_xact_lock` (altas y renombres simultáneos se serializan). **Sin índice único en DB**: la normalización con tildes exige la extensión `unaccent` o una columna derivada, y los datos existentes podrían ya tener nombres repetidos, lo que haría fallar la migración; el lock cubre la carrera para todo lo que pasa por `CyclesService`.
 - **Transiciones**: solo DRAFT → ACTIVE → CLOSED, con `UPDATE` condicional y auditoría (`CYCLE_ACTIVATED`, `CYCLE_CLOSED`).
 - **Edición**: las fechas solo se editan en DRAFT. Los umbrales deben estar en (0, 1] y su cambio se audita (`CYCLE_THRESHOLDS_CHANGED`).
 - **Cierre**: cada objetivo PUBLISHED pasa a CLOSED con `finalScore` (su score vigente) y `achieved` calculado con los umbrales vigentes al cierre. Cada uno queda auditado como `OBJECTIVE_CLOSED`. Los DRAFT no se cierran ni se puntúan.
@@ -525,6 +526,13 @@ sequenceDiagram
 #### Qué puede hacer el asistente (whitelist v1)
 
 Crear usuario, crear equipo, agregar o quitar integrante y asignar líder, crear ciclo, activar ciclo, crear objetivo (queda en borrador), crear KR y cambiar el responsable de un KR. **Fuera, a propósito**: cerrar ciclos, publicar o borrar objetivos, cambiar roles, desactivar usuarios, resetear claves, y todo lo de solicitudes de documento adaptado (asignar, entregar, rechazar). El resto responde con el paso a paso del manual (`HOW_TO`). Las consultas de **solo lectura** son auditoría (`AUDIT_SEARCH`) y listado de solicitudes de adaptación: Nest ejecuta el servicio existente y renderiza la tabla; los registros **nunca vuelven al LLM**.
+
+#### Validación previa (dry-run) y estado en el historial
+
+- **Dry-run de dominio antes de confirmar**: `validatePlan` simula el plan en orden con las mismas funciones puras que usan los servicios; lo que crea un paso anterior cuenta como existente para los siguientes. Cubre: jerarquía de ciclos (`validateCycleHierarchy`: trimestral con anual padre, dentro de sus fechas y sin solaparse con otros trimestres, existentes o del plan), máximo de objetivos por responsable y ciclo y de KRs por objetivo (`PLAN_LIMITS`, igual a `okrs/domain/limits.ts`), nombre de equipo único bajo su padre, nombre de ciclo único (contra los existentes y contra otro `CREATE_CYCLE` del plan, `(CYCLE_NAME_TAKEN)`) y email único. Una violación es un `issue` bloqueante (el plan queda `INVALID`, se pide una reparación al agente), no un fallo `PARTIAL` al ejecutar. Los ciclos reales viajan al validador como `existingCycles` (completos, sin el recorte del catálogo). El conjunto de `PlanIssue.code` del contrato es cerrado: los errores de jerarquía usan `DTO_INVALID` con el código de dominio entre paréntesis en el mensaje.
+- **Historial con el estado real del plan** (`domain/history.ts`): los turnos `PLAN` y `EXECUTION_RESULT` viajan en el mismo campo `text` con una anotación en texto plano: `[Plan PROPUESTO, todavía sin confirmar: nada de esto existe aún…]`, `VENCIDO`, `DESCARTADO`, `EJECUTADO`, `PARCIAL` (qué se hizo, qué falló y por qué), `FALLIDO`, `INVÁLIDO`, `EN EJECUCIÓN`, `INTERRUMPIDO`. Solo nombres y etiquetas: se quitan emails y UUIDs.
+- **Plan pendiente**: si al escribir un mensaje nuevo hay otro plan propio `PROPUESTO` y vigente, su anotación lo dice y la respuesta del plan nuevo agrega "Tenés un plan anterior sin confirmar…". **No se descarta solo**: descartar sin consentimiento destruye trabajo que la persona puede querer; conviven y la UI muestra ambos.
+- **Plan `INVALID`**: la respuesta lista los motivos en lenguaje claro y un paso siguiente concreto.
 
 #### Endpoints (todos ADMIN; cualquier otra persona recibe 404)
 

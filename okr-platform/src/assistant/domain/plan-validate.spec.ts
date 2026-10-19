@@ -349,9 +349,9 @@ describe('validatePlan', () => {
           type: 'CREATE_CYCLE',
           ref: 'c1',
           name: 'Q1 2027',
-          kind: 'QUARTER',
+          kind: 'ANNUAL',
           startDate: '2027-01-01',
-          endDate: '2027-03-31',
+          endDate: '2027-12-31',
           sourceQuote: 'creá el ciclo Q1 2027',
         },
         { type: 'ACTIVATE_CYCLE', cycle: created('c1'), sourceQuote: 'activalo' },
@@ -502,6 +502,210 @@ describe('validatePlan', () => {
     expect(PLAN_LIMITS.maxObjectivesPerOwner).toBe(MAX_OBJECTIVES_PER_OWNER);
     expect(PLAN_LIMITS.maxKrsPerObjective).toBe(MAX_KRS_PER_OBJECTIVE);
     expect(PLAN_LIMITS.minToPublish).toBe(MIN_KRS_TO_PUBLISH);
+  });
+
+  describe('dry-run de jerarquía de ciclos (misma regla que CyclesService)', () => {
+    const ANNUAL_2027 = {
+      id: 'c-annual',
+      name: 'Base anual',
+      kind: 'ANNUAL',
+      startDate: '2027-01-01',
+      endDate: '2027-12-31',
+      parentId: null,
+    };
+    const withAnnual = (extra: ValidationContext['existingCycles'] = []) =>
+      ctx({
+        handles: { ...ctx().handles, C9: { id: 'c-annual', label: 'Año 2027', status: 'DRAFT' } },
+        existingCycles: [ANNUAL_2027, ...extra],
+      });
+    const quarter = (ref: string, startDate: string, endDate: string, parent?: unknown) => ({
+      type: 'CREATE_CYCLE',
+      ref,
+      name: `Trimestre ${ref}`,
+      kind: 'QUARTER',
+      startDate,
+      endDate,
+      ...(parent ? { parent } : {}),
+      sourceQuote: 'creá el ciclo Q1 2027',
+    });
+    const annual = (ref: string) => ({
+      type: 'CREATE_CYCLE',
+      ref,
+      name: 'Año 2027',
+      kind: 'ANNUAL',
+      startDate: '2027-01-01',
+      endDate: '2027-12-31',
+      sourceQuote: 'creá el ciclo Q1 2027',
+    });
+
+    it('QUARTER sin padre -> issue con instrucciones para el planner (el caso real de la demo)', () => {
+      const r = validatePlan(plan([quarter('c1', '2027-01-01', '2027-03-31')]), ctx());
+      expect(r.issues).toHaveLength(1);
+      expect(r.issues[0]).toMatchObject({ actionIndex: 0, code: 'DTO_INVALID' });
+      expect(r.issues[0].message).toContain('necesita un ciclo anual');
+      expect(r.issues[0].message).toContain('QUARTER_REQUIRES_ANNUAL_PARENT');
+    });
+
+    it('QUARTER sin padre sugiere el anual existente que lo contiene', () => {
+      const r = validatePlan(plan([quarter('c1', '2027-01-01', '2027-03-31')]), withAnnual());
+      expect(r.issues[0].message).toContain('usá el anual existente C9 ("Año 2027")');
+    });
+
+    it('QUARTER con ANNUAL NUEVO creado antes en el plan -> válido', () => {
+      const r = validatePlan(
+        plan([annual('c1'), quarter('c2', '2027-01-01', '2027-03-31', created('c1'))]),
+        ctx(),
+      );
+      expect(r.issues).toEqual([]);
+    });
+
+    it('QUARTER con ANNUAL existente -> válido', () => {
+      const r = validatePlan(
+        plan([quarter('c1', '2027-01-01', '2027-03-31', existing('C9'))]),
+        withAnnual(),
+      );
+      expect(r.issues).toEqual([]);
+    });
+
+    it('QUARTER fuera de las fechas del anual -> issue', () => {
+      const r = validatePlan(
+        plan([quarter('c1', '2027-10-01', '2028-01-31', existing('C9'))]),
+        withAnnual(),
+      );
+      expect(r.issues[0].message).toContain('tiene que estar dentro de las fechas');
+      expect(r.issues[0].message).toContain('QUARTER_OUT_OF_PARENT_RANGE');
+    });
+
+    it('QUARTER que se solapa con uno existente o con otro del mismo plan -> issue', () => {
+      const c = withAnnual([
+        {
+          id: 'c-q1',
+          name: 'Trimestre previo',
+          kind: 'QUARTER',
+          startDate: '2027-01-01',
+          endDate: '2027-03-31',
+          parentId: 'c-annual',
+        },
+      ]);
+      const r = validatePlan(
+        plan([
+          quarter('c1', '2027-03-31', '2027-06-30', existing('C9')),
+          quarter('c2', '2027-07-01', '2027-09-30', existing('C9')),
+          quarter('c3', '2027-09-30', '2027-12-31', existing('C9')),
+        ]),
+        c,
+      );
+      expect(
+        r.issues.map((i) => [i.actionIndex, i.message.includes('QUARTER_OVERLAPS_SIBLING')]),
+      ).toEqual([
+        [0, true],
+        [2, true],
+      ]);
+    });
+
+    it('ANNUAL con padre, fechas invertidas y padre que no es anual -> issues', () => {
+      const r = validatePlan(
+        plan([
+          { ...annual('c1'), parent: existing('C9') },
+          { ...annual('c2'), startDate: '2027-12-31', endDate: '2027-01-01' },
+          quarter('c3', '2027-01-01', '2027-03-31', existing('C9')),
+          quarter('c4', '2027-04-01', '2027-06-30', created('c3')),
+        ]),
+        withAnnual(),
+      );
+      const found = r.issues.map((i) => i.message);
+      expect(found.some((m) => m.includes('ANNUAL_CANNOT_HAVE_PARENT'))).toBe(true);
+      expect(found.some((m) => m.includes('INVALID_DATE_RANGE'))).toBe(true);
+      expect(found.some((m) => m.includes('no es un ciclo anual'))).toBe(true);
+    });
+
+    it('padre sin resolver o fechas mal formadas no generan un issue de jerarquía duplicado', () => {
+      const r = validatePlan(
+        plan([
+          quarter('c1', '2027-01-01', '2027-03-31', existing('C99')),
+          quarter('c2', 'mañana', '2027-03-31'),
+        ]),
+        ctx(),
+      );
+      expect(codes(r)).toEqual(['UNKNOWN_HANDLE']);
+    });
+
+    it('CREATE_CYCLE con el nombre de un ciclo existente (aunque cambien tildes, mayúsculas o espacios) -> DTO_INVALID (CYCLE_NAME_TAKEN) sugiriendo el handle', () => {
+      const r = validatePlan(
+        plan([
+          { ...annual('c1'), name: '  AÑO 2027 ', startDate: '2028-01-01', endDate: '2028-12-31' },
+        ]),
+        ctx({
+          handles: { ...ctx().handles, C9: { id: 'c-old', label: 'Año 2027', status: 'CLOSED' } },
+          existingCycles: [
+            {
+              id: 'c-old',
+              name: 'Ano 2027',
+              kind: 'ANNUAL',
+              startDate: '2027-01-01',
+              endDate: '2027-12-31',
+              parentId: null,
+            },
+          ],
+        }),
+      );
+      expect(r.issues).toHaveLength(1);
+      expect(r.issues[0]).toMatchObject({ actionIndex: 0, code: 'DTO_INVALID' });
+      expect(r.issues[0].message).toContain('Ya existe un ciclo llamado «AÑO 2027»');
+      expect(r.issues[0].message).toContain('C9');
+      expect(r.issues[0].message).toMatch(/\(CYCLE_NAME_TAKEN\)$/);
+    });
+
+    it('dos CREATE_CYCLE con el mismo nombre en un plan -> el segundo falla; nombres distintos -> válido', () => {
+      const dup = validatePlan(
+        plan([
+          annual('c1'),
+          { ...annual('c2'), name: 'año 2027', startDate: '2028-01-01', endDate: '2028-12-31' },
+        ]),
+        ctx(),
+      );
+      expect(dup.issues).toHaveLength(1);
+      expect(dup.issues[0]).toMatchObject({ actionIndex: 1, code: 'DTO_INVALID' });
+      expect(dup.issues[0].message).toContain('en este mismo plan');
+      expect(dup.issues[0].message).toContain('(CYCLE_NAME_TAKEN)');
+      const distinct = validatePlan(
+        plan([annual('c1'), { ...annual('c2'), name: 'Año 2028' }]),
+        ctx(),
+      );
+      expect(distinct.issues.filter((i) => i.message.includes('CYCLE_NAME_TAKEN'))).toEqual([]);
+    });
+
+    it('sexto objetivo del mismo responsable en un ciclo NUEVO -> OBJECTIVE_LIMIT; email existente -> EMAIL_TAKEN', () => {
+      const objective = (ref: string) => ({
+        type: 'CREATE_OBJECTIVE',
+        ref,
+        cycle: created('c1'),
+        owner: { kind: 'USER', entity: existing('U1') },
+        title: 'Objetivo ' + ref,
+        origin: 'TOP_DOWN',
+        objectiveType: 'COMMITTED',
+        sourceQuote: 'creá tres objetivos',
+      });
+      const r = validatePlan(
+        plan([
+          annual('c1'),
+          ...['o1', 'o2', 'o3', 'o4', 'o5', 'o6'].map(objective),
+          {
+            type: 'CREATE_USER',
+            ref: 'u1',
+            name: 'Lucía Gómez',
+            email: 'taken@x.com',
+            role: 'MEMBER',
+            sourceQuote: 'dá de alta a Lucía Gómez',
+          },
+        ]),
+        ctx(),
+      );
+      expect(r.issues.map((i) => [i.actionIndex, i.code])).toEqual([
+        [6, 'OBJECTIVE_LIMIT'],
+        [7, 'EMAIL_TAKEN'],
+      ]);
+    });
   });
 
   it('TOO_MANY_ACTIONS y CATALOG_TRUNCATED', () => {
