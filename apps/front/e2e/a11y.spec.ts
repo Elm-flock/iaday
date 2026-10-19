@@ -194,15 +194,26 @@ test.describe('accesibilidad (axe) en rutas principales', () => {
         '/feedback/nuevo',
         '/reconocimientos',
         '/reconocimientos/nuevo',
+        '/pedidos-adaptacion',
+        '/pedidos-adaptacion/nuevo',
         '/ruta-que-no-existe',
       ];
       for (const route of routes) await scan(page, route, theme);
       await page.context().close();
     });
 
-    test(`admin: usuarios, ciclos y detalle de ciclo (${theme})`, async ({ browser }) => {
+    test(`admin: usuarios, uso de IA, ciclos y detalle de ciclo (${theme})`, async ({
+      browser,
+    }) => {
       const page = await sessionFor(browser, ADMIN.email, ADMIN.password);
-      for (const route of ['/admin/usuarios', '/ciclos', `/ciclos/${ctx.annualId}`]) {
+      for (const route of [
+        '/admin/usuarios',
+        '/admin/uso-ia',
+        '/admin/auditoria',
+        '/admin/pedidos-adaptacion',
+        '/ciclos',
+        `/ciclos/${ctx.annualId}`,
+      ]) {
         await scan(page, route, theme);
       }
       await page.context().close();

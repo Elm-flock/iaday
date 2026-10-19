@@ -43,3 +43,8 @@ export function sessionMaxAges(session: SessionLike, now = Date.now()) {
     refresh: secondsUntil(session.refreshExpiresAt, FALLBACK_REFRESH_MAX_AGE, now),
   };
 }
+
+/** Pantalla de cambio de contraseña (obligatorio si `mustChangePassword`, voluntario desde el menú). */
+export const CHANGE_PASSWORD_PATH = '/cambiar-contrasena';
+/** Código del 403 del back mientras la persona tiene la clave inicial sin cambiar. */
+export const PASSWORD_CHANGE_REQUIRED_CODE = 'PASSWORD_CHANGE_REQUIRED';

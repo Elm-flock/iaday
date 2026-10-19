@@ -1,4 +1,5 @@
 import { Target } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { EditedBadge, ReadBadge, UnreadBadge } from './unread-badge';
 import { Avatar } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
@@ -22,6 +23,8 @@ type Props = {
   editedAt?: string | null;
   viewerRole: 'author' | 'receiver';
   link: FeedbackLinkInfo | null;
+  /** Ranura para la versión accesible (IA). El contenido adaptado es tan privado como el feedback. */
+  accessibleVersion?: ReactNode;
 };
 
 /** Detalle presentacional. El contenido solo se renderiza en la vista del emisor o del receptor. */
@@ -34,6 +37,7 @@ export function FeedbackDetailView({
   editedAt = null,
   viewerRole,
   link,
+  accessibleVersion,
 }: Props) {
   return (
     <Card>
@@ -59,6 +63,7 @@ export function FeedbackDetailView({
       <p className="mt-s20 text-body whitespace-pre-wrap text-ink" data-testid="feedback-content">
         {content}
       </p>
+      {accessibleVersion ? <div className="mt-s15">{accessibleVersion}</div> : null}
       {link ? (
         <p className="mt-s20 flex items-center gap-s10 border-t border-border pt-s15 text-body-sm text-ink-muted">
           <Target size={16} strokeWidth={1.75} aria-hidden="true" />

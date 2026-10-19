@@ -27,3 +27,7 @@ Registro de avances de los resultados clave y vista "Pendientes" (`/check-ins`).
 ## Tests
 
 `check-ins-logic.test.ts` (parseo, políticas, copy), `actions.test.ts` (fetch mockeado, `updateTag`), `_components/check-ins-views.test.tsx` (drawer: preview, meta < inicio, clamp, manual, error; timeline; pendientes), `src/lib/check-in-preview.test.ts`, `src/lib/dal/check-ins.test.ts`, `objetivos/_components/progress-badge.test.tsx`; e2e contra el back real en `e2e/check-ins.spec.ts` (el "vencido" se siembra retrasando `publishedAt` con `docker exec ... psql` en la base e2e).
+
+## Ayuda de IA (ver `_ai/CLAUDE.md`)
+
+- `CheckInTimeline` y `KrHistoryCard` siguen siendo presentacionales: aceptan las ranuras opcionales `renderExtra` / `renderCheckInExtra` (bajo cada check-in) y `renderKrExtra` (bajo el título de cada KR). El detalle del objetivo las usa para "Ver en lectura fácil / lenguaje claro" (solo check-ins con nota: sin nota el back responde `AI_NOTHING_TO_ADAPT`) y "Resumir check-ins" (solo KRs con historial).

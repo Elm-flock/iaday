@@ -1,8 +1,11 @@
 'use client';
 
+import { useRef, useState } from 'react';
 import { createObjectiveAction } from '../actions';
 import { ObjectiveFields, type ParentOption } from './objective-fields';
 import type { OwnerChoices } from '../policy';
+import { SuggestOkrButton } from '../../_ai/_components/suggest-okr-button';
+import { buildObjectiveSuggestInput, formValues, objectivePrefill } from '../../_ai/suggest-input';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -19,6 +22,7 @@ export function ObjectiveCreateForm({
   owners,
   defaultOwner,
   parents,
+  aiEnabled = false,
 }: {
   cycles: CycleOption[];
   defaultCycleId: string | undefined;
@@ -26,15 +30,27 @@ export function ObjectiveCreateForm({
   /** Valor `user:{id}` de quien consulta si puede ser responsable (el resto elige a mano). */
   defaultOwner: string;
   parents: ParentOption[];
+  /** La ayuda de IA está activa: se ofrece "Sugerir redacción" (nunca se aplica sola). */
+  aiEnabled?: boolean;
 }) {
   const { state, onSubmit, pending } = useActionForm(createObjectiveAction);
-  const values = state.values ?? {};
+  const formRef = useRef<HTMLFormElement>(null);
+  // Al usar una sugerencia se precargan título/descripción: los campos se remontan con `key` para tomar el
+  // nuevo `defaultValue` sin perder lo demás que la persona ya tipeó.
+  const [prefill, setPrefill] = useState<Record<string, string>>({});
+  const [fieldsKey, setFieldsKey] = useState(0);
+  const values = { ...(state.values ?? {}), ...prefill };
   const errors = state.fieldErrors ?? {};
   const noOwners = owners.users.length + owners.teams.length === 0;
 
   return (
     <Card>
-      <form onSubmit={onSubmit} className="flex max-w-2xl flex-col gap-s15" noValidate>
+      <form
+        ref={formRef}
+        onSubmit={onSubmit}
+        className="flex max-w-2xl flex-col gap-s15"
+        noValidate
+      >
         {state.status === 'error' && state.message ? (
           <Alert tone="danger">{state.message}</Alert>
         ) : null}
@@ -78,7 +94,29 @@ export function ObjectiveCreateForm({
           </Select>
         </FormField>
 
-        <ObjectiveFields values={values} errors={errors} defaults={{}} parents={parents} />
+        <ObjectiveFields
+          key={fieldsKey}
+          values={values}
+          errors={errors}
+          defaults={{}}
+          parents={parents}
+        />
+
+        {aiEnabled ? (
+          <SuggestOkrButton
+            scope="objective"
+            buildInput={() =>
+              buildObjectiveSuggestInput(new FormData(formRef.current ?? undefined))
+            }
+            onUse={(suggestion) => {
+              setPrefill({
+                ...formValues(formRef.current),
+                ...objectivePrefill(suggestion.objective),
+              });
+              setFieldsKey((k) => k + 1);
+            }}
+          />
+        ) : null}
 
         <div className="flex justify-end">
           <Button type="submit" loading={pending} disabled={noOwners || cycles.length === 0}>

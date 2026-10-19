@@ -13,6 +13,6 @@ export const USER_ERROR_COPY: ErrorCopy = {
 
 export const ROLE_LABEL = {
   ADMIN: 'Administración',
-  LEADER: 'Liderazgo',
+  LEADER: 'Líder',
   MEMBER: 'Integrante',
 } as const;

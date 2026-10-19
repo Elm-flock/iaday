@@ -125,7 +125,7 @@ test('admin crea y activa el ciclo anual y el trimestre, arma el equipo con líd
   const members = page.locator('section', {
     has: page.getByRole('heading', { name: 'Integrantes' }),
   });
-  await expect(members.getByText('Líder', { exact: true })).toHaveCount(1);
+  await expect(members.getByText('Líder del equipo', { exact: true })).toHaveCount(1);
   await page.screenshot({ path: `${SHOTS}/journey-admin-equipo.png`, fullPage: true });
 
   // Quedó consistente para el resto de las personas: el trimestre figura como activo en la API y la líder ve su equipo.

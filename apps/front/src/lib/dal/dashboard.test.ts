@@ -31,6 +31,7 @@ const user = {
   id: 'u1',
   name: 'Ana',
   role: 'LEADER' as const,
+  mustChangePassword: false,
   teams: [
     { teamId: 't2', name: 'Producto', isLead: false },
     { teamId: 't1', name: 'Plataforma', isLead: true },

@@ -6,6 +6,7 @@ import { deleteKeyResultAction } from '../actions';
 import { KR_MAX, KR_MIN, KR_SCORING_LABEL } from '../messages';
 import { KrFormModal, type PersonOption } from './kr-form-modal';
 import { KrProgressBadge } from './progress-badge';
+import type { ObjectiveContext } from '../../_ai/suggest-input';
 import { toCheckInTarget } from '../../check-ins/_components/check-in-target';
 import { RegisterCheckInButton } from '../../check-ins/_components/register-check-in-button';
 import { Alert } from '@/components/ui/alert';
@@ -37,6 +38,8 @@ type Props = {
   canChangeTarget: boolean;
   /** Por KR: `null` si puede registrar check-ins; si no, la razón (se muestra deshabilitado con explicación). */
   checkInReasons: Record<string, string | null>;
+  /** Contexto del objetivo para "Sugerir redacción" de un KR; `undefined` si la ayuda de IA no está activa. */
+  suggestContext?: ObjectiveContext;
 };
 
 /** KRs del objetivo: tabla con inicio/meta/actual/unidad/score/banda y alta/edición/baja en modal. */
@@ -48,6 +51,7 @@ export function KeyResultsCard({
   canEdit,
   canChangeTarget,
   checkInReasons,
+  suggestContext,
 }: Props) {
   const [modal, setModal] = useState<{ kr?: KeyResult } | null>(null);
   const [toDelete, setToDelete] = useState<KeyResult | null>(null);
@@ -273,6 +277,7 @@ export function KeyResultsCard({
           defaultOwnerId={viewerId}
           targetLocked={targetLocked}
           keyResult={modal.kr}
+          suggestContext={suggestContext}
           onClose={closeModal}
         />
       ) : null}

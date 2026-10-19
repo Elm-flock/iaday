@@ -34,6 +34,15 @@ describe('AppNav', () => {
     expect(screen.getByRole('link', { name: 'Ciclos' })).toHaveAttribute('href', '/ciclos');
   });
 
+  it('Ayuda: visible para todos, incluso sin rol conocido', () => {
+    render(
+      <AppShell sidebar={<AppNav />} header={<div />}>
+        x
+      </AppShell>,
+    );
+    expect(screen.getByRole('link', { name: 'Ayuda' })).toHaveAttribute('href', '/ayuda');
+  });
+
   it('Usuarios: oculto sin rol conocido, habilitado para ADMIN y deshabilitado con explicación para el resto', () => {
     const { rerender } = render(
       <AppShell sidebar={<AppNav />} header={<div />}>
@@ -60,6 +69,76 @@ describe('AppNav', () => {
     const item = screen.getByText('Usuarios').closest('[aria-disabled="true"]');
     expect(item).toBeInTheDocument();
     expect(item).toHaveAccessibleDescription('Solo administración puede gestionar usuarios.');
+  });
+});
+
+describe('AppNav: Uso de IA (solo administración)', () => {
+  it('oculto sin rol, enlace para ADMIN y deshabilitado con su propia explicación para el resto', () => {
+    const { rerender } = render(
+      <AppShell sidebar={<AppNav />} header={<div />}>
+        x
+      </AppShell>,
+    );
+    expect(screen.queryByText('Uso de IA')).not.toBeInTheDocument();
+
+    rerender(
+      <AppShell sidebar={<AppNav role="ADMIN" />} header={<div />}>
+        x
+      </AppShell>,
+    );
+    expect(screen.getByRole('link', { name: 'Uso de IA' })).toHaveAttribute(
+      'href',
+      '/admin/uso-ia',
+    );
+
+    rerender(
+      <AppShell sidebar={<AppNav role="MEMBER" />} header={<div />}>
+        x
+      </AppShell>,
+    );
+    const item = screen.getByText('Uso de IA').closest('[aria-disabled="true"]');
+    expect(item).toBeInTheDocument();
+    expect(item).toHaveAccessibleDescription('Solo administración puede ver el uso de IA.');
+  });
+});
+
+describe('AppNav: Auditoría y Pedidos de adaptación (solo administración) y Documentos adaptados (todas las personas)', () => {
+  const renderNav = (role?: 'ADMIN' | 'MEMBER') =>
+    render(
+      <AppShell sidebar={<AppNav role={role} />} header={<div />}>
+        x
+      </AppShell>,
+    );
+
+  it('Documentos adaptados lo ve cualquier persona, incluso sin rol resuelto', () => {
+    renderNav();
+    expect(screen.getByRole('link', { name: 'Documentos adaptados' })).toHaveAttribute(
+      'href',
+      '/pedidos-adaptacion',
+    );
+  });
+
+  it('ADMIN tiene enlaces; el resto los ve deshabilitados con su explicación', () => {
+    const { unmount } = renderNav('ADMIN');
+    expect(screen.getByRole('link', { name: 'Auditoría' })).toHaveAttribute(
+      'href',
+      '/admin/auditoria',
+    );
+    expect(screen.getByRole('link', { name: 'Pedidos de adaptación' })).toHaveAttribute(
+      'href',
+      '/admin/pedidos-adaptacion',
+    );
+    unmount();
+
+    renderNav('MEMBER');
+    for (const [name, reason] of [
+      ['Auditoría', 'Solo administración puede ver la auditoría.'],
+      ['Pedidos de adaptación', 'Solo administración puede gestionar los pedidos de adaptación.'],
+    ]) {
+      const item = screen.getByText(name).closest('[aria-disabled="true"]');
+      expect(item).toBeInTheDocument();
+      expect(item).toHaveAccessibleDescription(reason);
+    }
   });
 });
 

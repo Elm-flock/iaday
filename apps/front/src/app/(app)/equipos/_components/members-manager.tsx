@@ -25,7 +25,7 @@ function LeadTag() {
   return (
     <Tag className="gap-s5">
       <Crown size={14} strokeWidth={1.75} aria-hidden="true" />
-      Líder
+      Líder del equipo
     </Tag>
   );
 }
@@ -173,7 +173,7 @@ export function MembersManager({
                     disabled={pending}
                     onClick={() => run(() => setLeadAction(teamId, m.userId, !m.isLead))}
                   >
-                    {m.isLead ? 'Quitar liderazgo' : 'Hacer líder'}
+                    {m.isLead ? 'Quitar como líder del equipo' : 'Hacer líder del equipo'}
                   </Button>
                   <Button
                     variant="ghost"

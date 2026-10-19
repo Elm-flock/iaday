@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { PageSkeleton } from '../../_components/page-skeleton';
+import { AccessibleVersion } from '../../_ai/_components/accessible-version';
 import { FeedbackAuthorActions } from '../_components/feedback-author-actions';
 import { FeedbackDetailView, type FeedbackLinkInfo } from '../_components/feedback-detail-view';
 import { MarkAsRead } from '../_components/mark-as-read';
@@ -68,6 +69,12 @@ async function FeedbackDetail({ params }: { params: Params }) {
           editedAt={feedback.editedAt}
           viewerRole={role}
           link={link}
+          accessibleVersion={
+            // Sin cache y dentro de su propio Suspense: la ayuda de IA nunca bloquea ni rompe el detalle.
+            <Suspense fallback={null}>
+              <AccessibleVersion entityType="feedback" entityId={feedback.id} owner={null} />
+            </Suspense>
+          }
         />
       </div>
       {isUnread(viewer.id, feedback) ? <MarkAsRead id={feedback.id} /> : null}

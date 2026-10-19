@@ -36,7 +36,7 @@ export function AppShell({ sidebar, header, children, defaultCollapsed = false }
       <div
         data-collapsed={collapsed}
         className={cn(
-          'grid min-h-screen grid-rows-[64px_1fr] bg-bg text-ink transition-[grid-template-columns] duration-200 ease-out',
+          'grid min-h-screen print:block grid-rows-[64px_1fr] bg-bg text-ink transition-[grid-template-columns] duration-200 ease-out',
           collapsed ? 'grid-cols-[68px_1fr]' : 'grid-cols-[248px_1fr]',
         )}
       >

@@ -16,7 +16,7 @@ export function Sidebar({
   return (
     <nav
       aria-label={label}
-      className="sticky top-16 flex h-[calc(100vh-64px)] flex-col gap-s5 overflow-y-auto border-r border-border bg-surface p-s10"
+      className="sticky top-16 flex h-[calc(100vh-64px)] flex-col gap-s5 overflow-y-auto border-r border-border bg-surface p-s10 print:hidden"
     >
       {children}
     </nav>

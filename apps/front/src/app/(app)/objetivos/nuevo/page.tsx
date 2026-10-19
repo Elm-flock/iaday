@@ -6,6 +6,7 @@ import { PageSkeleton } from '../../_components/page-skeleton';
 import { flattenTeams } from '../../equipos/team-tree';
 import { PageHeader } from '@/components/ui/page-header';
 import { cycleLabel } from '@/lib/cycle-label';
+import { getAiStatus } from '@/lib/dal/ai';
 import { listCycles, type Cycle } from '@/lib/dal/cycles';
 import { listObjectives } from '@/lib/dal/objectives';
 import { getCurrentUser } from '@/lib/dal/session';
@@ -26,12 +27,13 @@ async function NewObjectiveContent({ searchParams }: { searchParams: SearchParam
   const requested = Array.isArray(query.cycleId) ? query.cycleId[0] : query.cycleId;
 
   // Todo independiente: en paralelo (sesión, directorios, ciclos y candidatos a padre).
-  const [user, users, tree, cycles, published] = await Promise.all([
+  const [user, users, tree, cycles, published, ai] = await Promise.all([
     getCurrentUser(),
     listUsers(),
     getTeamTree(),
     listCycles(),
     listObjectives({ status: 'PUBLISHED' }),
+    getAiStatus(),
   ]);
 
   const teams = flattenTeams(tree);
@@ -65,6 +67,7 @@ async function NewObjectiveContent({ searchParams }: { searchParams: SearchParam
           owners.users.some((o) => o.value === selfValue) && user.role !== 'ADMIN' ? selfValue : ''
         }
         parents={parents}
+        aiEnabled={ai.enabled}
       />
     </>
   );

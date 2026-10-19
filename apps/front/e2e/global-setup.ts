@@ -20,6 +20,9 @@ const ROUTES = [
   '/reconocimientos',
   '/reconocimientos/nuevo',
   '/admin/usuarios',
+  '/admin/uso-ia',
+  '/ayuda',
+  '/ayuda/usuario',
   '/ui',
   '/ruta-que-no-existe',
 ];

@@ -79,7 +79,7 @@ describe('MembersManager', () => {
         <MembersManager teamId="t" members={members} candidates={[]} canManage={false} />
       </ToastProvider>,
     );
-    expect(screen.getByText('Líder')).toBeInTheDocument();
+    expect(screen.getByText('Líder del equipo')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Agregar integrante/ })).not.toBeInTheDocument();
   });
 
@@ -91,8 +91,10 @@ describe('MembersManager', () => {
     );
     expect(screen.getByRole('button', { name: 'Agregar integrante' })).toBeDisabled();
     expect(screen.getByText(/Todas las personas activas ya están/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Quitar liderazgo' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Hacer líder' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Quitar como líder del equipo' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Hacer líder del equipo' })).toBeInTheDocument();
   });
 });
 

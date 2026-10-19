@@ -4,6 +4,366 @@
  */
 
 export interface paths {
+  '/adaptation-requests': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Todos los pedidos (solo ADMIN), filtrables por estado y por vencidos; paginado. */
+    get: operations['AdaptationRequestsController_list'];
+    put?: never;
+    /** Pide un documento adaptado a una persona (plazo configurable, 10 días por defecto). Un feedback solo se vincula si lo enviaste o recibiste. */
+    post: operations['AdaptationRequestsController_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/adaptation-requests/mine': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Mis pedidos, del más nuevo al más viejo */
+    get: operations['AdaptationRequestsController_mine'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/adaptation-requests/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Detalle de un pedido (quien lo hizo o ADMIN; el resto, 404) */
+    get: operations['AdaptationRequestsController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/adaptation-requests/{id}/assign': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** Asigna el pedido a una persona de administración y lo pasa a EN_CURSO (solo ADMIN) */
+    patch: operations['AdaptationRequestsController_assign'];
+    trace?: never;
+  };
+  '/adaptation-requests/{id}/deliver': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Entrega el documento adaptado, con nota y enlace opcional (solo ADMIN) */
+    post: operations['AdaptationRequestsController_deliver'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/adaptation-requests/{id}/reject': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Rechaza el pedido con justificación obligatoria por escrito (art. 14.5: solo por carga desproporcionada) (solo ADMIN) */
+    post: operations['AdaptationRequestsController_reject'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ai/adapt/{entityType}/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** [:entityType = objective | check-in | feedback] Versión accesible vigente (mismo texto de origen) si ya existe */
+    get: operations['AiController_getAdaptation'];
+    put?: never;
+    /** [:entityType = objective | check-in | feedback] Genera (o devuelve de la caché) la versión en lectura fácil o lenguaje claro de un objetivo, check-in o feedback. Solo puede pedirla quien puede ver el elemento; el feedback ajeno responde 404 también para ADMIN. */
+    post: operations['AiController_adapt'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ai/adapted/{id}/accept': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Marca que la versión me sirve (solo quien la pidió; DRAFT -> ACCEPTED) */
+    post: operations['AiController_accept'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ai/adapted/{id}/validate': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** Validación humana de la versión (ADMIN o líder del equipo dueño del objetivo; el feedback no es validable). Puede corregir el contenido. */
+    patch: operations['AiController_validate'];
+    trace?: never;
+  };
+  '/ai/check-ins/{krId}/summary': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Resume el historial de check-ins de un KR (sin autores; habla del avance, no de personas) */
+    post: operations['AiController_summarize'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ai/impact': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Impacto: adopción, tiempos, calidad de legibilidad y costo estimado por usuario activo. Agregado, sin datos por persona (solo ADMIN) */
+    get: operations['AiAdminController_impact'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ai/okr-suggest': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Sugiere una redacción mejor de un objetivo y sus KRs. No modifica nada: la persona decide si la usa. */
+    post: operations['AiController_suggestOkr'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ai/status': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Indica si la ayuda de IA está activada (la UI oculta los botones si no) */
+    get: operations['AiController_status'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ai/suggestions/{id}/accept': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Acepta una sugerencia (solo quien la pidió). No aplica cambios. */
+    post: operations['AiController_acceptSuggestion'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ai/suggestions/{id}/discard': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Descarta una sugerencia (solo quien la pidió) */
+    post: operations['AiController_discardSuggestion'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/ai/usage': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Uso de IA por feature y por modelo: llamadas, fallos por paso, tokens, costo ESTIMADO y latencia p50/p95 (solo ADMIN) */
+    get: operations['AiAdminController_usage'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/assistant/conversation': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /** Borra la conversación propia: todos los mensajes y los planes que no se ejecutaron. Los planes ejecutados se conservan 90 días por trazabilidad. */
+    delete: operations['AssistantController_deleteConversation'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/assistant/digest': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Novedades para administración: hechos calculados de forma determinista + resumen en lenguaje claro (IA o plantilla). Caché de 10 minutos; `refresh=true` la ignora. */
+    get: operations['AssistantController_digest'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/assistant/messages': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Conversación propia (los últimos mensajes, del más viejo al más nuevo) */
+    get: operations['AssistantController_messages'];
+    put?: never;
+    /** Un turno de chat. La respuesta puede traer un plan (a confirmar), el resultado de una consulta de auditoría, ayuda citando el manual o un texto. */
+    post: operations['AssistantController_send'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/assistant/plans/{id}/confirm': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Confirma y ejecuta un plan con su planHash. Se frena en el primer paso que falla (sin rollback). Devuelve el resultado por paso; la clave inicial de un alta viaja solo acá, una vez. */
+    post: operations['AssistantController_confirm'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/assistant/plans/{id}/discard': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Descarta un plan que todavía no se ejecutó */
+    post: operations['AssistantController_discard'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/audit': {
     parameters: {
       query?: never;
@@ -15,6 +375,23 @@ export interface paths {
     get: operations['AuditController_list'];
     put?: never;
     post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/auth/change-password': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Cambia la contraseña propia. Apaga mustChangePassword, revoca las demás sesiones y devuelve una sesión nueva. */
+    post: operations['AuthController_changePassword'];
     delete?: never;
     options?: never;
     head?: never;
@@ -453,7 +830,7 @@ export interface paths {
     /** Directorio de usuarios (cualquier usuario autenticado) */
     get: operations['UsersController_list'];
     put?: never;
-    /** Crea un usuario (solo ADMIN; no hay auto-registro) */
+    /** Crea un usuario (solo ADMIN; no hay auto-registro). Nace con mustChangePassword; sin `password` devuelve una clave inicial generada, una sola vez. */
     post: operations['UsersController_create'];
     delete?: never;
     options?: never;
@@ -499,6 +876,125 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    AdaptationRequestDto: {
+      /** Format: uuid */
+      assigneeId: string | null;
+      assigneeName: string | null;
+      /** Format: date-time */
+      createdAt: string;
+      description: string | null;
+      /** Format: date-time */
+      dueDate: string;
+      /**
+       * Format: uuid
+       * @description Para un feedback vinculado, solo lo ve quien hizo el pedido (administración no recibe el id).
+       */
+      entityId: string | null;
+      /** @enum {string|null} */
+      entityType: 'OBJECTIVE' | 'CHECK_IN' | 'FEEDBACK' | null;
+      /** Format: uuid */
+      id: string;
+      /** @description Abierto y pasado de la fecha límite */
+      overdue: boolean;
+      /** @enum {string} */
+      preferredFormat:
+        'LECTURA_FACIL' | 'LENGUAJE_CLARO' | 'AUDIO' | 'APOYO_VISUAL' | 'REUNION_ADAPTADA' | 'OTRO';
+      /** @description Obligatoria cuando el estado es RECHAZADA; la ve quien hizo el pedido */
+      rejectionJustification: string | null;
+      /** Format: uuid */
+      requesterId: string | null;
+      requesterName: string | null;
+      resolutionLink: string | null;
+      resolutionNote: string | null;
+      /** Format: date-time */
+      resolvedAt: string | null;
+      /** @enum {string} */
+      status: 'PENDIENTE' | 'EN_CURSO' | 'ENTREGADA' | 'RECHAZADA';
+      subject: string;
+      /** Format: date-time */
+      updatedAt: string;
+    };
+    AdaptationRequestPageDto: {
+      items: components['schemas']['AdaptationRequestDto'][];
+      limit: number;
+      page: number;
+      total: number;
+    };
+    AdaptedContentBodyDto: {
+      glossary: components['schemas']['GlossaryEntryDto'][];
+      segments: components['schemas']['SegmentDto'][];
+    };
+    AdaptedContentDto: {
+      /** Format: date-time */
+      acceptedAt: string | null;
+      /** @description true si vino de la caché (mismo texto de origen y nivel) */
+      cached: boolean;
+      content: components['schemas']['AdaptedContentBodyDto'];
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: uuid */
+      entityId: string;
+      /** @enum {string} */
+      entityType: 'OBJECTIVE' | 'KEY_RESULT' | 'CHECK_IN' | 'FEEDBACK';
+      /** @description Latencia total del pedido en ms (RD 707/2026 art. 14.5) */
+      generationMs: number;
+      humanEdited: boolean;
+      /** Format: uuid */
+      id: string;
+      /** @enum {string} */
+      level: 'EASY_READ' | 'PLAIN';
+      /** @description Métricas de legibilidad { source, output } (Fernández-Huerta, Szigriszt-Pazos, INFLESZ) */
+      readability: {
+        [key: string]: unknown;
+      };
+      /** Format: uuid */
+      requestedById: string | null;
+      reviewReason: string | null;
+      /**
+       * @description DRAFT/ACCEPTED: generado por IA, pendiente de validación; VALIDATED: validado por una persona; NEEDS_REVIEW: requiere revisión humana (el contenido es el texto original sin adaptar)
+       * @enum {string}
+       */
+      status: 'DRAFT' | 'ACCEPTED' | 'VALIDATED' | 'NEEDS_REVIEW';
+      /** Format: uuid */
+      traceId: string;
+      /** Format: date-time */
+      validatedAt: string | null;
+      /** Format: uuid */
+      validatedById: string | null;
+      validationNote: string | null;
+    };
+    AiStatusDto: {
+      /** @description false: la ayuda de IA está desactivada y la UI no debe ofrecerla */
+      enabled: boolean;
+    };
+    AiSuggestionDto: {
+      /** Format: date-time */
+      acceptedAt: string | null;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      discardedAt: string | null;
+      /** @enum {string} */
+      feature: 'ADAPT' | 'OKR_SUGGEST' | 'CHECKIN_SUMMARY';
+      /** Format: uuid */
+      id: string;
+      /** @description true: requiere revisión humana antes de usarla */
+      needsHumanReview: boolean;
+      /** @description Resultado del agente tal cual: OKR_SUGGEST { objective, keyResults, warnings }; CHECKIN_SUMMARY { summary, trend, highlights, risks } */
+      payload: {
+        [key: string]: unknown;
+      };
+      reviewReason: string | null;
+      /** Format: uuid */
+      traceId: string;
+    };
+    AssignAdaptationRequestDto: {
+      /**
+       * Format: uuid
+       * @description Persona de administración que se hace cargo
+       */
+      assigneeId: string;
+    };
     AuditEntryDto: {
       /** @enum {string} */
       action:
@@ -512,7 +1008,19 @@ export interface components {
         | 'USER_ROLE_CHANGED'
         | 'USER_DEACTIVATED'
         | 'REFRESH_REUSE_DETECTED'
-        | 'REFRESH_REVOKED_USED';
+        | 'REFRESH_REVOKED_USED'
+        | 'AI_CONTENT_ADAPTED'
+        | 'AI_CONTENT_VALIDATED'
+        | 'AI_SUGGESTION_ACCEPTED'
+        | 'ADAPTATION_REQUEST_CREATED'
+        | 'ADAPTATION_REQUEST_ASSIGNED'
+        | 'ADAPTATION_REQUEST_DELIVERED'
+        | 'ADAPTATION_REQUEST_REJECTED'
+        | 'USER_PASSWORD_CHANGED'
+        | 'ASSISTANT_PLAN_CONFIRMED'
+        | 'ASSISTANT_PLAN_DISCARDED'
+        | 'ASSISTANT_ACTION_EXECUTED'
+        | 'ASSISTANT_ACTION_FAILED';
       /** Format: uuid */
       actorId: string | null;
       after: {
@@ -550,9 +1058,17 @@ export interface components {
       email: string;
       /** Format: uuid */
       id: string;
+      /** @description true si la clave la definió administración y todavía no se cambió: hasta entonces solo funciona POST /auth/change-password (el resto responde 403 PASSWORD_CHANGE_REQUIRED) */
+      mustChangePassword: boolean;
       name: string;
       /** @enum {string} */
       role: 'ADMIN' | 'LEADER' | 'MEMBER';
+    };
+    ChangePasswordDto: {
+      /** @description Contraseña actual (la inicial, si todavía no la cambiaste) */
+      currentPassword: string;
+      /** @description Contraseña nueva: al menos 12 caracteres y distinta de la actual */
+      newPassword: string;
     };
     CheckInDto: {
       /** @enum {string} */
@@ -575,6 +1091,36 @@ export interface components {
       score: number;
       /** @description Decimal como string (snapshot) */
       value: string | null;
+    };
+    CitationDto: {
+      /** @example admin#cómo-creo-un-usuario */
+      id: string;
+      title: string;
+      /** @example /ayuda/admin#cómo-creo-un-usuario */
+      url: string;
+    };
+    ConfirmPlanDto: {
+      /** @description planHash del plan que la persona vio (sha256 hex) */
+      planHash: string;
+    };
+    CreateAdaptationRequestDto: {
+      /** @description Detalle de lo que necesitás (opcional) */
+      description?: string;
+      /**
+       * Format: uuid
+       * @description Id del objetivo, check-in o feedback. Un feedback solo se puede vincular si sos quien lo envió o lo recibió.
+       */
+      entityId?: string;
+      /**
+       * @description Elemento al que se refiere el pedido. Va junto con entityId.
+       * @enum {string}
+       */
+      entityType?: 'OBJECTIVE' | 'CHECK_IN' | 'FEEDBACK';
+      /** @enum {string} */
+      preferredFormat:
+        'LECTURA_FACIL' | 'LENGUAJE_CLARO' | 'AUDIO' | 'APOYO_VISUAL' | 'REUNION_ADAPTADA' | 'OTRO';
+      /** @description Qué documento necesitás, en pocas palabras */
+      subject: string;
     };
     CreateCheckInDto: {
       /**
@@ -726,12 +1272,25 @@ export interface components {
       email: string;
       /** @example Ana Pérez */
       name: string;
-      /** @description Clave inicial (se guarda con argon2id) */
-      password: string;
+      /** @description Clave inicial (se guarda con argon2id). Opcional: si se omite, el back genera una aleatoria y la devuelve una sola vez en `initialPassword`. En ambos casos la persona debe cambiarla al entrar. */
+      password?: string;
       /**
        * @default MEMBER
        * @enum {string}
        */
+      role: 'ADMIN' | 'LEADER' | 'MEMBER';
+    };
+    CreatedUserDto: {
+      active: boolean;
+      email: string;
+      /** Format: uuid */
+      id: string;
+      /** @description Clave inicial generada. Se muestra UNA sola vez, solo si el pedido no trajo `password`; nunca se guarda en claro ni se audita. */
+      initialPassword?: string;
+      /** @description Siempre true en un alta: la persona debe cambiar la clave inicial al entrar (el login y /auth/me lo informan) */
+      mustChangePassword: boolean;
+      name: string;
+      /** @enum {string} */
       role: 'ADMIN' | 'LEADER' | 'MEMBER';
     };
     CycleCloseDto: {
@@ -796,6 +1355,89 @@ export interface components {
       /** @enum {string} */
       status: 'DRAFT' | 'ACTIVE' | 'CLOSED';
     };
+    DeliverAdaptationRequestDto: {
+      /** @description Enlace al documento adaptado (http/https) */
+      resolutionLink?: string;
+      /** @description Qué se entrega y cómo acceder (mínimo 10 caracteres; lo valida el dominio) */
+      resolutionNote?: string;
+    };
+    DigestDto: {
+      /** @description false si el asistente de chat no está disponible (input deshabilitado) */
+      chatAvailable: boolean;
+      /** Format: date-time */
+      generatedAt: string;
+      headline: string;
+      items: components['schemas']['DigestItemDto'][];
+      /**
+       * @description TEMPLATE = resumen automático (sin IA)
+       * @enum {string}
+       */
+      source: 'AI' | 'TEMPLATE';
+    };
+    DigestItemDto: {
+      count: number;
+      factKey: string;
+      /** @description Pantalla donde se resuelve */
+      href: string;
+      text: string;
+    };
+    DraftKeyResultDto: {
+      /**
+       * @description Decimal como string
+       * @example 0
+       */
+      startValue?: string;
+      /**
+       * @description Decimal como string
+       * @example 100
+       */
+      targetValue?: string;
+      title: string;
+      unit?: string;
+    };
+    DraftObjectiveDto: {
+      description?: string;
+      /** @description Hasta 5 KRs */
+      keyResults?: components['schemas']['DraftKeyResultDto'][];
+      /** @description Puede ser un borrador pobre */
+      title: string;
+      /** @enum {string} */
+      type: 'COMMITTED' | 'ASPIRATIONAL';
+    };
+    EditedContentDto: {
+      glossary?: components['schemas']['EditedGlossaryEntryDto'][];
+      segments: components['schemas']['EditedSegmentDto'][];
+    };
+    EditedGlossaryEntryDto: {
+      explanation: string;
+      term: string;
+    };
+    EditedSegmentDto: {
+      /** @example checkin.note */
+      key: string;
+      text: string;
+    };
+    EntityLinkDto: {
+      /** Format: uuid */
+      id: string;
+      /** @example Team */
+      type: string;
+      /** @description Ruta de la app, si hay pantalla */
+      url: string | null;
+    };
+    ExecutionResultDto: {
+      plan: components['schemas']['PlanDto'];
+      /** Format: uuid */
+      planId: string;
+      /** @enum {string} */
+      status: 'EXECUTED' | 'PARTIAL' | 'FAILED';
+      steps: components['schemas']['StepResultDto'][];
+    };
+    FailureRowDto: {
+      count: number;
+      errorCode: string | null;
+      step: string;
+    };
     FeedbackDto: {
       content: string;
       /** Format: date-time */
@@ -817,6 +1459,53 @@ export interface components {
       readAt: string | null;
       /** Format: uuid */
       toUserId: string;
+    };
+    GlossaryEntryDto: {
+      explanation: string;
+      term: string;
+    };
+    ImpactAdoptionDto: {
+      adaptationAcceptanceRate: number | null;
+      /** @description ACCEPTED o VALIDATED */
+      adaptationsAccepted: number;
+      adaptationsTotal: number;
+      suggestionAcceptanceRate: number | null;
+      suggestionsAccepted: number;
+      suggestionsTotal: number;
+    };
+    ImpactCostByFeatureDto: {
+      costUsdEst: number;
+      feature: string;
+    };
+    ImpactCostDto: {
+      /** @description Personas distintas que usaron la IA (solo conteo) */
+      activeUsers: number;
+      byFeature: components['schemas']['ImpactCostByFeatureDto'][];
+      costPerActiveUserUsdEst: number | null;
+      /** @description ESTIMACIÓN en USD */
+      totalCostUsdEst: number;
+    };
+    ImpactDto: {
+      adoption: components['schemas']['ImpactAdoptionDto'];
+      cost: components['schemas']['ImpactCostDto'];
+      /** Format: date-time */
+      from: string;
+      quality: components['schemas']['ImpactQualityDto'];
+      time: components['schemas']['ImpactTimeDto'];
+      /** Format: date-time */
+      to: string;
+    };
+    ImpactQualityDto: {
+      /** @description Delta medio de Szigriszt-Pazos origen -> salida (sin NEEDS_REVIEW) */
+      meanReadabilityDelta: number | null;
+      /** @description Fracción de adaptaciones en NEEDS_REVIEW */
+      needsReviewRate: number | null;
+    };
+    ImpactTimeDto: {
+      /** @description p50 de la latencia pedido->entrega de una adaptación (ms) */
+      adaptationLatencyP50Ms: number | null;
+      /** @description p50 del tiempo hasta aceptar/descartar una sugerencia (ms) */
+      decisionTimeP50Ms: number | null;
     };
     KeyResultDto: {
       /** @description Decimal como string */
@@ -858,6 +1547,8 @@ export interface components {
       email: string;
       /** Format: uuid */
       id: string;
+      /** @description true si la clave la definió administración y todavía no se cambió: hasta entonces solo funciona POST /auth/change-password (el resto responde 403 PASSWORD_CHANGE_REQUIRED) */
+      mustChangePassword: boolean;
       name: string;
       /** @enum {string} */
       role: 'ADMIN' | 'LEADER' | 'MEMBER';
@@ -868,6 +1559,23 @@ export interface components {
       name: string;
       /** Format: uuid */
       teamId: string;
+    };
+    MessageDto: {
+      citations?: components['schemas']['CitationDto'][];
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: uuid */
+      id: string;
+      /** @enum {string} */
+      kind: 'TEXT' | 'PLAN' | 'QUERY_RESULT' | 'EXECUTION_RESULT' | 'HELP';
+      /** @description Kind PLAN: estado vigente del plan */
+      plan?: components['schemas']['PlanDto'];
+      query?: components['schemas']['QueryResultDto'];
+      /** @enum {string} */
+      role: 'ADMIN' | 'ASSISTANT';
+      /** @description Kind EXECUTION_RESULT: pasos (sin claves) */
+      steps?: components['schemas']['StepResultDto'][];
+      text: string;
     };
     ObjectiveDto: {
       /** @description Logrado según el umbral del ciclo */
@@ -906,6 +1614,29 @@ export interface components {
       /** @enum {string} */
       type: 'COMMITTED' | 'ASPIRATIONAL';
     };
+    OkrSuggestDto: {
+      /**
+       * Format: uuid
+       * @description Ciclo del objetivo (define el horizonte)
+       */
+      cycleId: string;
+      draft: components['schemas']['DraftObjectiveDto'];
+      /**
+       * Format: uuid
+       * @description Objetivo existente a mejorar (exige poder editarlo). Sin esto, informar el owner.
+       */
+      objectiveId?: string;
+      /**
+       * Format: uuid
+       * @description Owner equipo del objetivo nuevo
+       */
+      ownerTeamId?: string;
+      /**
+       * Format: uuid
+       * @description Owner usuario del objetivo nuevo
+       */
+      ownerUserId?: string;
+    };
     OriginMixDto: {
       /** @description Objetivos BOTTOM_UP (del equipo + de sus miembros) en el ciclo */
       bottomUp: number;
@@ -936,6 +1667,75 @@ export interface components {
        */
       referenceAt: string;
     };
+    PlanActionDto: {
+      /** @description Descripción legible en español, sin UUIDs */
+      description: string;
+      index: number;
+      /** @description Tipo de la whitelist (CREATE_USER, ...) */
+      type: string;
+    };
+    PlanDto: {
+      actions: components['schemas']['PlanActionDto'][];
+      assumptions: string[];
+      /** Format: date-time */
+      confirmedAt: string | null;
+      /** Format: date-time */
+      expiresAt: string;
+      /** Format: date-time */
+      finishedAt: string | null;
+      /** Format: uuid */
+      id: string;
+      /** @description Bloqueantes: con issues no hay botón de confirmar */
+      issues: components['schemas']['PlanIssueDto'][];
+      /** @description Se reenvía tal cual al confirmar */
+      planHash: string;
+      /** @enum {string} */
+      status:
+        | 'PROPOSED'
+        | 'INVALID'
+        | 'EXECUTING'
+        | 'EXECUTED'
+        | 'PARTIAL'
+        | 'FAILED'
+        | 'INTERRUPTED'
+        | 'DISCARDED'
+        | 'EXPIRED';
+      /** @description Resultado por paso, si ya se ejecutó */
+      steps?: components['schemas']['StepResultDto'][];
+      summary: string;
+      /** @description Avisos no bloqueantes (CREATES_ADMIN, ...) */
+      warnings: components['schemas']['PlanIssueDto'][];
+    };
+    PlanIssueDto: {
+      actionIndex: number | null;
+      /** @description UNKNOWN_ACTION, UNGROUNDED, EMAIL_TAKEN, OBJECTIVE_LIMIT, ... */
+      code: string;
+      message: string;
+    };
+    QueryResultDto: {
+      /** @description Solo AUDIT_SEARCH */
+      auditRows: components['schemas']['QueryRowDto'][];
+      /** @description Pantalla con los mismos filtros (/admin/auditoria?... o /admin/pedidos-adaptacion?...) */
+      link: string;
+      /** @description Solo ADAPTATION_REQUESTS_LIST */
+      requestRows: components['schemas']['RequestRowDto'][];
+      /** @description Texto determinista de resumen o de "sin resultados" */
+      summary: string;
+      total: number;
+      /** @enum {string} */
+      type: 'AUDIT_SEARCH' | 'ADAPTATION_REQUESTS_LIST';
+    };
+    QueryRowDto: {
+      /** @description Valor de AuditAction */
+      action: string;
+      actorName: string | null;
+      /** Format: date-time */
+      at: string;
+      /** @description Ej.: "Integrante → Líder" */
+      change: string | null;
+      entityLabel: string | null;
+      entityType: string;
+    };
     RecognitionDto: {
       /** Format: date-time */
       createdAt: string;
@@ -962,6 +1762,10 @@ export interface components {
     RefreshDto: {
       /** @description Refresh token opaco recibido en login/refresh */
       refreshToken: string;
+    };
+    RejectAdaptationRequestDto: {
+      /** @description Justificación por escrito, en lenguaje claro (art. 14.5: solo por carga desproporcionada). Mínimo 20 caracteres; sin ella responde 422. */
+      justification?: string;
     };
     ReportCycleDto: {
       /** @description Umbral de logro de objetivos ASPIRATIONAL (0..1) */
@@ -1039,12 +1843,45 @@ export interface components {
       id: string;
       name: string;
     };
+    RequestRowDto: {
+      assigneeName: string | null;
+      /** Format: date-time */
+      dueDate: string;
+      overdue: boolean;
+      preferredFormat: string;
+      requesterName: string | null;
+      status: string;
+      subject: string;
+    };
     ResetPasswordDto: {
       password: string;
+    };
+    SegmentDto: {
+      /** @example checkin.note */
+      key: string;
+      text: string;
+    };
+    SendMessageDto: {
+      /** @example Creá el equipo Datos dentro de Plataforma */
+      text: string;
     };
     SetMemberDto: {
       /** @default false */
       isLead: boolean;
+    };
+    StepErrorDto: {
+      code: string;
+      message: string;
+    };
+    StepResultDto: {
+      description: string;
+      entity?: components['schemas']['EntityLinkDto'];
+      error?: components['schemas']['StepErrorDto'];
+      index: number;
+      /** @description Clave inicial de un usuario recién creado. Solo viaja en la respuesta de confirmar: se muestra una sola vez y no se guarda. */
+      oneTimeSecret?: string;
+      /** @enum {string} */
+      status: 'OK' | 'FAILED' | 'SKIPPED';
     };
     TeamDetailDto: {
       /** Format: uuid */
@@ -1088,6 +1925,13 @@ export interface components {
       team: components['schemas']['ReportTeamDto'];
       /** @description Objetivos cuyo owner es el equipo */
       teamObjectives: components['schemas']['ReportObjectiveDto'][];
+    };
+    TurnResultDto: {
+      citations?: components['schemas']['CitationDto'][];
+      /** @description Los mensajes nuevos: el de la persona y la respuesta */
+      messages: components['schemas']['MessageDto'][];
+      plan?: components['schemas']['PlanDto'];
+      query?: components['schemas']['QueryResultDto'];
     };
     UpdateCycleDto: {
       aspirationalThreshold?: number;
@@ -1153,6 +1997,29 @@ export interface components {
       /** @enum {string} */
       role?: 'ADMIN' | 'LEADER' | 'MEMBER';
     };
+    UsageDto: {
+      byFeature: components['schemas']['UsageRowDto'][];
+      byModel: components['schemas']['UsageRowDto'][];
+      failures: components['schemas']['FailureRowDto'][];
+      /** Format: date-time */
+      from: string;
+      /** Format: date-time */
+      to: string;
+    };
+    UsageRowDto: {
+      calls: number;
+      /** @description ESTIMACIÓN en USD según la tabla de precios del agente (el free tier no factura) */
+      costUsdEst: number;
+      failedCalls: number;
+      /** @description Fracción de llamadas hechas con el modelo de fallback */
+      fallbackRate: number | null;
+      inputTokens: number;
+      /** @description Feature o modelo según la tabla */
+      key: string;
+      latencyP50Ms: number | null;
+      latencyP95Ms: number | null;
+      outputTokens: number;
+    };
     UserDto: {
       active: boolean;
       email: string;
@@ -1161,6 +2028,11 @@ export interface components {
       name: string;
       /** @enum {string} */
       role: 'ADMIN' | 'LEADER' | 'MEMBER';
+    };
+    ValidateAdaptationDto: {
+      /** @description Corrección humana: reemplaza la salida de la IA (mismas claves y orden de segmentos) */
+      content?: components['schemas']['EditedContentDto'];
+      note?: string;
     };
   };
   responses: never;
@@ -1171,6 +2043,881 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+  AdaptationRequestsController_list: {
+    parameters: {
+      query?: {
+        status?: 'PENDIENTE' | 'EN_CURSO' | 'ENTREGADA' | 'RECHAZADA';
+        /** @description true: solo los vencidos (abiertos y pasados de fecha). false: el resto. */
+        overdue?: boolean;
+        page?: number;
+        limit?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdaptationRequestPageDto'];
+        };
+      };
+      /** @description Solo ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AdaptationRequestsController_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateAdaptationRequestDto'];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdaptationRequestDto'];
+        };
+      };
+      /** @description Datos inválidos */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description El elemento vinculado no existe o no podés verlo */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AdaptationRequestsController_mine: {
+    parameters: {
+      query?: {
+        page?: number;
+        limit?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdaptationRequestPageDto'];
+        };
+      };
+    };
+  };
+  AdaptationRequestsController_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdaptationRequestDto'];
+        };
+      };
+      /** @description No existe o no es tuyo */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AdaptationRequestsController_assign: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['AssignAdaptationRequestDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdaptationRequestDto'];
+        };
+      };
+      /** @description El pedido ya está resuelto */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description ADAPTATION_ASSIGNEE_INVALID */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AdaptationRequestsController_deliver: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DeliverAdaptationRequestDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdaptationRequestDto'];
+        };
+      };
+      /** @description El pedido ya está resuelto */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description ADAPTATION_DELIVERY_NOTE_REQUIRED */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AdaptationRequestsController_reject: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RejectAdaptationRequestDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdaptationRequestDto'];
+        };
+      };
+      /** @description El pedido ya está resuelto */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description ADAPTATION_REJECTION_JUSTIFICATION_REQUIRED */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AiController_getAdaptation: {
+    parameters: {
+      query: {
+        /** @description EASY_READ = lectura fácil (UNE 153101); PLAIN = lenguaje claro (UNE-ISO 24495-1) */
+        level: 'EASY_READ' | 'PLAIN';
+      };
+      header?: never;
+      path: {
+        entityType: string;
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdaptedContentDto'];
+        };
+      };
+      /** @description Elemento no visible o AI_ADAPTATION_NOT_FOUND */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AiController_adapt: {
+    parameters: {
+      query: {
+        /** @description EASY_READ = lectura fácil (UNE 153101); PLAIN = lenguaje claro (UNE-ISO 24495-1) */
+        level: 'EASY_READ' | 'PLAIN';
+      };
+      header?: never;
+      path: {
+        entityType: string;
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdaptedContentDto'];
+        };
+      };
+      /** @description Elemento inexistente o no visible para el actor */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description AI_NOTHING_TO_ADAPT o AI_INPUT_REJECTED */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description AI_RATE_LIMITED (agente o límite por usuario) */
+      429: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description AI_OUTPUT_INVALID */
+      502: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description AI_DISABLED / AI_UNAVAILABLE: la ayuda de IA no está disponible (el resto de la API sigue funcionando) */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AiController_accept: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdaptedContentDto'];
+        };
+      };
+      /** @description No sos quien pidió la versión */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Versión inexistente o elemento de origen no visible */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description AI_ADAPTATION_STATE_CONFLICT */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AiController_validate: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ValidateAdaptationDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AdaptedContentDto'];
+        };
+      };
+      /** @description Sin permiso de validación */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Versión inexistente o elemento de origen no visible */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description AI_ADAPTATION_STATE_CONFLICT (ya validada) */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description AI_VALIDATION_NOT_ALLOWED (feedback) o AI_EDITED_CONTENT_INVALID */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AiController_summarize: {
+    parameters: {
+      query?: {
+        level?: 'STANDARD' | 'PLAIN';
+      };
+      header?: never;
+      path: {
+        krId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AiSuggestionDto'];
+        };
+      };
+      /** @description KR inexistente u objetivo no visible */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description AI_NOTHING_TO_SUMMARIZE */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description AI_DISABLED / AI_UNAVAILABLE: la ayuda de IA no está disponible (el resto de la API sigue funcionando) */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AiAdminController_impact: {
+    parameters: {
+      query?: {
+        /** @description Desde (default: hace 30 días) */
+        from?: string;
+        /** @description Hasta (default: ahora) */
+        to?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ImpactDto'];
+        };
+      };
+      /** @description Solo ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AiController_suggestOkr: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['OkrSuggestDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AiSuggestionDto'];
+        };
+      };
+      /** @description No podés editar el objetivo ni crearlo para ese owner */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Ciclo u objetivo inexistente o no visible */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description AI_DISABLED / AI_UNAVAILABLE: la ayuda de IA no está disponible (el resto de la API sigue funcionando) */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AiController_status: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AiStatusDto'];
+        };
+      };
+    };
+  };
+  AiController_acceptSuggestion: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AiSuggestionDto'];
+        };
+      };
+      /** @description Sugerencia inexistente o ajena */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description AI_SUGGESTION_ALREADY_DECIDED */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AiController_discardSuggestion: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AiSuggestionDto'];
+        };
+      };
+      /** @description Sugerencia inexistente o ajena */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description AI_SUGGESTION_ALREADY_DECIDED */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AiAdminController_usage: {
+    parameters: {
+      query?: {
+        /** @description Desde (default: hace 30 días) */
+        from?: string;
+        /** @description Hasta (default: ahora) */
+        to?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UsageDto'];
+        };
+      };
+      /** @description Solo ADMIN */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AssistantController_deleteConversation: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description No sos ADMIN */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AssistantController_digest: {
+    parameters: {
+      query?: {
+        /** @description true ignora la caché de 10 minutos ("Actualizar") */
+        refresh?: boolean;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DigestDto'];
+        };
+      };
+      /** @description No sos ADMIN */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AssistantController_messages: {
+    parameters: {
+      query?: {
+        limit?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['MessageDto'][];
+        };
+      };
+      /** @description No sos ADMIN */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AssistantController_send: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SendMessageDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TurnResultDto'];
+        };
+      };
+      /** @description No sos ADMIN */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description AI_INPUT_REJECTED: el mensaje se rechazó */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description AI_UNAVAILABLE / AI_DISABLED: el resto de la API sigue igual */
+      503: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AssistantController_confirm: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ConfirmPlanDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ExecutionResultDto'];
+        };
+      };
+      /** @description ASSISTANT_PLAN_NOT_FOUND (inexistente o de otra persona) o no sos ADMIN */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description ASSISTANT_PLAN_HASH_MISMATCH o ASSISTANT_PLAN_ALREADY_DECIDED (trae `result`) */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description ASSISTANT_PLAN_EXPIRED: pasaron los 15 minutos */
+      410: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description ASSISTANT_PLAN_INVALID: el plan tiene problemas */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AssistantController_discard: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PlanDto'];
+        };
+      };
+      /** @description ASSISTANT_PLAN_NOT_FOUND o no sos ADMIN */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description ASSISTANT_PLAN_ALREADY_DECIDED */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
   AuditController_list: {
     parameters: {
       query?: {
@@ -1189,7 +2936,19 @@ export interface operations {
           | 'USER_ROLE_CHANGED'
           | 'USER_DEACTIVATED'
           | 'REFRESH_REUSE_DETECTED'
-          | 'REFRESH_REVOKED_USED';
+          | 'REFRESH_REVOKED_USED'
+          | 'AI_CONTENT_ADAPTED'
+          | 'AI_CONTENT_VALIDATED'
+          | 'AI_SUGGESTION_ACCEPTED'
+          | 'ADAPTATION_REQUEST_CREATED'
+          | 'ADAPTATION_REQUEST_ASSIGNED'
+          | 'ADAPTATION_REQUEST_DELIVERED'
+          | 'ADAPTATION_REQUEST_REJECTED'
+          | 'USER_PASSWORD_CHANGED'
+          | 'ASSISTANT_PLAN_CONFIRMED'
+          | 'ASSISTANT_PLAN_DISCARDED'
+          | 'ASSISTANT_ACTION_EXECUTED'
+          | 'ASSISTANT_ACTION_FAILED';
         /** @description Desde (inclusive) */
         from?: string;
         /** @description Hasta (inclusive) */
@@ -1220,6 +2979,43 @@ export interface operations {
       };
       /** @description Solo ADMIN */
       403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AuthController_changePassword: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ChangePasswordDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AuthSessionDto'];
+        };
+      };
+      /** @description INVALID_CURRENT_PASSWORD, PASSWORD_TOO_SHORT o PASSWORD_UNCHANGED (la nueva igual a la actual) */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Demasiados intentos */
+      429: {
         headers: {
           [name: string]: unknown;
         };
@@ -2634,7 +4430,7 @@ export interface operations {
           [name: string]: unknown;
         };
         content: {
-          'application/json': components['schemas']['UserDto'];
+          'application/json': components['schemas']['CreatedUserDto'];
         };
       };
       /** @description Rol insuficiente */

@@ -15,6 +15,7 @@
 
 # next.js
 /.next/
+/.next-e2e/
 /out/
 
 # production
@@ -51,3 +52,7 @@ next-env.d.ts
 
 # e2e stack
 .e2e-api.pid
+.e2e-agent.pid
+
+# ayuda: capturas copiadas por scripts/build-help.mjs desde docs/manual/img
+/public/ayuda/

@@ -10,7 +10,7 @@ type HeaderProps = {
 
 export function Header({ productName, children }: HeaderProps) {
   return (
-    <header className="flex h-16 items-center gap-s15 bg-surface-brand px-s20 text-on-brand">
+    <header className="flex h-16 items-center gap-s15 bg-surface-brand px-s20 text-on-brand print:hidden">
       <SidebarToggle />
       <span className="text-heading-3 font-light tracking-heading">{productName}</span>
       <div className="ml-auto flex items-center gap-s15">{children}</div>

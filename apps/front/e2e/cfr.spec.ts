@@ -1,6 +1,7 @@
 import { expect, test, type Browser, type Page } from '@playwright/test';
 import {
   ADMIN,
+  onboardUser,
   PASSWORD,
   SHOTS,
   loginApi,
@@ -85,11 +86,7 @@ test.describe('CFR: feedback privado y reconocimientos (contra el back real)', (
     ctx.cycleId = quarter.id;
 
     for (const who of Object.keys(people) as Who[]) {
-      await api(request, 'post', '/users', admin.token, {
-        ...people[who],
-        password: PASSWORD,
-        role: 'MEMBER',
-      });
+      await onboardUser(request, admin.token, { ...people[who], role: 'MEMBER' });
       const session = await loginApi(request, people[who].email, PASSWORD);
       ctx.ids[who] = session.id;
       ctx.tokens[who] = session.token;

@@ -8,8 +8,12 @@ import { KrHistoryCard } from '../../check-ins/_components/kr-history-card';
 import { checkInAvailability } from '../../check-ins/policy';
 import { canChangeKrTarget, canEditObjective } from '../policy';
 import { PageSkeleton } from '../../_components/page-skeleton';
+import { AccessibleVersionPanel } from '../../_ai/_components/accessible-version-panel';
+import { CheckInSummaryButton } from '../../_ai/_components/checkin-summary-button';
+import { canValidateAdaptation } from '../../_ai/policy';
 import { flattenTeams } from '../../equipos/team-tree';
 import { PageHeader } from '@/components/ui/page-header';
+import { getAiStatus } from '@/lib/dal/ai';
 import { listKrCheckIns } from '@/lib/dal/check-ins';
 import { listCycles } from '@/lib/dal/cycles';
 import { getObjective, listObjectives, type Objective } from '@/lib/dal/objectives';
@@ -25,13 +29,14 @@ async function ObjectiveContent({ params }: { params: Params }) {
   const { id } = await params;
 
   // Todo en paralelo: el objetivo, la sesión, los directorios y los publicados (padre, hijos y candidatos a padre).
-  const [objective, user, users, tree, cycles, published] = await Promise.all([
+  const [objective, user, users, tree, cycles, published, ai] = await Promise.all([
     getObjective(id),
     getCurrentUser(),
     listUsers(),
     getTeamTree(),
     listCycles(),
     listObjectives({ status: 'PUBLISHED' }),
+    getAiStatus(),
   ]);
   if (!objective) notFound();
 
@@ -73,6 +78,17 @@ async function ObjectiveContent({ params }: { params: Params }) {
       return [kr.id, availability.allowed ? null : availability.reason];
     }),
   );
+  // Ayuda de IA (solo si está activa): versión accesible del objetivo y de cada check-in, y resumen por KR.
+  const owner = { ownerUserId: objective.ownerUserId, ownerTeamId: objective.ownerTeamId };
+  const adaptable = (entityType: 'objective' | 'check-in', entityId: string) =>
+    ai.enabled ? (
+      <AccessibleVersionPanel
+        entityType={entityType}
+        entityId={entityId}
+        viewerId={user.id}
+        validation={canValidateAdaptation(user, entityType, owner)}
+      />
+    ) : null;
   const people = users.filter((u) => u.active).map((u) => ({ id: u.id, name: u.name }));
 
   return (
@@ -102,6 +118,7 @@ async function ObjectiveContent({ params }: { params: Params }) {
           cycleName={cycleName}
           parent={parentObjective ? related(parentObjective) : null}
           aligned={children.map(related)}
+          accessibleVersion={adaptable('objective', objective.id)}
         />
         <KeyResultsCard
           objective={{ id: objective.id, status: objective.status }}
@@ -111,12 +128,31 @@ async function ObjectiveContent({ params }: { params: Params }) {
           canEdit={canEdit}
           canChangeTarget={canChangeKrTarget(user, objective)}
           checkInReasons={checkInReasons}
+          suggestContext={
+            ai.enabled
+              ? {
+                  id: objective.id,
+                  cycleId: objective.cycleId,
+                  title: objective.title,
+                  description: objective.description,
+                  type: objective.type,
+                }
+              : undefined
+          }
         />
         {objective.status !== 'DRAFT' ? (
           <KrHistoryCard
             keyResults={objective.keyResults}
             history={history}
             names={new Map(users.map((u) => [u.id, u.name]))}
+            renderCheckInExtra={(checkIn) =>
+              checkIn.note ? adaptable('check-in', checkIn.id) : null
+            }
+            renderKrExtra={(kr) =>
+              ai.enabled && (history.get(kr.id)?.length ?? 0) > 0 ? (
+                <CheckInSummaryButton krId={kr.id} />
+              ) : null
+            }
           />
         ) : null}
       </div>
