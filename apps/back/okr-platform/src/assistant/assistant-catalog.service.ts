@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { buildCatalog, type BuiltCatalog } from './domain/catalog';
+import type { CycleFact } from './domain/plan-validate';
 
 export interface CatalogContext extends BuiltCatalog {
   existingTeams: { name: string; parentId: string | null }[];
   /** Objetivos DRAFT+PUBLISHED por `${cycleId}|U|${userId}` / `${cycleId}|T|${teamId}`. */
   objectiveCounts: Record<string, number>;
   krCounts: Record<string, number>;
+  /** Todos los ciclos reales (sin recorte) para simular la jerarquía del plan. */
+  existingCycles: CycleFact[];
 }
 
 /** Lee la organización y arma el catálogo con handles (contrato §3.4) y los datos para validar el plan. */
@@ -101,6 +104,14 @@ export class AssistantCatalogService {
     return {
       ...built,
       existingTeams: teams.map((t) => ({ name: t.name, parentId: t.parentId })),
+      existingCycles: cycles.map((c) => ({
+        id: c.id,
+        name: c.name,
+        kind: c.kind,
+        startDate: c.startDate.toISOString().slice(0, 10),
+        endDate: c.endDate.toISOString().slice(0, 10),
+        parentId: c.parentId,
+      })),
       objectiveCounts,
       krCounts,
     };

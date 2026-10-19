@@ -1,4 +1,12 @@
-import { canTransitionCycle, validateCycleHierarchy, validateThresholds } from './cycles';
+import {
+  canTransitionCycle,
+  cycleNameTakenMessage,
+  isCycleNameTaken,
+  normalizeCycleName,
+  validateCycleHierarchy,
+  validateCycleNameAvailable,
+  validateThresholds,
+} from './cycles';
 import type { Result } from '../../common/domain/result';
 
 const d = (s: string) => new Date(`${s}T00:00:00Z`);
@@ -95,5 +103,33 @@ describe('validateThresholds', () => {
   it.each([0, 1.2, -0.1, NaN])('rechaza %p', (v) => {
     expect(code(validateThresholds({ committed: v, aspirational: 0.7 }))).toBe('INVALID_THRESHOLD');
     expect(code(validateThresholds({ committed: 1, aspirational: v }))).toBe('INVALID_THRESHOLD');
+  });
+});
+
+describe('nombre único de ciclo', () => {
+  it('normaliza espacios, mayúsculas y tildes', () => {
+    expect(normalizeCycleName('  Año   2027 ')).toBe('ano 2027');
+    expect(normalizeCycleName('Q1 2027')).toBe(normalizeCycleName('q1  2027'));
+    expect(normalizeCycleName('ÁÉÍÓÚ')).toBe('aeiou');
+  });
+  it.each([
+    ['2027', ' 2027 '],
+    ['Q1 2027', 'q1 2027'],
+    ['Año 2027', 'ANO 2027'],
+    ['Q1	2027', 'Q1 2027'],
+  ])('"%s" y "%s" son el mismo nombre', (a, b) => expect(isCycleNameTaken(a, [b])).toBe(true));
+  it('nombres distintos no chocan (ni "Q1" con "Q1 2027")', () => {
+    expect(isCycleNameTaken('Q1 2027', ['Q1', 'Q2 2027', '2027'])).toBe(false);
+    expect(isCycleNameTaken('2027', [])).toBe(false);
+  });
+  it('validateCycleNameAvailable devuelve CYCLE_NAME_TAKEN con el mensaje en lenguaje claro', () => {
+    const r = validateCycleNameAvailable('  q1 2027 ', ['Q1 2027']);
+    expect(r).toEqual({
+      ok: false,
+      code: 'CYCLE_NAME_TAKEN',
+      message: 'Ya existe un ciclo llamado «q1 2027». Elegí otro nombre o usá el existente.',
+    });
+    expect(cycleNameTakenMessage(' X ')).toContain('«X»');
+    expect(validateCycleNameAvailable('Q2 2027', ['Q1 2027']).ok).toBe(true);
   });
 });

@@ -4,6 +4,7 @@ import type { Err } from '../common/domain/result';
 /**
  * Códigos de dominio de ciclos -> HTTP.
  * 400: el pedido en sí es incoherente (fechas, jerarquía, umbrales; REQ-CYC-1/2).
+ * 409: el nombre ya está en uso por otro ciclo (CYCLE_NAME_TAKEN).
  * 422: regla de negocio contra el estado existente (solape con hermanos, transición inválida).
  */
 const STATUS_BY_CODE: Record<string, HttpStatus> = {
@@ -14,6 +15,7 @@ const STATUS_BY_CODE: Record<string, HttpStatus> = {
   INVALID_THRESHOLD: HttpStatus.BAD_REQUEST,
   QUARTER_OVERLAPS_SIBLING: HttpStatus.UNPROCESSABLE_ENTITY,
   INVALID_CYCLE_TRANSITION: HttpStatus.UNPROCESSABLE_ENTITY,
+  CYCLE_NAME_TAKEN: HttpStatus.CONFLICT,
 };
 
 export function cycleDomainError(error: Err): HttpException {

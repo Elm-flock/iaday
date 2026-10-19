@@ -102,6 +102,29 @@ describe('Cycles (e2e)', () => {
       );
     });
 
+    it('nombre repetido (sin importar espacios, mayúsculas ni tildes, ni el estado del ciclo) -> 409 CYCLE_NAME_TAKEN', async () => {
+      const { auth } = await as('ADMIN');
+      await createCycle(prisma, { name: 'Año 2027' });
+      for (const name of ['Año 2027', '  año 2027 ', 'ANO 2027']) {
+        const res = await postCycle(auth, { ...annual, name }).expect(409);
+        expect(res.body).toMatchObject({
+          code: 'CYCLE_NAME_TAKEN',
+          message: `Ya existe un ciclo llamado «${name.trim()}». Elegí otro nombre o usá el existente.`,
+        });
+      }
+      expect(await prisma.cycle.count()).toBe(1);
+      await postCycle(auth, { ...annual, name: 'Año 2028' }).expect(201);
+    });
+
+    it('altas simultáneas con el mismo nombre: una sola gana', async () => {
+      const { auth } = await as('ADMIN');
+      const results = await Promise.all(
+        [1, 2, 3].map(() => postCycle(auth, { ...annual, name: 'Carrera' })),
+      );
+      expect(results.map((r) => r.status).sort()).toEqual([201, 409, 409]);
+      expect(await prisma.cycle.count()).toBe(1);
+    });
+
     it('QUARTER sin padre, ANNUAL con padre -> 400; padre inexistente -> 404', async () => {
       const { auth } = await as('ADMIN');
       const parent = await createAnnual(auth);
@@ -217,6 +240,16 @@ describe('Cycles (e2e)', () => {
         before: { committedThreshold: 1, aspirationalThreshold: 0.7 },
         after: { committedThreshold: 0.85, aspirationalThreshold: 0.7 },
       });
+    });
+
+    it('renombrar a un nombre ajeno -> 409; conservar el propio (otra grafía) -> 200', async () => {
+      const { auth } = await as('ADMIN');
+      await createCycle(prisma, { name: 'Año 2027' });
+      const cycle = await createCycle(prisma, { name: 'Año 2028' });
+      const patch = (name: string) =>
+        http().patch(`/cycles/${cycle.id}`).set('Authorization', auth).send({ name });
+      expect((await patch('ano 2027').expect(409)).body.code).toBe('CYCLE_NAME_TAKEN');
+      await patch('AÑO 2028').expect(200);
     });
 
     it('cambiar solo cadencia o nombre no audita umbrales; umbral inválido -> 400; campo de objetivo -> 400', async () => {
