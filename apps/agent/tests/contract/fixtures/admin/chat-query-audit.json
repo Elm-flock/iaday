@@ -1,0 +1,117 @@
+{
+  "description": "Consulta de solo lectura: el agente traduce la pregunta a un filtro tipado (contrato 5.5).",
+  "endpoint": "/v1/admin/chat",
+  "status": 200,
+  "request": {
+    "locale": "es",
+    "today": "2026-10-18",
+    "message": "¿Quién cambió el rol de Ana Pérez?",
+    "history": [],
+    "catalog": {
+      "users": [
+        {
+          "handle": "U1",
+          "name": "Ana Pérez",
+          "role": "ADMIN",
+          "active": true,
+          "teams": [
+            "T1"
+          ]
+        }
+      ],
+      "teams": [
+        {
+          "handle": "T1",
+          "name": "Flock IT",
+          "parent": null,
+          "leads": [
+            "U1"
+          ],
+          "memberCount": 12
+        },
+        {
+          "handle": "T2",
+          "name": "Plataforma",
+          "parent": "T1",
+          "leads": [],
+          "memberCount": 4
+        }
+      ],
+      "cycles": [
+        {
+          "handle": "C1",
+          "name": "Q4 2026",
+          "kind": "QUARTER",
+          "status": "ACTIVE",
+          "parent": "C2",
+          "startDate": "2026-10-01",
+          "endDate": "2026-12-31"
+        }
+      ],
+      "objectives": [],
+      "keyResults": []
+    },
+    "catalogTruncated": false,
+    "helpChunks": [],
+    "repair": null
+  },
+  "response": {
+    "traceId": "8a0f3c1e-1d2b-4c5a-9e8f-7b6a5c4d3e2f",
+    "intent": "QUERY",
+    "reply": "Busco en la auditoría los cambios de rol de Ana Pérez.",
+    "plan": null,
+    "query": {
+      "type": "AUDIT_SEARCH",
+      "action": "USER_ROLE_CHANGED",
+      "entity": {
+        "entityType": "User",
+        "handle": "U1"
+      },
+      "limit": 10,
+      "sourceQuote": "quién cambió el rol de Ana Pérez"
+    },
+    "citations": [],
+    "checks": {
+      "piiMasked": 0,
+      "injectionSuspected": false,
+      "planLocalIssues": []
+    },
+    "prompt": {
+      "id": "admin_query",
+      "version": "1",
+      "hash": "5c4b3a291807"
+    },
+    "usage": [
+      {
+        "step": "CLASSIFY",
+        "attempt": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "isFallback": false,
+        "promptId": "admin_classify",
+        "promptVersion": "1",
+        "promptHash": "0f1e2d3c4b5a",
+        "inputTokens": 420,
+        "outputTokens": 30,
+        "latencyMs": 1200,
+        "costUsdEst": 0.000156,
+        "status": "OK",
+        "errorCode": null
+      },
+      {
+        "step": "PLAN",
+        "attempt": 1,
+        "model": "nvidia/nemotron-3-ultra-550b-a55b",
+        "isFallback": false,
+        "promptId": "admin_query",
+        "promptVersion": "1",
+        "promptHash": "5c4b3a291807",
+        "inputTokens": 1500,
+        "outputTokens": 80,
+        "latencyMs": 3100,
+        "costUsdEst": 0.00174,
+        "status": "OK",
+        "errorCode": null
+      }
+    ]
+  }
+}

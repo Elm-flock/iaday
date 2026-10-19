@@ -1,0 +1,48 @@
+# Jerga de negocio / OKR y anglicismos que NO pueden quedar en una adaptacion (EASY_READ / PLAIN)
+# sin explicacion en el glosario (guards/jargon.py). EXTENSIBLE: agregar una linea por termino y
+# reiniciar el servicio; no hace falta tocar codigo.
+#
+# Reglas de coincidencia (guards/jargon.py): sin distinguir mayusculas ni tildes, por palabra completa,
+# con plural opcional (s/es). Un termino de varias palabras ("tasa de cierre") se busca como frase.
+# NO listar siglas en MAYUSCULAS (KPI, NPS, SLA, MRR...): ya las cubre readability.find_acronyms.
+# Cuidado con palabras comunes del espanol (falsos positivos): "retencion" es jerga solo como metrica,
+# por eso se lista "tasa de retencion" y no "retencion".
+terms:
+  # anglicismos de negocio / producto
+  - pipeline
+  - funnel
+  - churn
+  - onboarding
+  - offboarding
+  - lead
+  - upselling
+  - upsell
+  - cross-selling
+  - cross selling
+  - roadmap
+  - sprint
+  - backlog
+  - deadline
+  - engagement
+  - stakeholder
+  - feature
+  - release
+  - deploy
+  - rollout
+  - benchmark
+  - target
+  - forecast
+  - bottleneck
+  - runbook
+  - workflow
+  - playbook
+  - ticket de soporte
+  # metricas y jerga comercial en espanol
+  - tasa de cierre
+  - tasa de conversion
+  - tasa de retencion
+  - tasa de abandono
+  - ciclo de venta
+  - embudo de ventas
+  - embudo comercial
+  - cartera de clientes

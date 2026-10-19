@@ -1,0 +1,49 @@
+{
+  "description": "Respuesta de ayuda con cita (subconjunto de los ids enviados).",
+  "endpoint": "/v1/help/answer",
+  "status": 200,
+  "request": {
+    "locale": "es",
+    "audience": "ADMIN",
+    "question": "¿Cómo cierro un ciclo?",
+    "chunks": [
+      {
+        "id": "admin#como-cierro-un-ciclo",
+        "manual": "ADMIN",
+        "title": "Ciclos > Cerrar un ciclo",
+        "text": "1. Entrá a Ciclos.\n2. Elegí el ciclo activo.\n3. Tocá Cerrar ciclo y confirmá.",
+        "url": "/ayuda/administracion#como-cierro-un-ciclo"
+      }
+    ]
+  },
+  "response": {
+    "traceId": "8a0f3c1e-1d2b-4c5a-9e8f-7b6a5c4d3e2f",
+    "answer": "1. Entrá a Ciclos. 2. Elegí el ciclo activo. 3. Tocá Cerrar ciclo y confirmá.",
+    "citations": [
+      "admin#como-cierro-un-ciclo"
+    ],
+    "found": true,
+    "prompt": {
+      "id": "help_answer",
+      "version": "1",
+      "hash": "7d6c5b4a3921"
+    },
+    "usage": [
+      {
+        "step": "ANSWER",
+        "attempt": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "isFallback": false,
+        "promptId": "help_answer",
+        "promptVersion": "1",
+        "promptHash": "7d6c5b4a3921",
+        "inputTokens": 900,
+        "outputTokens": 120,
+        "latencyMs": 2400,
+        "costUsdEst": 0.00039,
+        "status": "OK",
+        "errorCode": null
+      }
+    ]
+  }
+}

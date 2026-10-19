@@ -1,0 +1,37 @@
+{
+  "level": "PLAIN",
+  "keyResult": {
+    "title": "Reducir el tiempo medio de resolución de incidencias P1 de 8 h a 4 h",
+    "scoring": "DERIVED",
+    "unit": "h",
+    "startValue": "8",
+    "targetValue": "4",
+    "currentValue": "5.5"
+  },
+  "checkIns": [
+    {
+      "date": "2026-10-01",
+      "value": "7.5",
+      "score": 0.125,
+      "band": "RED",
+      "action": "START",
+      "note": "Arrancamos el relevamiento de incidencias."
+    },
+    {
+      "date": "2026-10-08",
+      "value": "6.5",
+      "score": 0.375,
+      "band": "RED",
+      "action": "CONTINUE",
+      "note": "Primer runbook publicado."
+    },
+    {
+      "date": "2026-10-15",
+      "value": "5.5",
+      "score": 0.625,
+      "band": "YELLOW",
+      "action": "CONTINUE",
+      "note": "El SLA del proveedor es el cuello de botella; se escala al comité el 15/11."
+    }
+  ]
+}

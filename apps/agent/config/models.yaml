@@ -1,0 +1,111 @@
+# Modelos por tarea (tier). VERIFICAR en build.nvidia.com la vigencia de cada ID antes de usar.
+# Sobrescribibles por entorno: AGENT_MODEL_<TIER> y AGENT_MODEL_<TIER>_FALLBACK.
+# Invariante: la familia (prefijo antes de "/") del juez no puede coincidir con la del generador.
+api_base: https://integrate.api.nvidia.com/v1   # env NVIDIA_NIM_API_BASE
+litellm_prefix: nvidia_nim
+
+defaults:
+  timeout_s: 20      # timeout por intento de LLM
+  max_retries: 1     # reintentos por modelo antes de pasar al fallback
+  backoff_s: 1.5
+  temperature: 0.2
+
+tiers:
+  # Clasificador / guard de entrada: barato y rapido.
+  # Medido el 2026-10-18 contra la cuenta (solo responden los "Free Endpoint"; el resto da 404):
+  #   diffusiongemma-26b ~1.1s | nemotron-3-super ~3-6s | gpt-oss-20b ~6-12s (razona) | nemotron-3-ultra ~18s
+  #   Descartados: glm-5-3 (deprecacion), glm-5-3-flash y nemotron-3.5-lightning (timeouts >55s).
+  # diffusiongemma rechaza response_format json_object: exige json_schema (lo que envia ADK con output_schema).
+  # Pero como CLASIFICADOR es poco fiable: marco "outOfScope" en 3 de 9 textos laborales validos y a veces
+  # omite el "{" inicial del JSON. nemotron-3-super (sin thinking) clasifico bien los 10 casos -> primario.
+  classify:
+    model: nvidia/nemotron-3-super-120b-a12b             # VERIFICAR en build.nvidia.com
+    fallback: google/diffusiongemma-26b-a4b-it           # VERIFICAR en build.nvidia.com
+    max_tokens: 256
+    temperature: 0.0
+  # Generador: el mejor espanol / seguimiento de instrucciones.
+  generate:
+    model: nvidia/nemotron-3-super-120b-a12b             # VERIFICAR en build.nvidia.com
+    fallback: nvidia/nemotron-3-ultra-550b-a55b          # VERIFICAR en build.nvidia.com
+    max_tokens: 2048
+    temperature: 0.3
+    timeout_s: 40
+  # Regeneracion (UNA vez, cuando falla legibilidad / fidelidad / juez): el modelo mas capaz. La latencia no importa
+  # (decision de producto); la calidad si. nemotron-3-super (sin thinking) oscila: o conserva palabras largas
+  # (Szigriszt 55,7 < 65) o cambia "100 %" por "todo". ultra (sin thinking, ~15-25 s) da la mejor lectura facil
+  # ("7 de cada 10"). Si falta este tier, REGENERATE usa el tier generate. timeout_s propio (ultra es lento).
+  # Medido (2026-10-18, 3 corridas de 11 evals): como REGENERATE ultra tardo 0,9-4,6 s y feedback-reconocimiento,
+  # kr-estancado y estado-enum pasaron siempre. Como GENERADOR PRIMARIO se descarto: latencia muy variable en el free
+  # tier (1,3 s a >38 s; un intento agoto 40 s y el reintento tardo 38 s) y rompe la repetibilidad; super (1-6 s) pasa
+  # 11/11 y ultra solo se paga en el ~25 % de pedidos que necesitan regenerar.
+  regenerate:
+    model: nvidia/nemotron-3-ultra-550b-a55b             # VERIFICAR en build.nvidia.com
+    fallback: nvidia/nemotron-3-super-120b-a12b          # VERIFICAR en build.nvidia.com
+    max_tokens: 2048
+    temperature: 0.3
+    timeout_s: 60
+  # --- Extension asistente admin (docs/ai/agent-contract-admin.md) ---
+  # Planner (pasos PLAN/REPAIR de /v1/admin/chat: arma el plan de acciones; consulta de solo lectura admin_query).
+  #   mode: schema = output_schema=PlannerOut (JSON validado con Pydantic + REPAIR)
+  #         tools  = ADK FunctionTools que SOLO registran propuestas (no ejecutan nada) + ensamblado determinista
+  #   Fallback en modo schema: nemotron-3-super (json_schema strict, el structured output mas fiable medido);
+  #   en modo tools: `tools_fallback` (super/gpt-oss emiten 1 sola llamada por turno; ver README).
+  #   AGENT_PLANNER_MODE=schema|tools pisa `mode` sin tocar este archivo (se usa para comparar ambos en los evals).
+  #   Medicion 2026-10-18 (29 casos de evals/admin_plan.test.json, ultra sin thinking, mismos prompts en ambos modos):
+  #     schema: 28/29 (el fallo es del CLASIFICADOR, no del modo), media 3,3 s/caso, 114k tokens in, USD 0,103 est.
+  #     tools : 29/29, media 11,0 s/caso (max 54 s), 295k tokens in (cada accion = una vuelta: ultra emite 1 llamada por turno
+  #             y reenvia catalogo + 11 esquemas de herramientas), USD 0,285 est. y 3x la latencia -> default `schema`.
+  #   ultra con json_mode none devolvio JSON valido en 29/29 (1 REPAIR en toda la corrida). Requiere el paquete `mcp` (litellm lo importa con tools).
+  planner:
+    mode: schema
+    model: nvidia/nemotron-3-ultra-550b-a55b             # VERIFICAR en build.nvidia.com
+    fallback: nvidia/nemotron-3-super-120b-a12b          # VERIFICAR en build.nvidia.com
+    tools_fallback: google/diffusiongemma-26b-a4b-it     # VERIFICAR en build.nvidia.com (solo modo tools)
+    max_tokens: 3072
+    temperature: 0.0
+    timeout_s: 90
+  # Resumen de novedades (SUMMARIZE): nemotron-3-super sin thinking (model_options), 1-5 s.
+  summarize:
+    model: nvidia/nemotron-3-super-120b-a12b             # VERIFICAR en build.nvidia.com
+    fallback: google/diffusiongemma-26b-a4b-it           # VERIFICAR en build.nvidia.com
+    max_tokens: 768
+    temperature: 0.2
+  # Juez (LLM-as-judge): de OTRA familia que el generador para no heredar sus sesgos.
+  # Prueba con 4 pares (fiel / numero cambiado / dato inventado / juicio de valor): diffusiongemma acerto 4/4 en
+  # 0.4-2.5s; gpt-oss-20b (razona) tardo 6-8s, marco como NO fiel una version fiel y a veces agota los 20s.
+  # gpt-oss queda de fallback (con max_tokens bajos devuelve contenido vacio: el razonamiento consume el presupuesto).
+  judge:
+    model: google/diffusiongemma-26b-a4b-it              # VERIFICAR en build.nvidia.com
+    fallback: openai/gpt-oss-20b                         # VERIFICAR en build.nvidia.com
+    max_tokens: 1536
+    temperature: 0.0
+    timeout_s: 30   # diffusiongemma agoto 20 s en 3 de 11 evals (free tier): la latencia no importa
+
+# Minimo de Szigriszt-Pazos (INFLESZ) de la salida segun el nivel.
+readability_min:
+  EASY_READ: 65
+  PLAIN: 55
+
+# ESTIMACION (referencia de mercado aproximada, USD por 1M de tokens). El free tier de NVIDIA no factura.
+pricing_usd_per_1m:
+  google/diffusiongemma-26b-a4b-it: { input: 0.10, output: 0.40 }
+  nvidia/nemotron-3-super-120b-a12b: { input: 0.30, output: 1.00 }
+  nvidia/nemotron-3-ultra-550b-a55b: { input: 1.00, output: 3.00 }
+  openai/gpt-oss-20b: { input: 0.05, output: 0.20 }
+  default: { input: 0.50, output: 1.50 }
+
+# Opciones por modelo (el comportamiento de NIM varia por modelo; medido el 2026-10-18).
+#   json_mode: schema (default: response_format json_schema strict, lo que envia ADK) | object | none
+#   extra_body: se envia en el body de la request.
+# nemotron-3-super y -ultra son modelos de razonamiento: con thinking activo gastan ~1500 tokens y 30-43s para
+# ~170 tokens utiles (super, easy_read). enable_thinking=false: ~5s. gpt-oss se limita con reasoning_effort=low.
+model_options:
+  nvidia/nemotron-3-super-120b-a12b:
+    json_mode: schema
+    extra_body: { chat_template_kwargs: { enable_thinking: false } }
+  nvidia/nemotron-3-ultra-550b-a55b:
+    json_mode: none          # con json_object anida mal el JSON ({"text":{"text":...}})
+    extra_body: { chat_template_kwargs: { enable_thinking: false } }
+  openai/gpt-oss-20b:
+    json_mode: schema
+    extra_body: { reasoning_effort: low }

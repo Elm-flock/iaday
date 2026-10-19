@@ -1,0 +1,22 @@
+{
+  "cycleKind": "QUARTER",
+  "objective": {
+    "title": "mejorar soporte",
+    "description": null,
+    "type": "COMMITTED"
+  },
+  "keyResults": [
+    {
+      "title": "hacer runbooks",
+      "unit": null,
+      "startValue": null,
+      "targetValue": null
+    },
+    {
+      "title": "bajar tiempo de resolución P1",
+      "unit": "h",
+      "startValue": "8",
+      "targetValue": "4"
+    }
+  ]
+}

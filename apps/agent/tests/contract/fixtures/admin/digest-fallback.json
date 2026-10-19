@@ -1,0 +1,120 @@
+{
+  "description": "El modelo usó un número que no está en los hechos, también tras regenerar: plantilla determinista. `checks` describe la salida RECHAZADA del modelo (unknownNumbers/unknownNames) y `fallbackUsed: true`; el `summary` entregado es la plantilla y es fiel por construcción.",
+  "endpoint": "/v1/admin/digest-summary",
+  "status": 200,
+  "request": {
+    "locale": "es",
+    "today": "2026-10-18",
+    "facts": {
+      "overdueCheckIns": {
+        "count": 7,
+        "examples": [
+          {
+            "krTitle": "Bajar el tiempo de respuesta",
+            "objectiveTitle": "Mejorar soporte",
+            "ownerName": "Juan Díaz",
+            "daysOverdue": 12
+          }
+        ]
+      },
+      "krsInRed": {
+        "count": 0,
+        "examples": []
+      },
+      "cyclesEndingSoon": {
+        "count": 1,
+        "examples": [
+          {
+            "cycleName": "Q4 2026",
+            "endDate": "2026-10-28",
+            "daysLeft": 10
+          }
+        ]
+      },
+      "cyclesToClose": {
+        "count": 0,
+        "examples": []
+      },
+      "draftsNotPublishable": {
+        "count": 0,
+        "examples": []
+      },
+      "usersWithoutTeam": {
+        "count": 0,
+        "examples": []
+      },
+      "teamsWithoutLead": {
+        "count": 0,
+        "examples": []
+      },
+      "adaptationsNeedingReview": {
+        "count": 0
+      },
+      "recentSensitiveChanges": {
+        "count": 0,
+        "examples": []
+      }
+    }
+  },
+  "response": {
+    "traceId": "8a0f3c1e-1d2b-4c5a-9e8f-7b6a5c4d3e2f",
+    "summary": {
+      "headline": "Hay 2 temas para revisar hoy.",
+      "items": [
+        {
+          "factKey": "overdueCheckIns",
+          "text": "7 resultados clave tienen el check-in vencido. El más atrasado es «Bajar el tiempo de respuesta», de Juan Díaz, con 12 días."
+        },
+        {
+          "factKey": "cyclesEndingSoon",
+          "text": "El ciclo Q4 2026 termina en 10 días."
+        }
+      ]
+    },
+    "checks": {
+      "numbersFaithful": false,
+      "unknownNumbers": [
+        "9"
+      ],
+      "unknownNames": [],
+      "fallbackUsed": true
+    },
+    "prompt": {
+      "id": "digest_summary",
+      "version": "1",
+      "hash": "9e8d7c6b5a40"
+    },
+    "usage": [
+      {
+        "step": "SUMMARIZE",
+        "attempt": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "isFallback": false,
+        "promptId": "digest_summary",
+        "promptVersion": "1",
+        "promptHash": "9e8d7c6b5a40",
+        "inputTokens": 700,
+        "outputTokens": 150,
+        "latencyMs": 2100,
+        "costUsdEst": 0.00036,
+        "status": "OK",
+        "errorCode": null
+      },
+      {
+        "step": "REPAIR",
+        "attempt": 1,
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "isFallback": false,
+        "promptId": "digest_summary",
+        "promptVersion": "1",
+        "promptHash": "9e8d7c6b5a40",
+        "inputTokens": 700,
+        "outputTokens": 150,
+        "latencyMs": 2100,
+        "costUsdEst": 0.00036,
+        "status": "OK",
+        "errorCode": null
+      }
+    ]
+  }
+}
