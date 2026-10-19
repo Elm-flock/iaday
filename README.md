@@ -8,12 +8,14 @@ Plataforma de gestión de OKRs para Flock IT, basada en *Measure What Matters* (
 | --- | --- |
 | `apps/back` | API NestJS 11 + Prisma 6 + PostgreSQL (la app vive en `apps/back/okr-platform`) |
 | `apps/front` | Next.js 16 (App Router) + React 19 + Tailwind 4, con el sistema de diseño Flock UI |
+| `apps/agent` | Agente de IA de accesibilidad cognitiva (Python, Google ADK + NVIDIA NIM); lo consume la API por HTTP con firma HMAC |
 | `docs/design-system` | Guía de Flock UI (tokens, voz, componentes) |
+| `docs/ai` | Contrato HTTP API ⇄ agente y resumen de la funcionalidad de IA (checklist del AI Day, RD 707/2026) |
 | `tools/demo` | Scripts para levantar una demo local con datos realistas |
 | `tools/monorepo` | Script de sincronización de este monorepo |
 | `spikes/pdf-json-render` | Prueba técnica del PDF con `@json-render/react-pdf` |
 
-> Este monorepo es un **espejo**: el desarrollo ocurre en los repos fuente `okr-platform-back` y `okr-platform-front`, y se sincroniza acá con `git subtree` conservando el historial completo. Cada app tiene su propio `CLAUDE.md` con arquitectura, reglas y comandos.
+> Este monorepo es un **espejo**: el desarrollo ocurre en los repos fuente `okr-platform-back`, `okr-platform-front` y `okr-platform-agent`, y se sincroniza acá con `git subtree` conservando el historial completo. Cada app tiene su propio `CLAUDE.md` con arquitectura, reglas y comandos.
 
 ## Demo local
 

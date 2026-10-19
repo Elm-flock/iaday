@@ -69,6 +69,50 @@ Write-Host '[demo] prisma db seed...'
 npx prisma db seed
 if ($LASTEXITCODE -ne 0) { Pop-Location; Fail 'prisma db seed fallo' }
 
+# 2b) Agente de IA (OPCIONAL). Solo si existen su .env y su .venv; si no, la demo corre con AI_ENABLED=false.
+# Sin build: uvicorn desde el venv del agente. El secreto HMAC se genera por corrida (no se lee ni se guarda el del .env).
+$agentDir = if (Test-Path (Join-Path $rootDir 'apps\agent')) { Join-Path $rootDir 'apps\agent' } else { Join-Path $rootDir 'okr-platform-agent' }
+$agentPy  = Join-Path $agentDir '.venv\Scripts\python.exe'
+$agentPidFile = Join-Path $demoDir '.agent.pid'
+$agentLog = Join-Path $demoDir '.agent.log'
+$agentPort = 8098
+$env:AI_ENABLED = 'false'
+$env:ASSISTANT_ENABLED = 'false'
+if ((Test-Path (Join-Path $agentDir '.env')) -and (Test-Path $agentPy) -and -not (Port-InUse $agentPort)) {
+  $bytes = New-Object byte[] 32
+  [System.Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes)
+  $env:AGENT_SHARED_SECRET = ($bytes | ForEach-Object { $_.ToString('x2') }) -join ''
+  $env:AGENT_PORT = "$agentPort"
+  Write-Host "[demo] Iniciando agente de IA (uvicorn) en :$agentPort..."
+  $agentProc = Start-Process -FilePath $agentPy `
+    -ArgumentList @('-m', 'uvicorn', 'okr_agent.api.main:app', '--host', '127.0.0.1', '--port', "$agentPort") `
+    -WorkingDirectory $agentDir -WindowStyle Hidden -PassThru `
+    -RedirectStandardOutput $agentLog -RedirectStandardError "$agentLog.err"
+  Set-Content -Path $agentPidFile -Value $agentProc.Id
+  $agentUp = $false
+  for ($i = 0; $i -lt 60 -and -not $agentUp; $i++) {
+    $agentProc.Refresh()
+    if ($agentProc.HasExited) { break }
+    try {
+      $r = [System.Net.HttpWebRequest]::Create("http://127.0.0.1:$agentPort/health"); $r.Proxy = $null; $r.Timeout = 2000
+      $resp = $r.GetResponse(); $agentUp = ([int]$resp.StatusCode -eq 200); $resp.Close()
+    } catch { }
+    if (-not $agentUp) { Start-Sleep -Seconds 1 }
+  }
+  if ($agentUp) {
+    $env:AI_ENABLED = 'true'
+    $env:ASSISTANT_ENABLED = 'true'
+    $env:AGENT_URL = "http://127.0.0.1:$agentPort"
+    Write-Host "[demo] Agente de IA saludable (PID $($agentProc.Id)). AI_ENABLED=true." -ForegroundColor Green
+  } else {
+    Write-Host "[demo] AVISO: el agente no respondio en /health. La demo sigue con AI_ENABLED=false. Ver $agentLog.err" -ForegroundColor Yellow
+    if (-not $agentProc.HasExited) { taskkill /PID $agentProc.Id /T /F | Out-Null }
+    Remove-Item $agentPidFile -Force -ErrorAction SilentlyContinue
+  }
+} else {
+  Write-Host '[demo] Sin agente de IA (falta okr-platform-agent\.env o .venv, o el puerto esta ocupado): AI_ENABLED=false.'
+}
+
 # 3) API (sin build: ts-node). Se invoca el bin de ts-node con node para tener el PID real del proceso.
 $env:PORT = '3100'
 $env:FRONT_ORIGIN = 'http://localhost:3101'

@@ -28,6 +28,15 @@ $env:API_URL="http://localhost:3100"; npx next dev -p 3101
 
 (Opcional: si querés que `demo-down.ps1` lo detenga, guardá su PID en `tools\demo\.front.pid`.)
 
+## IA de accesibilidad cognitiva (opcional)
+
+`demo-up.ps1` intenta levantar también el agente (`okr-platform-agent`, o `apps/agent` en el monorepo) **sin compilar**, con `python -m uvicorn` desde su `.venv`, en el puerto **8098**. Solo lo hace si existen `okr-platform-agent\.env` (con `NVIDIA_NIM_API_KEY`) y `okr-platform-agent\.venv`; si falta alguno, la demo corre igual con `AI_ENABLED=false` y el front oculta las ayudas de IA.
+
+- El script genera un `AGENT_SHARED_SECRET` aleatorio por corrida (no lee ni guarda el del `.env`) y se lo pasa a la API junto con `AI_ENABLED=true` y `AGENT_URL=http://127.0.0.1:8098`.
+- PID en `.agent.pid`, logs en `.agent.log` / `.agent.log.err`; `demo-down.ps1` lo detiene (verifica la línea de comandos antes de matarlo).
+- Para probar la degradación: detené el agente (`demo-down.ps1` o matá el PID) y repetí un pedido; la API responde 503 `AI_UNAVAILABLE` y la UI muestra la nota de servicio no disponible.
+- Los modelos y el costo son los de `okr-platform-agent/config/models.yaml` (fuente de verdad). El costo en USD que muestra `admin/uso-ia` es una estimación: el free tier de NVIDIA no factura.
+
 ## URLs
 
 | Qué | URL |

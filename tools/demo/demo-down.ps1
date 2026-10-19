@@ -21,6 +21,8 @@ function Stop-Verified($pidFile, $pattern, $label) {
 
 # Back: node ... ts-node ... src/main.ts dentro de okr-platform-back
 Stop-Verified (Join-Path $demoDir '.api.pid') '(okr-platform-back|apps[\\/]back).*ts-node.*src[\\/]main\.ts' 'API'
+# Agente de IA (opcional): python -m uvicorn okr_agent.api.main:app
+Stop-Verified (Join-Path $demoDir '.agent.pid') 'uvicorn.*okr_agent\.api\.main' 'Agente IA'
 # Front (opcional): next dev -p 3101 lanzado desde okr-platform-front
 Stop-Verified (Join-Path $demoDir '.front.pid') 'next.*dev.*3101|3101.*next|okr-platform-front-demo.*next[\\/]dist[\\/]server' 'Front'
 

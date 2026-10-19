@@ -5,7 +5,8 @@
 # Fuente de verdad: los repos separados. El monorepo es un espejo:
 #   apps/back   <- okr-platform-back (rama master)
 #   apps/front  <- okr-platform-front (rama master)
-#   docs/design-system, tools/demo, spikes/pdf-json-render (solo código) <- workspace iaday/
+#   apps/agent  <- okr-platform-agent (rama main; agente Python de IA, ADK + NVIDIA NIM)
+#   docs/design-system, docs/ai, tools/demo, spikes/pdf-json-render (solo código) <- workspace iaday/
 # Nunca incluye docs/reference (libro con derechos de autor).
 #
 # Uso (desde WSL):  bash tools/monorepo/sync-monorepo.sh [--push]
@@ -16,6 +17,7 @@ MONO="$WS/okr-platform-monorepo"
 REMOTE="git@github.com:Elm-flock/iaday.git"
 BACK="$WS/okr-platform-back"
 FRONT="$WS/okr-platform-front"
+AGENT="$WS/okr-platform-agent"
 PUSH=""
 ALLOW_DIRTY=""
 for arg in "$@"; do
@@ -27,7 +29,18 @@ done
 
 # git subtree solo toma commits: los cambios sin commitear NO se suben.
 # Por defecto aborta para que nadie crea que publicó trabajo en curso.
-for repo in "$BACK" "$FRONT"; do
+# El agente es opcional: si su repo no existe o todavía no tiene commits (subtree solo toma commits),
+# se omite con un aviso en vez de abortar. Una vez que tenga su primer commit, la próxima corrida lo agrega.
+SYNC_AGENT=""
+if [ -d "$AGENT/.git" ] && git -C "$AGENT" rev-parse --verify -q HEAD >/dev/null; then
+  SYNC_AGENT="1"
+else
+  echo "[sync] AVISO: $AGENT no existe o no tiene commits; se omite apps/agent (commiteá el agente y volvé a correr)." >&2
+fi
+
+REPOS=("$BACK" "$FRONT")
+[ -n "$SYNC_AGENT" ] && REPOS+=("$AGENT")
+for repo in "${REPOS[@]}"; do
   if [ -n "$(git -C "$repo" status --porcelain)" ]; then
     if [ -n "$ALLOW_DIRTY" ]; then
       echo "[sync] AVISO: $repo tiene cambios sin commitear; se publica solo lo commiteado." >&2
@@ -52,22 +65,24 @@ if [ ! -d "$MONO/.git" ]; then
 fi
 
 sync_app() {
-  local prefix="$1" src="$2"
+  local prefix="$1" src="$2" branch="${3:-master}"
   if [ -d "$MONO/$prefix" ]; then
     echo "[sync] subtree pull $prefix <- $src"
-    git -C "$MONO" subtree pull -q --prefix="$prefix" "$src" master -m "chore(sync): actualizar $prefix desde su repo fuente"
+    git -C "$MONO" subtree pull -q --prefix="$prefix" "$src" "$branch" -m "chore(sync): actualizar $prefix desde su repo fuente"
   else
     echo "[sync] subtree add $prefix <- $src (con historial)"
-    git -C "$MONO" subtree add -q --prefix="$prefix" "$src" master
+    git -C "$MONO" subtree add -q --prefix="$prefix" "$src" "$branch"
   fi
 }
 sync_app apps/back "$BACK"
 sync_app apps/front "$FRONT"
+[ -n "$SYNC_AGENT" ] && sync_app apps/agent "$AGENT" main
 
 echo "[sync] Copiando docs, tools y spikes (sin artefactos)"
-mkdir -p "$MONO/docs/design-system" "$MONO/tools/demo" "$MONO/tools/monorepo" "$MONO/spikes/pdf-json-render"
+mkdir -p "$MONO/docs/design-system" "$MONO/docs/ai" "$MONO/tools/demo" "$MONO/tools/monorepo" "$MONO/spikes/pdf-json-render"
 rsync -a --delete "$WS/docs/design-system/" "$MONO/docs/design-system/"
-rsync -a --delete --exclude '.api.pid' --exclude '.front.pid' --exclude '*.log' --exclude '*.log.err' \
+rsync -a --delete "$WS/docs/ai/" "$MONO/docs/ai/"
+rsync -a --delete --exclude '.api.pid' --exclude '.front.pid' --exclude '.agent.pid' --exclude '*.log' --exclude '*.log.err' \
   "$WS/tools/demo/" "$MONO/tools/demo/"
 rsync -a --delete --exclude 'sync-monorepo.local*' "$WS/tools/monorepo/" "$MONO/tools/monorepo/"
 rsync -a --delete --exclude 'node_modules' --exclude '.next' --exclude 'out' --exclude '*.tsbuildinfo' \
