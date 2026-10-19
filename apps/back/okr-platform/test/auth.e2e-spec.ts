@@ -224,6 +224,7 @@ describe('Auth (e2e)', () => {
         name: user.name,
         email: user.email,
         role: 'LEADER',
+        mustChangePassword: false,
         teams: [{ teamId: team.id, name: 'Plataforma', isLead: true }],
       });
     });

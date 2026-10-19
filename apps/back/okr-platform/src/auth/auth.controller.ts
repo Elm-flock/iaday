@@ -6,14 +6,17 @@ import {
   ApiOperation,
   ApiTags,
   ApiTooManyRequestsResponse,
+  ApiUnprocessableEntityResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { AllowPasswordChange } from '../common/decorators/allow-password-change.decorator';
 import { Public } from '../common/decorators/public.decorator';
 import type { AuthUser } from '../common/types/auth-user';
 import { AuthService } from './auth.service';
 import { AuthSessionDto, MeDto } from './dto/auth-response.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshDto } from './dto/refresh.dto';
 
@@ -64,6 +67,29 @@ export class AuthController {
   }
 
   @ApiBearerAuth('JWT-auth')
+  @AllowPasswordChange()
+  @Throttle(authThrottle)
+  @HttpCode(HttpStatus.OK)
+  @Post('change-password')
+  @ApiOperation({
+    summary:
+      'Cambia la contraseña propia. Apaga mustChangePassword, revoca las demás sesiones y devuelve una sesión nueva.',
+  })
+  @ApiOkResponse({ type: AuthSessionDto })
+  @ApiUnprocessableEntityResponse({
+    description:
+      'INVALID_CURRENT_PASSWORD, PASSWORD_TOO_SHORT o PASSWORD_UNCHANGED (la nueva igual a la actual)',
+  })
+  @ApiTooManyRequestsResponse({ description: 'Demasiados intentos' })
+  changePassword(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: ChangePasswordDto,
+  ): Promise<AuthSessionDto> {
+    return this.auth.changePassword(user.id, dto.currentPassword, dto.newPassword);
+  }
+
+  @ApiBearerAuth('JWT-auth')
+  @AllowPasswordChange()
   @Get('me')
   @ApiOperation({ summary: 'Perfil del usuario autenticado' })
   @ApiOkResponse({ type: MeDto })

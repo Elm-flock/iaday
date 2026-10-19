@@ -1,7 +1,7 @@
 export type CheckInCadence = 'WEEKLY' | 'BIWEEKLY' | 'MONTHLY';
 
 const DAY_MS = 86_400_000;
-const CADENCE_DAYS: Record<CheckInCadence, number> = {
+export const CADENCE_DAYS: Record<CheckInCadence, number> = {
   WEEKLY: 7,
   BIWEEKLY: 14,
   MONTHLY: 30,

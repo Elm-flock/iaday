@@ -8,6 +8,6 @@ import { OkrsAccess } from './okrs-access.service';
 @Module({
   controllers: [ObjectivesController, KeyResultsController],
   providers: [ObjectivesService, KeyResultsService, OkrsAccess],
-  exports: [OkrsAccess],
+  exports: [OkrsAccess, ObjectivesService, KeyResultsService],
 })
 export class OkrsModule {}

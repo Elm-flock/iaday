@@ -4,4 +4,6 @@ export type Role = 'ADMIN' | 'LEADER' | 'MEMBER';
 export interface AuthUser {
   id: string;
   role: Role;
+  /** true mientras la persona no cambie la clave inicial que le dio administración. */
+  mustChangePassword?: boolean;
 }

@@ -1,0 +1,117 @@
+{
+  "traceId": "3b1f6c2e-8f4d-4a51-9a63-2d7f0c9e5b10",
+  "needsHumanReview": false,
+  "reviewReason": null,
+  "result": {
+    "level": "EASY_READ",
+    "segments": [
+      {
+        "key": "checkin.kr_title",
+        "text": "Queremos arreglar más rápido los problemas graves. Antes tardábamos 8 h. La meta es tardar 4 h."
+      },
+      {
+        "key": "checkin.action",
+        "text": "Seguimos igual."
+      },
+      {
+        "key": "checkin.note",
+        "text": "Ahora tardamos 5,5 h. Mejoramos gracias a una guía nueva. Todavía hay un problema: el proveedor tarda mucho. El 15/11 se lo contamos al comité."
+      }
+    ],
+    "glossary": [
+      {
+        "term": "proveedor",
+        "explanation": "La empresa que nos da un servicio."
+      },
+      {
+        "term": "comité",
+        "explanation": "Un grupo de personas que toma decisiones."
+      }
+    ]
+  },
+  "readability": {
+    "source": {
+      "fernandezHuerta": 52.1,
+      "szigrisztPazos": 47.8,
+      "infleszBand": "ALGO_DIFICIL",
+      "words": 37,
+      "sentences": 2,
+      "avgSentenceLength": 18.5,
+      "maxSentenceLength": 23,
+      "unexplainedAcronyms": ["SLA", "P1"]
+    },
+    "output": {
+      "fernandezHuerta": 84.3,
+      "szigrisztPazos": 79.6,
+      "infleszBand": "BASTANTE_FACIL",
+      "words": 52,
+      "sentences": 8,
+      "avgSentenceLength": 6.5,
+      "maxSentenceLength": 10,
+      "unexplainedAcronyms": []
+    }
+  },
+  "checks": {
+    "piiMasked": 0,
+    "sensitiveContent": false,
+    "numbersPreserved": true,
+    "missingTokens": [],
+    "judge": {
+      "verdict": "FAITHFUL",
+      "reasons": []
+    },
+    "regenerated": false
+  },
+  "prompt": {
+    "id": "easy_read",
+    "version": "1",
+    "hash": "a91c03be77d2"
+  },
+  "usage": [
+    {
+      "step": "CLASSIFY",
+      "attempt": 1,
+      "model": "nvidia/nemotron-3-nano-30b-a3b",
+      "isFallback": false,
+      "promptId": "classify",
+      "promptVersion": "1",
+      "promptHash": "0c55e1f4a2b9",
+      "inputTokens": 612,
+      "outputTokens": 38,
+      "latencyMs": 410,
+      "costUsdEst": 3.82e-5,
+      "status": "OK",
+      "errorCode": null
+    },
+    {
+      "step": "GENERATE",
+      "attempt": 1,
+      "model": "nvidia/nemotron-3-super-120b-a12b",
+      "isFallback": false,
+      "promptId": "easy_read",
+      "promptVersion": "1",
+      "promptHash": "a91c03be77d2",
+      "inputTokens": 1480,
+      "outputTokens": 402,
+      "latencyMs": 6120,
+      "costUsdEst": 0.000846,
+      "status": "OK",
+      "errorCode": null
+    },
+    {
+      "step": "JUDGE",
+      "attempt": 1,
+      "model": "qwen/qwen3-next-80b-a3b-instruct",
+      "isFallback": false,
+      "promptId": "judge",
+      "promptVersion": "1",
+      "promptHash": "77be2d90c1aa",
+      "inputTokens": 1950,
+      "outputTokens": 96,
+      "latencyMs": 2380,
+      "costUsdEst": 0.0004365,
+      "status": "OK",
+      "errorCode": null
+    }
+  ]
+}

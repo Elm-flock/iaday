@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { AdaptationRequestsModule } from './adaptation-requests/adaptation-requests.module';
+import { AiModule } from './ai/ai.module';
+import { AssistantModule } from './assistant/assistant.module';
 import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
 import { CheckInsModule } from './check-ins/check-ins.module';
@@ -10,6 +13,7 @@ import { RecognitionsModule } from './cfr/recognitions/recognitions.module';
 import { CyclesModule } from './cycles/cycles.module';
 import { OkrsModule } from './okrs/okrs.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import { PasswordChangeRequiredGuard } from './common/guards/password-change-required.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter';
 import { HealthController } from './health/health.controller';
@@ -34,12 +38,16 @@ import { UsersModule } from './users/users.module';
     RecognitionsModule,
     ReportsModule,
     AuditModule,
+    AiModule,
+    AdaptationRequestsModule,
+    AssistantModule,
   ],
   controllers: [HealthController],
   providers: [
-    // El orden importa: throttling -> autenticación -> autorización por rol.
+    // El orden importa: throttling -> autenticación -> cambio de clave obligatorio -> autorización por rol.
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useClass: JwtAuthGuard },
+    { provide: APP_GUARD, useClass: PasswordChangeRequiredGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
     { provide: APP_FILTER, useClass: PrismaExceptionFilter },
   ],

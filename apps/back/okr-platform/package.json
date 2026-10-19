@@ -21,7 +21,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "openapi:emit": "ts-node src/openapi.ts",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev"
+    "prisma:migrate": "prisma migrate dev",
+    "assistant:purge": "ts-node src/assistant/assistant-purge.cli.ts",
+    "assistant:help-index": "ts-node scripts/sync-help-index.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

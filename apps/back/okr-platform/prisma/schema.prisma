@@ -83,6 +83,18 @@ enum AuditAction {
   USER_DEACTIVATED
   REFRESH_REUSE_DETECTED
   REFRESH_REVOKED_USED
+  AI_CONTENT_ADAPTED
+  AI_CONTENT_VALIDATED
+  AI_SUGGESTION_ACCEPTED
+  ADAPTATION_REQUEST_CREATED
+  ADAPTATION_REQUEST_ASSIGNED
+  ADAPTATION_REQUEST_DELIVERED
+  ADAPTATION_REQUEST_REJECTED
+  USER_PASSWORD_CHANGED
+  ASSISTANT_PLAN_CONFIRMED
+  ASSISTANT_PLAN_DISCARDED
+  ASSISTANT_ACTION_EXECUTED
+  ASSISTANT_ACTION_FAILED
 }
 
 model User {
@@ -92,20 +104,30 @@ model User {
   passwordHash String
   role         Role     @default(MEMBER)
   active       Boolean  @default(true)
+  // true en toda cuenta creada por administración (otra persona conoce la clave inicial): solo permite cambiar la clave.
+  mustChangePassword Boolean @default(false)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  refreshTokens     RefreshToken[]
-  memberships       TeamMember[]
-  ownedObjectives   Objective[]    @relation("ObjectiveOwnerUser")
-  createdObjectives Objective[]    @relation("ObjectiveCreator")
-  ownedKeyResults   KeyResult[]
-  checkIns          CheckIn[]
-  feedbackSent      Feedback[]     @relation("FeedbackFrom")
-  feedbackReceived  Feedback[]     @relation("FeedbackTo")
-  recognitionsSent  Recognition[]  @relation("RecognitionFrom")
-  recognitionsRecv  Recognition[]  @relation("RecognitionTo")
-  auditLogs         AuditLog[]
+  refreshTokens       RefreshToken[]
+  memberships          TeamMember[]
+  ownedObjectives      Objective[]      @relation("ObjectiveOwnerUser")
+  createdObjectives    Objective[]      @relation("ObjectiveCreator")
+  ownedKeyResults      KeyResult[]
+  checkIns             CheckIn[]
+  feedbackSent         Feedback[]       @relation("FeedbackFrom")
+  feedbackReceived     Feedback[]       @relation("FeedbackTo")
+  recognitionsSent     Recognition[]    @relation("RecognitionFrom")
+  recognitionsRecv     Recognition[]    @relation("RecognitionTo")
+  auditLogs            AuditLog[]
+  llmCalls             LlmCall[]
+  adaptationsRequested AdaptedContent[] @relation("AdaptedRequestedBy")
+  adaptationsValidated AdaptedContent[] @relation("AdaptedValidatedBy")
+  adaptationRequests   AdaptationRequest[] @relation("AdaptationRequester")
+  adaptationAssigned   AdaptationRequest[] @relation("AdaptationAssignee")
+  aiSuggestions        AiSuggestion[]   @relation("AiSuggestionRequestedBy")
+  assistantPlans       AssistantPlan[]  @relation("AssistantPlanRequestedBy")
+  assistantMessages    AssistantMessage[] @relation("AssistantMessages")
 }
 
 model RefreshToken {
@@ -312,4 +334,255 @@ model AuditLog {
 
   @@index([entityType, entityId, createdAt])
   @@index([actorId])
+}
+
+enum AiFeature {
+  ADAPT
+  OKR_SUGGEST
+  CHECKIN_SUMMARY
+  ADMIN_CHAT
+  ADMIN_DIGEST
+  HELP_ANSWER
+}
+
+enum AiStep {
+  CLASSIFY
+  GENERATE
+  REPAIR
+  JUDGE
+  REGENERATE
+  TRANSPORT
+  PLAN
+  ANSWER
+  SUMMARIZE
+}
+
+enum LlmCallStatus {
+  OK
+  FAILED
+}
+
+enum AiEntityType {
+  OBJECTIVE
+  KEY_RESULT
+  CHECK_IN
+  FEEDBACK
+  ASSISTANT_PLAN
+}
+
+enum AdaptationLevel {
+  EASY_READ
+  PLAIN
+}
+
+enum AdaptedContentStatus {
+  DRAFT
+  ACCEPTED
+  VALIDATED
+  NEEDS_REVIEW
+}
+
+// Append-only (trigger en la migración 20261018120000_ai_accesibilidad): sin updatedAt.
+// Una fila por cada intento de llamada a un LLM, también los fallidos.
+model LlmCall {
+  id            String        @id @default(uuid()) @db.Uuid
+  traceId       String        @db.Uuid
+  feature       AiFeature
+  step          AiStep
+  attempt       Int           @default(1)
+  model         String
+  isFallback    Boolean       @default(false)
+  promptId      String
+  promptVersion String
+  promptHash    String
+  inputTokens   Int
+  outputTokens  Int
+  latencyMs     Int
+  costUsdEst    Decimal       @db.Decimal(12, 8)
+  status        LlmCallStatus
+  errorCode     String?
+  actorId       String?       @db.Uuid
+  entityType    AiEntityType?
+  entityId      String?       @db.Uuid
+  createdAt     DateTime      @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([traceId])
+  @@index([feature, createdAt])
+  @@index([model, createdAt])
+  @@index([actorId])
+}
+
+// Versión accesible (lectura fácil / lenguaje claro) de un texto. Para FEEDBACK es tan privada como el feedback.
+model AdaptedContent {
+  id             String               @id @default(uuid()) @db.Uuid
+  entityType     AiEntityType
+  entityId       String               @db.Uuid
+  level          AdaptationLevel
+  sourceHash     String
+  content        Json
+  readability    Json
+  status         AdaptedContentStatus @default(DRAFT)
+  reviewReason   String?
+  promptId       String
+  promptVersion  String
+  traceId        String               @db.Uuid
+  generationMs   Int
+  requestedById  String?              @db.Uuid
+  acceptedAt     DateTime?
+  validatedById  String?              @db.Uuid
+  validatedAt    DateTime?
+  validationNote String?              @db.VarChar(1000)
+  humanEdited    Boolean              @default(false)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  requestedBy User? @relation("AdaptedRequestedBy", fields: [requestedById], references: [id], onDelete: SetNull)
+  validatedBy User? @relation("AdaptedValidatedBy", fields: [validatedById], references: [id], onDelete: SetNull)
+
+  @@unique([entityType, entityId, level, sourceHash])
+  @@index([entityType, entityId])
+  @@index([status, createdAt])
+}
+
+model AiSuggestion {
+  id               String        @id @default(uuid()) @db.Uuid
+  feature          AiFeature
+  entityType       AiEntityType?
+  entityId         String?       @db.Uuid
+  traceId          String        @db.Uuid
+  payload          Json
+  needsHumanReview Boolean       @default(false)
+  requestedById    String?       @db.Uuid
+  acceptedAt       DateTime?
+  discardedAt      DateTime?
+  timeToDecisionMs Int?
+  createdAt        DateTime      @default(now())
+
+  requestedBy User? @relation("AiSuggestionRequestedBy", fields: [requestedById], references: [id], onDelete: SetNull)
+
+  @@index([feature, createdAt])
+  @@index([requestedById])
+}
+
+// Pedido de un documento adaptado a una PERSONA (RD 707/2026 art. 14.5): complementa la ayuda de IA.
+// El texto libre (asunto, descripción, notas) NUNCA va al AuditLog: solo ids y estado.
+enum AdaptationFormat {
+  LECTURA_FACIL
+  LENGUAJE_CLARO
+  AUDIO
+  APOYO_VISUAL
+  REUNION_ADAPTADA
+  OTRO
+}
+
+enum AdaptationRequestStatus {
+  PENDIENTE
+  EN_CURSO
+  ENTREGADA
+  RECHAZADA
+}
+
+model AdaptationRequest {
+  id                     String                  @id @default(uuid()) @db.Uuid
+  requesterId            String?                 @db.Uuid
+  subject                String                  @db.VarChar(150)
+  description            String?                 @db.VarChar(2000)
+  entityType             AiEntityType?
+  entityId               String?                 @db.Uuid
+  preferredFormat        AdaptationFormat
+  status                 AdaptationRequestStatus @default(PENDIENTE)
+  assigneeId             String?                 @db.Uuid
+  dueDate                DateTime
+  resolutionNote         String?                 @db.VarChar(2000)
+  resolutionLink         String?                 @db.VarChar(500)
+  rejectionJustification String?                 @db.VarChar(2000)
+  resolvedAt             DateTime?
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+
+  requester User? @relation("AdaptationRequester", fields: [requesterId], references: [id], onDelete: SetNull)
+  assignee  User? @relation("AdaptationAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  @@index([requesterId, createdAt])
+  @@index([status, dueDate])
+}
+
+// ---------------------------------------------------------------------------
+// Asistente de administración (cambio asistente-admin-y-manuales).
+// El agente propone, Nest dispone: el plan se valida, se confirma con hash + vencimiento y se ejecuta en proceso.
+// Retención: AssistantMessage 30 días, AssistantPlan 90 días (src/assistant/domain/retention.ts).
+// ---------------------------------------------------------------------------
+enum AssistantPlanStatus {
+  PROPOSED
+  INVALID
+  EXECUTING
+  EXECUTED
+  PARTIAL
+  FAILED
+  INTERRUPTED
+  DISCARDED
+  EXPIRED
+}
+
+enum AssistantMessageRole {
+  ADMIN
+  ASSISTANT
+}
+
+enum AssistantMessageKind {
+  TEXT
+  PLAN
+  QUERY_RESULT
+  EXECUTION_RESULT
+  HELP
+}
+
+model AssistantPlan {
+  id            String              @id @default(uuid()) @db.Uuid
+  requestedById String              @db.Uuid
+  status        AssistantPlanStatus
+  summary       String              @db.VarChar(300)
+  assumptions   Json
+  // Acciones RESUELTAS (UUIDs + etiquetas). Sin secretos: la clave inicial de un alta nunca se guarda.
+  actions       Json
+  // handle -> uuid del pedido (para re-render y auditoría).
+  handleMap     Json
+  issues        Json
+  warnings      Json
+  planHash      String              @db.Char(64)
+  traceId       String              @db.Uuid
+  promptVersion String
+  expiresAt     DateTime
+  confirmedAt   DateTime?
+  finishedAt    DateTime?
+  // [{ index, status: OK|FAILED|SKIPPED, entity?, error? }]; nunca la clave inicial.
+  stepResults   Json?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  requestedBy User               @relation("AssistantPlanRequestedBy", fields: [requestedById], references: [id], onDelete: Cascade)
+  messages    AssistantMessage[]
+
+  @@index([requestedById, createdAt])
+  @@index([status, expiresAt])
+}
+
+model AssistantMessage {
+  id        String               @id @default(uuid()) @db.Uuid
+  adminId   String               @db.Uuid
+  role      AssistantMessageRole
+  kind      AssistantMessageKind @default(TEXT)
+  text      String               @db.VarChar(2000)
+  planId    String?              @db.Uuid
+  // QUERY_RESULT: filas ya renderizadas; HELP: citas; EXECUTION_RESULT: pasos sin secretos.
+  payload   Json?
+  traceId   String?              @db.Uuid
+  createdAt DateTime             @default(now())
+
+  admin User           @relation("AssistantMessages", fields: [adminId], references: [id], onDelete: Cascade)
+  plan  AssistantPlan? @relation(fields: [planId], references: [id], onDelete: SetNull)
+
+  @@index([adminId, createdAt])
 }

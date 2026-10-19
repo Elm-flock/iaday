@@ -24,7 +24,13 @@ import {
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Roles } from '../common/decorators/roles.decorator';
 import type { AuthUser } from '../common/types/auth-user';
-import { CreateUserDto, ResetPasswordDto, UpdateUserDto, UserDto } from './dto/user.dto';
+import {
+  CreatedUserDto,
+  CreateUserDto,
+  ResetPasswordDto,
+  UpdateUserDto,
+  UserDto,
+} from './dto/user.dto';
 import { UsersService } from './users.service';
 
 @ApiTags('users')
@@ -42,11 +48,14 @@ export class UsersController {
 
   @Roles('ADMIN')
   @Post()
-  @ApiOperation({ summary: 'Crea un usuario (solo ADMIN; no hay auto-registro)' })
-  @ApiCreatedResponse({ type: UserDto })
+  @ApiOperation({
+    summary:
+      'Crea un usuario (solo ADMIN; no hay auto-registro). Nace con mustChangePassword; sin `password` devuelve una clave inicial generada, una sola vez.',
+  })
+  @ApiCreatedResponse({ type: CreatedUserDto })
   @ApiForbiddenResponse({ description: 'Rol insuficiente' })
   @ApiConflictResponse({ description: 'El email ya existe' })
-  create(@Body() dto: CreateUserDto): Promise<UserDto> {
+  create(@Body() dto: CreateUserDto): Promise<CreatedUserDto> {
     return this.users.create(dto);
   }
 

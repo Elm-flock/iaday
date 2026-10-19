@@ -156,6 +156,15 @@ describe('Auditoría (e2e) REQ-AUD-1', () => {
       expect(after.entityType).toBe('KeyResult');
     });
 
+    it('TRUNCATE sobre AuditLog (directo o en cascada) es rechazado', async () => {
+      await log();
+      expect(await sqlState(prisma.$executeRawUnsafe('TRUNCATE TABLE "AuditLog"'))).toBe('23001');
+      expect(await sqlState(prisma.$executeRawUnsafe('TRUNCATE TABLE "User" CASCADE'))).toBe(
+        '23001',
+      );
+      expect(await prisma.auditLog.count()).toBe(1);
+    });
+
     it('INSERT sigue permitido y borrar al actor conserva la entrada (actorId -> null)', async () => {
       const actor = await createUser(prisma);
       const entry = await log({ actorId: actor.id });

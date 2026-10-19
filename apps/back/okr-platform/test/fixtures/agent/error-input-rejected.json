@@ -1,0 +1,28 @@
+{
+  "traceId": "5f0e9d8c-7b6a-4c5d-8e4f-3a2b1c0d9e8f",
+  "error": {
+    "code": "INPUT_REJECTED",
+    "message": "El texto no parece contenido de OKRs, check-ins o feedback.",
+    "retryable": false,
+    "details": {
+      "reason": "INJECTION_SUSPECTED"
+    }
+  },
+  "usage": [
+    {
+      "step": "CLASSIFY",
+      "attempt": 1,
+      "model": "nvidia/nemotron-3-nano-30b-a3b",
+      "isFallback": false,
+      "promptId": "classify",
+      "promptVersion": "1",
+      "promptHash": "0c55e1f4a2b9",
+      "inputTokens": 420,
+      "outputTokens": 30,
+      "latencyMs": 350,
+      "costUsdEst": 2.7e-5,
+      "status": "OK",
+      "errorCode": null
+    }
+  ]
+}
