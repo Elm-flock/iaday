@@ -74,7 +74,7 @@ Una referencia a una entidad, existente o creada antes en el mismo plan:
 | Campo | Tipo | Reglas |
 |---|---|---|
 | `role` | `"ADMIN" \| "ASSISTANT"` | |
-| `text` | `string` | 1–2000 chars. Los turnos `ASSISTANT` son las respuestas de texto previas (nunca planes completos; un plan previo viaja resumido como `"[plan <estado>: <summary>]"`) |
+| `text` | `string` | 1–2000 chars. Los turnos `ASSISTANT` son las respuestas de texto previas (nunca planes completos; un plan previo viaja resumido en texto plano con su estado real, p. ej. `"[Plan PROPUESTO, todavía sin confirmar: nada de esto existe aún. <summary>. Pasos: …]"`, `[Plan EJECUTADO…]`, `[Plan PARCIAL: se hizo … falló … por …]`, `[Plan INVÁLIDO…]`; mismo campo y forma, solo cambia el texto) |
 
 ### 3.4 `Catalog` (minimizado; solo lo necesario para resolver referencias)
 
