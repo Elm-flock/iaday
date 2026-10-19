@@ -188,12 +188,14 @@ Un ciclo solo avanza en un sentido:
 
 1. Entrá a **Ciclos** y hacé clic en **Crear ciclo**.
 2. Completá el formulario:
-   - **Nombre**. Ejemplos: "OKR 2026" o "Q1 2027".
+   - **Nombre**. Ejemplos: "OKR 2026" o "Q1 2027". No puede haber dos ciclos con el mismo nombre. Da igual si cambian las mayúsculas, las tildes o los espacios de más: "Q1 2027" y " q1 2027 " son el mismo nombre. Tampoco se puede repetir el nombre de un ciclo cerrado.
    - **Tipo**: Anual o Trimestral. Si elegís Trimestral, aparece **Ciclo anual**. Elegí a cuál pertenece.
    - **Inicio** y **Fin**.
    - **Cadencia de check-in**.
    - **Umbral de comprometidos** y **Umbral de aspiracionales**.
 3. Hacé clic en **Crear ciclo**.
+
+Si el nombre ya existe, el formulario marca el campo **Nombre** con el aviso "Ya existe un ciclo llamado ...". Elegí otro nombre o usá el ciclo que ya existe.
 
 El ciclo se crea en estado **Borrador**.
 
@@ -230,7 +232,7 @@ Los umbrales se pueden cambiar hasta que el ciclo se cierre. Cada cambio queda e
 2. Cambiá lo que necesites.
 3. Guardá los cambios.
 
-Las fechas solo se editan mientras el ciclo es borrador. Los umbrales se editan hasta el cierre.
+Las fechas solo se editan mientras el ciclo es borrador. Los umbrales se editan hasta el cierre. Si cambiás el nombre, tiene que seguir siendo distinto al de los demás ciclos.
 
 ### Cómo activo un ciclo
 

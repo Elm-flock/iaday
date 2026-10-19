@@ -105,6 +105,31 @@ test.describe('ciclos, equipos y usuarios (admin)', () => {
     await expect(page.getByTestId('aspirational-threshold')).toHaveText('0,65');
   });
 
+  test('un nombre de ciclo repetido (aunque cambien mayúsculas o espacios) se marca en el campo Nombre', async ({
+    page,
+  }) => {
+    await login(page, ADMIN.email, ADMIN.password);
+    await page.goto('/ciclos');
+    await expect(dialog(page)).toHaveCount(0);
+    await page.getByRole('button', { name: 'Crear ciclo' }).click();
+    await dialog(page)
+      .getByLabel(/Nombre/)
+      .fill(`  ${annualName.toUpperCase()} `);
+    await dialog(page)
+      .getByLabel(/Inicio/)
+      .fill(`${YEAR + 5}-01-01`);
+    await dialog(page)
+      .getByLabel(/Fin/)
+      .fill(`${YEAR + 5}-12-31`);
+    await dialog(page).getByRole('button', { name: 'Crear ciclo' }).click();
+
+    await expect(dialog(page)).toContainText(
+      `Ya existe un ciclo llamado «${annualName.toUpperCase()}». Elegí otro nombre o usá el existente.`,
+    );
+    // El modal sigue abierto con lo tipeado para corregir.
+    await expect(dialog(page).getByLabel(/Inicio/)).toHaveValue(`${YEAR + 5}-01-01`);
+  });
+
   test('un trimestre solapado se rechaza con un mensaje claro en español', async ({ page }) => {
     await login(page, ADMIN.email, ADMIN.password);
     await page.goto('/ciclos');
